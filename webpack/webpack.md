@@ -96,35 +96,18 @@ npx webpack
 >
 > 它也可以打包模块化的JS，让浏览器认识
 
+# webpack有四大核心概念:
+
+- 入口(entry): 程序的入口js
+- 输出(output): 打包后存放的位置
+- loader: 用于对模块的源代码进行转换  //module
+- 插件(plugins): 插件目的在于解决 loader无法实现的**其他事**
 
 
-
-
-## 入口和出口
-
-- 入口： 打包从哪个文件开始打，默认从src里的index.js开始
-
-- 出口：打包后生成到哪，默认是dist文件夹里的main.js
-
-- 修改步骤：
-
-    - 在项目根目录（也就是跟package.json同级）的地方，新建一个文件 `webpack.config.js` （webpack的配置文件）
-
-    
-
-### 入口
 
 [传送门](https://www.webpackjs.com/concepts/#%E5%85%A5%E5%8F%A3-entry-)
 
 - 在文件里写以下代码
-
-```js
-  module.exports = {
-  
-      //打包入口,以src里面的xx.js为入口
-      entry:"./src/xx.js"
-}
-```
 
 - 打包时要带上这个配置文件
 
@@ -137,26 +120,9 @@ npx webpack --config webpack.config.js
 - 在webpack老版本的时候，必须自己制定这个配置文件
 - 也可以不叫 `webpack.config.js` 叫别的名字，叫别的名字必须制定配置文件的名字
 
-
-
-### 出口
-
 [传送门](https://www.webpackjs.com/concepts/#%E5%87%BA%E5%8F%A3-output-)
 
 - webpack.config.js
-
-```js
-output:{
-    //路径
-    path:'',
-    //文件名
-    filename:''
-}
-```
-
-
-
-- 最终配置代码
 
 ```js
 const path = require('path')
@@ -270,7 +236,7 @@ package.json
 
 
 
-## 打包css
+## 打包css less sass
 
 - webpack默认只认识.js文件，如果想打包解析别的文件格式，就需要对应的loader
 
@@ -285,24 +251,18 @@ package.json
     - webpack.config.js
 
     - ```js
-            module: {
-                rules: [
-                    {
-                        test: /\.css$/,
-                        use: [
-                            'style-loader',
-                            'css-loader'
-                        ]
-                    }
-                ]
-            }
+        module: {
+          rules: [
+              {test: /\.css$/,use: ['style-loader','css-loader']},
+              {test: /\.less$/,use: ['style-loader','css-loader','less-loader']},
+              {test: /\.s(a|c)ss$/,use: ['style-loader','css-loader','sass-loader']},
+          ]
+        }
         ```
 
         
 
-
-
-## 打包图片
+## 打包图片,font
 
 - 默认不支持打包图片
 
@@ -326,23 +286,27 @@ package.json
       },
       module: {
         rules: [
-          {
-            test: /\.css$/,
-            use: [
-              'style-loader',
-              'css-loader'
-            ]
-          },
-    +       {
-    +         test: /\.(png|svg|jpg|gif)$/,
-    +         use: [
-    +           'file-loader'
-    +         ]
-    +       }
+    +       {test: /\.(png|svg|jpg|gif)$/,use: ['file-loader']},
+    		{test: /\.(png|svg|jpg|gif)$/,
+    			use: {
+    			  loader:'url-loader',
+    			  options:{
+    			  	limit:5 * 1024,  //大于5kb 转为base64
+    			  	outputPath:'images',  //指定图片打不路径
+    			  	name:'[name]-[hash:4].[ext]'  //防止重名
+    			  }
+    			}
+    		},
           ]
         }
       };
     ```
+
+## babel-loader
+
+```js
+ES6 ES7 转换为 ES5
+```
 
 
 
@@ -476,13 +440,17 @@ module.exports = {
 
 - 我们就用 npm run xxx 运行
 
-### 参数解读:
+# 参数解读:
 
 ```js
 webpack-dev-server有三种配置方式，有配置文件方式、package.json方式和纯node的API实现方式，
 ```
 
+## webpack.config.js
+
 ```js
+
+
 devServer: {
     contentBase: path.join(__dirname, "public")"./",//本地服务器所加载的页面所在的目录
     historyApiFallback: true,//不跳转; 应对返回404页面时定向到特定页面用的
@@ -511,6 +479,34 @@ devServer: {
  }
 ————————————————
 原文链接：https://blog.csdn.net/franktaoge/article/details/80083317
+```
+
+## package.json
+
+```json
+
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildcustom": "webpack --config webpack.custom.config.js", //指定打包配置文件
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "dev2": "webpack-dev-server --compress --hot --port 5000 --open --contentBase src",
+    "server": "node server.js"
+  },
+      
+--compress  //gzip压缩
+--hot 		//热更新,保存自动更新页面
+--port 5000 //端口
+--open 		//npm run dev 后自动打开页面
+--contentBase src", //指定默认打开路径
+--devtool source-map //生成 .map文件
+--watch 	//监听模式
+--config XXX.js //执行另一个js文件 //默认是webpack.config.js
+-p			//压缩混淆
+-d			//生成map映射文件
+--progress  //显示进度条
+--color 	//添加颜色
+
 ```
 
 

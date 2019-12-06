@@ -194,45 +194,7 @@ package.json
 
     
 
-# 打包插件
-
-## 打包html
-
-[传送门](https://www.webpackjs.com/guides/output-management/#%E8%AE%BE%E5%AE%9A-htmlwebpackplugin)
-
-- webpack默认只能打包js
-
-- 如果要打包html，还得下载一个html的插件
-
-- 并且要修改配置文件，不能只是独立的html，还得给一个js的入口文件
-
-- 步骤：
-
-    - ```bash
-        npm install --save-dev html-webpack-plugin
-        ```
-
-    - 修改webpack.config.js
-
-    - 先导入
-
-    - ```diff
-        const HtmlWebpackPlugin = require('html-webpack-plugin');
-        ```
-
-    ```js
-    plugins: [
-          new HtmlWebpackPlugin({
-                //title设置打包后的html标题
-                title: '测试'
-              template:'./src/index.html' //导入自己的html;
-            })
-        ],
-    ```
-
-    - 会自动把入口文件的js  打包后的js文件 导入到打包后的html里面来
-    - 如果只是写title，它会帮你创建新的空的html,并导入js依赖
-    - 如果写template跟路径，就代表找到template对应的路径的html文件，把它打包起来，并添加依赖
+# 打包loader
 
 
 
@@ -304,24 +266,84 @@ package.json
 
 ## babel-loader
 
-```js
+```json
 ES6 ES7 转换为 ES5
+babeljs.com
+
+安装:npm i babel-loader @babel/core @babel/preset-env webpack -D
+@babel/core  核心包
+@babel/preset-env 预设包,语言包
+
+{
+    	test:/\.js$/,
+        use:{
+            loader:'babel-loader',
+-                options:{
+-                    presets:['@babel/env'],
+-                    plugins:['@babel/plugin-proposal-class-properties']
+-                }
+        }
+}
+
+建一个 .babelrc文件,json格式 把options写入这个文件
+{
+  "presets": ["@babel/env"],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-transform-runtime"
+  ]
+}
 ```
 
+# plugin插件
+
+## html-webpack-plugin
+
+[传送门](https://www.webpackjs.com/guides/output-management/#%E8%AE%BE%E5%AE%9A-htmlwebpackplugin)
+
+- webpack默认只能打包js
+
+- 如果要打包html，还得下载一个html的插件
+
+- 并且要修改配置文件，不能只是独立的html，还得给一个js的入口文件
+
+- 步骤：
+
+    - ```bash
+        npm install --save-dev html-webpack-plugin
+        ```
+
+    - 修改webpack.config.js
+
+    - 先导入
+
+    - ```diff
+        const HtmlWebpackPlugin = require('html-webpack-plugin');
+        ```
+
+    ```js
+    plugins: [
+          new HtmlWebpackPlugin({
+                //title设置打包后的html标题
+                title: '测试'
+              template:'./src/index.html' //导入自己的html;
+            })
+        ],
+    ```
+
+    - 会自动把入口文件的js  打包后的js文件 导入到打包后的html里面来
+    - 如果只是写title，它会帮你创建新的空的html,并导入js依赖
+    - 如果写template跟路径，就代表找到template对应的路径的html文件，把它打包起来，并添加依赖
 
 
-## webpack打包vue
 
-- 本质是跟打包css是一样的，都是要先下载一个loader
-- 然后改配置文件
-
-# 每次打包清空dist文件夹
+## clean-webpack-plugin 
 
 [中文传送门](https://www.webpackjs.com/guides/output-management/#%E6%B8%85%E7%90%86-dist-%E6%96%87%E4%BB%B6%E5%A4%B9)
 
 [英文官网](https://webpack.js.org/guides/output-management/#cleaning-up-the-dist-folder)
 
-- 下载清空的插件
+- 下载清空dist的插件
 
     - ```bash
         npm install clean-webpack-plugin --save-dev
@@ -339,6 +361,27 @@ ES6 ES7 转换为 ES5
        new CleanWebpackPlugin()
     ]
     ```
+
+## copy-webpack-puugin
+
+```js
+npm i copy-webpack-puugin -D
+
+plugins:[
+    new copyWebpackPuugin([
+        {
+            from:path.join(__dirname,'assets'), //从这里拷贝到to
+            to:'assets'  //拷贝到src里的assets
+        }
+   ])
+]
+```
+
+## BannerPlugin webpack内置插件
+
+```js
+new webpack.BannerPlugin  生成头部注释
+```
 
 
 
@@ -450,7 +493,9 @@ webpack-dev-server有三种配置方式，有配置文件方式、package.json�
 
 ```js
 
-
+mode:'development' / 'production' 指定模式
+devtool:"cheap-module-eval-source-map" //压缩.map文件或不用  测试环境
+devtool:"none" //生产环境推荐使用
 devServer: {
     contentBase: path.join(__dirname, "public")"./",//本地服务器所加载的页面所在的目录
     historyApiFallback: true,//不跳转; 应对返回404页面时定向到特定页面用的

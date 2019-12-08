@@ -232,6 +232,8 @@ package.json
 
 - ```js
     npm install --save-dev file-loader
+    
+    url路径的
     ```
 
 - ```diff
@@ -263,6 +265,25 @@ package.json
         }
       };
     ```
+
+## img标签图片资源loader
+
+```js
+npm install -s html-withimg-loader
+
+html 标签中img src 中引入的图片会被打包
+```
+
+```
+webpack.config.js
+
+{
+	test:/\.(htm|html)$/i,
+	loader:'html-withimg-loader'
+}
+```
+
+
 
 ## babel-loader
 
@@ -700,3 +721,793 @@ module.exports = {
 }
 ```
 
+# webpack高级
+
+## 多页面打包
+
+在`webpack.config.js`中修改入口和出口配置
+
+```js
+  // 1. 修改为多入口
+  entry: {
+      main: './src/main.js',
+      other: './src/other.js'
+  },
+  output: {
+    path: path.join(__dirname, './dist/'),
+    // filename: 'bundle.js',
+    // 2. 多入口无法对应一个固定的出口, 所以修改filename为[name]变量
+    filename: '[name].js',
+    publicPath: '/'
+  },
+  plugins: [
+      // 3. 如果用了html插件,需要手动配置多入口对应的html文件,将指定其对应的输出文件
+      new HtmlWebpackPlugin({
+          template: './index.html',
+          filename: 'index.html',
+          chunks: ['main']
+      }),
+      new HtmlWebpackPlugin({
+          template: './index.html',
+          filename: 'other.html',
+          // chunks: ['other', 'main']
+          chunks: ['other']
+      })
+  ]
+```
+
+修改入口为对象，支持多个js入口，同时修改output输出的文件名为`'[name].js'`表示各自已入口文件名作为输出文件名，但是`html-webpack-plugin`不支持此功能，所以需要再拷贝一份插件，用于生成两个html页面，实现多页应用
+
+## 第三方库的两种引入方式
+
+可以通过`expose-loader`进行全局变量的注入，同时也可以使用内置插件`webpack.ProvidePlugin`对每个模块的闭包空间，注入一个变量，自动加载模块，而不必到处 `import` 或 `require`
+
+- expose-loader **将库引入到全局作用域**
+
+    1. 安装`expose-loader`
+
+        `npm i -D expose-loader`
+
+    2. 配置loader
+
+        ```js
+        module: {
+          rules: [{
+            test: require.resolve('jquery'),
+            use: {
+              loader: 'expose-loader',
+              options: '$'
+            }
+          }]
+        }
+        ```
+
+        tips: `require.resolve` 用来获取模块的绝对路径。所以这里的loader只会作用于 jquery 模块。并且只在 bundle 中使用到它时，才进行处理。
+
+- webpack.ProvidePlugin **将库自动加载到每个模块**
+
+    1. 引入webpack
+
+        ```js
+        const webpack = require('webpack')
+        ```
+
+    2. 创建插件对象
+
+        要自动加载 `jquery`，我们可以将两个变量都指向对应的 node 模块
+
+        ```js
+        new webpack.ProvidePlugin({
+          $: 'jquery',
+          jQuery: 'jquery'
+        })
+        ```
+
+## Development / Production不同配置文件打包
+
+```
+`npm i -D webpack-merge`
+```
+
+项目开发时一般需要使用两套配置文件，用于开发阶段打包（不压缩代码，不优化代码，增加效率）和上线阶段打包（压缩代码，优化代码，打包后直接上线使用）
+
+抽取三个配置文件：
+
+- webpack.base.js
+
+- webpack.prod.js
+
+- webpack.dev.js
+
+步骤如下：
+
+1. 将开发环境和生产环境公用的配置放入base中，不同的配置各自放入prod或dev文件中（例如：mode）
+
+2. 然后在dev和prod中使用`webpack-merge`把自己的配置与base的配置进行合并后导出
+
+    `npm i -D webpack-merge`
+
+3. 将package.json中的脚本参数进行修改，通过`--config`手动指定特定的配置文件
+
+```js
+webpack.dev.js
+
+const merge = require('webpack-merge')
+const baseConfig = require('./webpack.base.js')
+// 引入webpack
+const webpack = require('webpack')
+// webpack的配置文件遵循着CommonJS规范
+module.exports = merge(baseConfig, {
+  mode: 'development',
+  // 开启监视模式, 此时执行webpack指令进行打包会监视文件变化自动打包
+  // watch: true
+  devServer: {
+    open: true,
+    hot: true, // 开启热更新
+    compress: true,
+    port: 3000,
+    // contentBase: './src'
+    proxy: {
+      // /api/getUserInfo
+      // 当前端请求 /api 地址时, 会将请求转发到 
+      // http://localhost:9999/api
+      // 举例: 客户端现在请求的时 /api/getUserInfo
+      // 此时会将请求转发到: http://localhost:9999/api/getUserInfo
+      // '/api': 'http://localhost:9999',
+      // 此时会将请求转发到: http://localhost:9999/getUserInfo
+      // '/getUserInfo': 'http://localhost:9999'
+      '/api': {
+        target: 'http://localhost:9999',
+        // 转发请求时不会携带 /api
+        // http://localhost:9999/getUserInfo
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
+  },
+  devtool: 'cheap-module-eval-source-map',
+  plugins: [
+    new webpack.DefinePlugin({
+      IS_DEV: 'true',
+      // test: '1 + 1', // DefinePlugin会解析定义的环境变量表达式, 当成JS执行
+      // test2: '"zs"'
+    })
+  ]
+})
+```
+
+```js
+webpack.prod.js
+
+const merge = require('webpack-merge')
+const baseConfig = require('./webpack.base.js')
+const webpack = require('webpack')
+
+// webpack的配置文件遵循着CommonJS规范
+module.exports = merge(baseConfig, {
+  mode: 'production',
+  devtool: 'cheap-module-source-map',
+  plugins: [
+    new webpack.DefinePlugin({
+      IS_DEV: 'false',
+      // test: '1 + 1', // DefinePlugin会解析定义的环境变量表达式, 当成JS执行
+      // test2: '"zs"'
+    })
+  ]
+})
+```
+
+```js
+webpack.base.js
+
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpack = require('webpack')
+
+// webpack的配置文件遵循着CommonJS规范
+module.exports = {
+  // entry: './src/main.js',
+  entry: {
+    index: './src/index.js',
+    other: './src/other.js'
+  },
+  output: {
+    // path.resolve() : 解析当前相对路径的绝对路径
+    // path: path.resolve('./dist/'),
+    // path: path.resolve(__dirname, './dist/'),
+    path: path.join(__dirname, '..', './dist/'),
+    // filename: 'bundle.js',
+    filename: '[name].js',
+    publicPath: '/'
+  },
+  // 开启监视模式, 此时执行webpack指令进行打包会监视文件变化自动打包
+  // watch: true
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: './src/index.html',
+      chunks: ['index', 'other']
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'other.html',
+      template: './src/other.html',
+      chunks: ['other']
+    }),
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin([
+      {
+        from: path.join(__dirname, '..', 'assets'),
+        to: 'assets'
+      }
+    ]),
+    new webpack.BannerPlugin('黑马程序员真牛biubiu!'),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        // webpack读取loader时 是从右到左的读取, 会将css文件先交给最右侧的loader来处理
+        // loader的执行顺序是从右到左以管道的方式链式调用
+        // css-loader: 解析css文件
+        // style-loader: 将解析出来的结果 放到html中, 使其生效
+        use: ['style-loader', 'css-loader']
+      },
+      { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] },
+      { test: /\.s(a|c)ss$/, use: ['style-loader', 'css-loader', 'sass-loader'] },
+      {
+        test: /\.(jpg|jpeg|png|bmp|gif)$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 5 * 1024,
+            outputPath: 'images',
+            name: '[name]-[hash:6].[ext]'
+          }
+        }
+      },
+      { test: /\.(woff|woff2|eot|svg|ttf)$/, use: 'url-loader' },
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader',
+          // options: {
+          //   presets: ['@babel/env'],
+          //   plugins: [
+          //     '@babel/plugin-proposal-class-properties',
+          //     '@babel/plugin-transform-runtime'
+          //   ]
+          // }
+        },
+        exclude: /node_modules/,
+
+      },
+      {
+        test: /\.(htm|html)$/i,
+        loader: 'html-withimg-loader'
+      },
+      // {
+      //   // 用于解析jQuery模块的绝对路径
+      //   test: require.resolve('jquery'),
+      //   use: {
+      //     loader: 'expose-loader',
+      //     options: '$'
+      //   }
+      // }
+    ]
+  }
+}
+```
+
+## 定义环境变量
+
+除了区分不同的配置文件进行打包，还需要在开发时知道当前的环境是开发阶段或上线阶段，所以可以借助内置插件`DefinePlugin`来定义环境变量。最终可以实现开发阶段与上线阶段的api地址自动切换。
+
+1. 引入webpack
+
+    ```js
+    const webpack = require('webpack')
+    ```
+
+2. 创建插件对象，并定义环境变量
+
+    ```js
+    new webpack.DefinePlugin({
+      IS_DEV: 'false'
+    })
+    ```
+
+3. 在src打包的代码环境下可以直接使用
+
+```js
+config.js
+const DEV_BASE_URL = 'https://weixiao.bdxhcom.com:9028'//线上测试环境
+const PRO_BASE_URL = 'https://wxapi.bdxhcom.com'//正式环境
+
+module.exports = process.env.NODE_ENV == 'development' ? DEV_BASE_URL : PRO_BASE_URL
+
+```
+
+```js
+ plugins: [
+    new webpack.DefinePlugin({
+      'process.env': require('../config/dev.env'),
+      'process.env.FILE_NAME': JSON.stringify(process.env.FILE_NAME)
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
+    new webpack.NoEmitOnErrorsPlugin(),
+    // https://github.com/ampedandwired/html-webpack-plugin
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: path.resolve(__dirname, `../src/apply/${process.env.FILE_NAME}/${process.env.FILE_NAME}.html`),
+      inject: true
+    }),
+  ]
+```
+
+## 跨域http proxy
+
+```js
+本地地址:http://localhost:3000',
+目标地址:http://localhost:9999
+devServer: {
+    open: true,
+    hot: true,
+    compress: true,
+    port: 3000,
+    // contentBase: './src'
+    proxy: {
+      '/api': 'http://localhost:9999' //带有/api/xx的接口转成此目标
+      写法二\
+      '/api':{
+      		target:'http://localhost:9999',
+      		pathRewrite:{
+      			'^/api':''  ////无需带有/api/xx的接口转成此
+      		}
+      }
+      
+    }
+  },
+```
+
+## HMR的使用
+
+需要对某个模块进行热更新时，可以通过`module.hot.accept`方法进行文件监视
+
+只要模块内容发生变化，就会触发回调函数，从而可以重新读取模块内容，做对应的操作
+
+```js
+if (module.hot) {
+  module.hot.accept('./hotmodule.js', function() {
+    console.log('hotmodule.js更新了');
+    let str = require('./hotmodule.js')
+    console.log(str)
+  })
+}
+```
+
+# webpack优化
+
+## production模式打包自带优化
+
+- tree shaking
+
+    tree shaking 是一个术语，通常用于打包时移除 JavaScript 中的未引用的代码(dead-code)，它依赖于 ES6 模块系统中 `import`和 `export`的**静态结构**特性。
+
+    开发时引入一个模块后，如果只使用其中一个功能，上线打包时只会把用到的功能打包进bundle，其他没用到的功能都不会打包进来，可以实现最基础的优化
+
+```js
+又引用则打包,没有的就不打包
+```
+
+
+
+- scope hoisting
+
+    scope hoisting的作用是将模块之间的关系进行结果推测， 可以让 Webpack 打包出来的代码文件更小、运行的更快
+
+    scope hoisting 的实现原理其实很简单：分析出模块之间的依赖关系，尽可能的把打散的模块合并到一个函数中去，但前提是不能造成代码冗余。
+    因此只有那些被引用了一次的模块才能被合并。
+
+    由于 scope hoisting 需要分析出模块之间的依赖关系，因此源码必须采用 ES6 模块化语句，不然它将无法生效。
+    原因和tree shaking一样。
+
+    ```js
+    let a=1;
+    let b=2;
+    console.log(a+b)  // console.log(3)
+    ```
+
+    
+
+- 代码压缩
+
+    所有代码使用UglifyJsPlugin插件进行压缩、混淆
+
+## css优化
+
+### 将css提取到独立的文件中
+
+`mini-css-extract-plugin`是用于将CSS提取为独立的文件的插件，对每个包含css的js文件都会创建一个CSS文件，支持按需加载css和sourceMap
+
+只能用在webpack4中，有如下优势:
+
+- 异步加载
+- 不重复编译，性能很好
+- 容易使用
+- 只针对CSS
+
+使用方法：
+
+1. 安装
+
+    `npm i -D mini-css-extract-plugin`
+
+2. 在webpack配置文件中引入插件
+
+    ```js
+    const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+    ```
+
+3. 创建插件对象，配置抽离的css文件名，支持placeholder语法
+
+    ```js
+    new MiniCssExtractPlugin({
+    	filename: '[name].css'
+    })
+    ```
+
+4. 将原来配置的所有`style-loader`替换为`MiniCssExtractPlugin.loader`
+
+    ```js
+    {
+    test: /\.css$/,
+    // webpack读取loader时 是从右到左的读取, 会将css文件先交给最右侧的loader来处理
+    // loader的执行顺序是从右到左以管道的方式链式调用
+    // css-loader: 解析css文件
+    // style-loader: 将解析出来的结果 放到html中, 使其生效
+    // use: ['style-loader', 'css-loader']
+    use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+    },
+    // { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] },
+    { test: /\.less$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'] },
+    // { test: /\.s(a|c)ss$/, use: ['style-loader', 'css-loader', 'sass-loader'] },
+    { test: /\.s(a|c)ss$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'] },
+    ```
+
+### 自动添加css前缀
+
+使用`postcss`，需要用到`postcss-loader`和`autoprefixer`插件
+
+1. 安装
+
+    `npm i -D postcss-loader autoprefixer`
+
+2. 修改webpack配置文件中的loader，将`postcss-loader`放置在`css-loader`的右边（调用链从右到左）
+
+    ```js
+    {
+    test: /\.css$/,
+    // webpack读取loader时 是从右到左的读取, 会将css文件先交给最右侧的loader来处理
+    // loader的执行顺序是从右到左以管道的方式链式调用
+    // css-loader: 解析css文件
+    // style-loader: 将解析出来的结果 放到html中, 使其生效
+    // use: ['style-loader', 'css-loader']
+    use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+    },
+    // { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] },
+    { test: /\.less$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'less-loader'] },
+    // { test: /\.s(a|c)ss$/, use: ['style-loader', 'css-loader', 'sass-loader'] },
+    { test: /\.s(a|c)ss$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'] },
+    ```
+
+3. 项目根目录下添加`postcss`的配置文件：`postcss.config.js`
+
+4. 在`postcss`的配置文件中使用插件
+
+    ```js
+    module.exports = {
+      plugins: [require('autoprefixer')]
+    }
+    ```
+
+### 开启css压缩
+
+需要使用`optimize-css-assets-webpack-plugin`插件来完成css压缩
+
+但是由于配置css压缩时会覆盖掉webpack默认的优化配置，导致JS代码无法压缩，所以还需要手动把JS代码压缩插件导入进来：`terser-webpack-plugin`
+
+1. 安装
+
+    `npm i -D optimize-css-assets-webpack-plugin terser-webpack-plugin `
+
+2. 导入插件
+
+    ```js
+    const TerserJSPlugin = require('terser-webpack-plugin')
+    const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+    ```
+
+3. 在webpack配置文件中添加配置节点
+
+    ```js
+    optimization: {
+      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+    },
+    ```
+
+tips: webpack4默认采用的JS压缩插件为：`uglifyjs-webpack-plugin`，在`mini-css-extract-plugin`上一个版本中还推荐使用该插件，但最新的v0.6中建议使用`teser-webpack-plugin`来完成js代码压缩，具体原因未在官网说明，我们就按照最新版的官方文档来做即可
+
+## js代码优化分离
+
+Code Splitting是webpack打包时用到的重要的优化特性之一，此特性能够把代码分离到不同的 bundle 中，然后可以按需加载或并行加载这些文件。代码分离可以用于获取更小的 bundle，以及控制资源加载优先级，如果使用合理，会极大影响加载时间。
+
+有三种常用的代码分离方法：
+
+- 入口起点(entry points)：使用`entry`配置手动地分离代码。
+- 防止重复(prevent duplication)：使用 `SplitChunksPlugin`去重和分离 chunk。
+- 动态导入(dynamic imports)：通过模块的内联函数调用来分离代码。
+
+### 手动配置多入口
+
+1. 在webpack配置文件中配置多个入口
+
+    ```js
+    entry: {
+      main: './src/main.js',
+      other: './src/other.js'
+    },
+    output: {
+      // path.resolve() : 解析当前相对路径的绝对路径
+      // path: path.resolve('./dist/'),
+      // path: path.resolve(__dirname, './dist/'),
+      path: path.join(__dirname, '..', './dist/'),
+      // filename: 'bundle.js',
+      filename: '[name].bundle.js',
+      publicPath: '/'
+    },
+    ```
+
+2. 在main.js和other.js中都引入同一个模块，并使用其功能
+
+    main.js
+
+    ```js
+    import $ from 'jquery'
+    
+    $(function() {
+      $('<div></div>').html('main').appendTo('body')
+    })
+    ```
+
+    other.js
+
+    ```js
+    import $ from 'jquery'
+    
+    $(function() {
+      $('<div></div>').html('other').appendTo('body')
+    })
+    ```
+
+3. 修改package.json的脚本，添加一个使用dev配置文件进行打包的脚本（目的是不压缩代码检查打包的bundle时更方便）
+
+    ```json
+    "scripts": {
+        "build": "webpack --config ./build/webpack.prod.js",
+        "dev-build": "webpack --config ./build/webpack.dev.js"
+    }
+    ```
+
+4. 运行`npm run dev-build`，进行打包
+
+5. 查看打包后的结果，发现other.bundle.js和main.bundle.js都同时打包了jQuery源文件
+
+    ![main](../image/main.bundle.js.png)
+
+    ![other](../image/other.bundle.js.png)
+
+这种方法存在一些问题:
+
+- 如果入口 chunks 之间包含重复的模块，那些重复模块都会被引入到各个 bundle 中。
+- 这种方法不够灵活，并且不能将核心应用程序逻辑进行动态拆分代码。
+
+### 抽取公共代码
+
+tips: Webpack v4以上使用的插件为`SplitChunksPlugin`，以前使用的`CommonsChunkPlugin`已经被移除了，最新版的webpack只需要在配置文件中的`optimization`节点下添加一个`splitChunks`属性即可进行相关配置
+
+1. 修改webpack配置文件
+
+    ```js
+    optimization: {
+        splitChunks: {
+          chunks: 'all'
+        }
+    },
+    ```
+
+2. 运行`npm run dev-build`重新打包
+
+3. 查看`dist`目录
+
+    ![1558771916946](../image/1558771916946.png)
+
+4. 查看`vendors~main~other.bundle.js`，其实就是把都用到的jQuery打包到了一个单独的js中
+
+    ![1558772012664](../image/1558772012664.png)
+
+### 动态导入 (懒加载)
+
+webpack4默认是允许import语法动态导入的，但是需要babel的插件支持，最新版babel的插件包为：`@babel/plugin-syntax-dynamic-import`，以前老版本不是`@babel`开头，已经无法使用，需要注意
+
+动态导入最大的好处是实现了懒加载，用到哪个模块才会加载哪个模块，可以提高SPA应用程序的首屏加载速度，Vue、React、Angular框架的路由懒加载原理一样
+
+1. 安装babel插件
+
+    `npm install -D @babel/plugin-syntax-dynamic-import`
+
+2. 修改.babelrc配置文件，添加`@babel/plugin-syntax-dynamic-import`插件
+
+    ```json
+    {
+      "presets": ["@babel/env"],
+      "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-transform-runtime",
+        "@babel/plugin-syntax-dynamic-import"
+      ]
+    }
+    ```
+
+3. 将jQuery模块进行动态导入
+
+    ```js
+    function getComponent() {
+      return import('jquery').then(({ default: $ }) => {
+        return $('<div></div>').html('main')
+      })
+    }
+    ```
+
+4. 给某个按钮添加点击事件，点击后调用getComponent函数创建元素并添加到页面
+
+    ```js
+    window.onload = function () {
+      document.getElementById('btn').onclick = function () {
+        getComponent().then(item => {
+          item.appendTo('body')
+        })
+      }
+    }
+    ```
+
+
+### SplitChunksPlugin配置参数
+
+webpack4之后，使用`SplitChunksPlugin`插件替代了以前`CommonsChunkPlugin`
+
+而`SplitChunksPlugin`的配置，只需要在webpack配置文件中的`optimization`节点下的`splitChunks`进行修改即可，如果没有任何修改，则会使用默认配置
+
+默认的`SplitChunksPlugin` 配置适用于绝大多数用户
+
+webpack 会基于如下默认原则自动分割代码：
+
+- 公用代码块或来自 *node_modules* 文件夹的组件模块。
+- 打包的代码块大小超过 30k（最小化压缩之前）。
+- 按需加载代码块时，同时发送的请求最大数量不应该超过 5。
+- 页面初始化时，同时发送的请求最大数量不应该超过 3。
+
+以下是`SplitChunksPlugin`的默认配置：
+
+```js
+module.exports = {
+  //...
+  optimization: {
+    splitChunks: {
+      chunks: 'async', // 只对异步加载的模块进行拆分，可选值还有all | initial
+      minSize: 30000, // 模块最少大于30KB才拆分
+      maxSize: 0,  // 模块大小无上限，只要大于30KB都拆分
+      minChunks: 1, // 模块最少引用一次才会被拆分
+      maxAsyncRequests: 5, // 异步加载时同时发送的请求数量最大不能超过5,超过5的部分不拆分
+      maxInitialRequests: 3, // 页面初始化时同时发送的请求数量最大不能超过3,超过3的部分不拆分
+      automaticNameDelimiter: '~', // 默认的连接符
+      name: true, // 拆分的chunk名,设为true表示根据模块名和CacheGroup的key来自动生成,使用上面连接符连接
+      cacheGroups: { // 缓存组配置,上面配置读取完成后进行拆分,如果需要把多个模块拆分到一个文件,就需要缓存,所以命名为缓存组
+        vendors: { // 自定义缓存组名
+          test: /[\\/]node_modules[\\/]/, // 检查node_modules目录,只要模块在该目录下就使用上面配置拆分到这个组
+          priority: -10 // 权重-10,决定了哪个组优先匹配,例如node_modules下有个模块要拆分,同时满足vendors和default组,此时就会分到vendors组,因为-10 > -20
+        },
+        default: { // 默认缓存组名
+          minChunks: 2, // 最少引用两次才会被拆分
+          priority: -20, // 权重-20
+          reuseExistingChunk: true // 如果主入口中引入了两个模块,其中一个正好也引用了后一个,就会直接复用,无需引用两次
+        }
+      }
+    }
+  }
+};
+```
+
+### 减少打包时间
+
+#### noParse
+
+在引入一些第三方模块时，例如jQuery、bootstrap等，我们知道其内部肯定不会依赖其他模块，因为最终我们用到的只是一个单独的js文件或css文件
+
+所以此时如果webpack再去解析他们的内部依赖关系，其实是非常浪费时间的，我们需要阻止webpack浪费精力去解析这些明知道没有依赖的库
+
+可以在webpack配置文件的`module`节点下加上`noParse`，并配置正则来确定不需要解析依赖关系的模块
+
+```js
+module: {
+	noParse: /jquery|bootstrap/
+}
+```
+
+## IgnorePlugin
+
+在引入一些第三方模块时，例如moment，内部会做i18n国际化处理，所以会包含很多语言包，而语言包打包时会比较占用空间，如果我们项目只需要用到中文，或者少数语言，可以忽略掉所有的语言包，然后按需引入语言包
+
+从而使得构建效率更高，打包生成的文件更小
+
+需要忽略第三方模块内部依赖的其他模块，只需要三步：
+
+1. 首先要找到moment依赖的语言包是什么
+2. 使用IgnorePlugin插件忽略其依赖
+3. 需要使用某些依赖时自行手动引入
+
+具体实现如下：
+
+1. 通过查看moment的源码来分析：
+
+    ```js
+    function loadLocale(name) {
+        var oldLocale = null;
+        // TODO: Find a better way to register and load all the locales in Node
+        if (!locales[name] && (typeof module !== 'undefined') &&
+            module && module.exports) {
+            try {
+                oldLocale = globalLocale._abbr;
+                var aliasedRequire = require;
+                aliasedRequire('./locale/' + name);
+                getSetGlobalLocale(oldLocale);
+            } catch (e) {}
+        }
+        return locales[name];
+    }
+    
+    ```
+
+    观察上方代码，同时查看moment目录下确实有locale目录，其中放着所有国家的语言包，可以分析得出：locale目录就是moment所依赖的语言包目录
+
+2. 使用IgnorePlugin插件来忽略掉moment模块的locale目录
+
+    在webpack配置文件中安装插件，并传入配置项
+
+    参数1：表示要忽略的资源路径
+
+    参数2：要忽略的资源上下文（所在哪个目录）
+
+    两个参数都是正则对象
+
+    ```js
+    new webpack.IgnorePlugin(/\.\/locale/, /moment/)
+    ```
+
+3. 使用moment时需要手动引入语言包，否则默认使用英文
+
+    ```js
+    import moment from 'moment'
+    import 'moment/locale/zh-cn'
+    moment.locale('zh-CN')
+    console.log(moment().subtract(6, 'days').calendar())
+    ```
+
+## 

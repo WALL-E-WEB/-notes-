@@ -1511,3 +1511,49 @@ module: {
     ```
 
 ## 
+
+# 打包分析
+
+项目构建完成后，需要通过一些工具对打包后的bundle进行分析，通过分析才能总结出一些经验，官方推荐的分析方法有两步完成：
+
+1. 使用`--profile --json`参数，以json格式来输出打包后的结果到某个指定文件中
+
+    `webpack --profile --json > stats.json`
+
+2. 将stats.json文件放入工具中进行分析
+
+    官方工具：[official analyze tool](https://github.com/webpack/analyse)
+
+    官方推荐的其他四个工具：
+
+    - [webpack-chart](https://alexkuz.github.io/webpack-chart/)
+    - [webpack-visualizer](https://chrisbateman.github.io/webpack-visualizer/)
+    - [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)  推荐
+    - [webpack bundle optimize helper](https://webpack.jakoblind.no/optimize)
+
+    其中webpack-bundle-analyzer是一个插件，可以以插件的方式安装到项目中
+
+
+
+# 覆盖率Prefetching和Preloading
+
+在优化访问性能时，除了充分利用浏览器缓存之外，还需要涉及一个性能指标：coverage rate（覆盖率）
+
+可以在Chrome浏览器的控制台中按：ctrl  + shift + p，查找coverage，打开覆盖率面板
+
+开始录制后刷新网页，即可看到每个js文件的覆盖率，以及总的覆盖率
+
+![1559811338075](../image/1559811338075.png)
+
+想提高覆盖率，需要尽可能多的使用动态导入，也就是懒加载功能，将一切能使用懒加载的地方都是用懒加载，这样可以大大提高覆盖率
+
+但有时候使用懒加载会影响用户体验，所以可以在懒加载时使用魔法注释：Prefetching，是指在首页资源加载完毕后，空闲时间时，将动态导入的资源加载进来，这样即可以提高首屏加载速度，也可以解决懒加载可能会影响用户体验的问题，一举两得！
+
+```js
+function getComponent() {
+  return import(/* webpackPrefetch: true */ 'jquery').then(({ default: $ }) => {
+    return $('<div></div>').html('我是main')
+  })
+}
+```
+

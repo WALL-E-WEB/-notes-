@@ -3193,7 +3193,65 @@ const instance = axios.create({
 });
 ```
 
+# 路由 生命周期 动画钩子 顺序
 
+```js
+进入首页的钩子们
+
+    1 路由钩子 路由跳转前beforeEach
+
+    2 路由钩子 home组件内部：守卫执行前beforeRouteEnter
+
+    3.路由钩子 路由跳转后afterEach
+
+    4 生命周期 home beforeCreate 创建前状态
+
+    5 生命周期 home created 创建完毕状态
+
+    6 生命周期 home beforeMount 挂载前状态
+
+    7 动画钩子 beforeEnter
+
+    8 生命周期 home mounted 挂载结束状态
+
+    9 动画钩子 enter
+
+    10 动画钩子 afterEnter
+
+
+离开首页，进入别的页面 other
+
+    1 路由钩子 home 导航离开该组件beforeRouteLeave
+
+    2 路由钩子 路由跳转前beforeEach
+
+    3 路由钩子 other组件内部：守卫执行前beforeRouteEnter
+
+    4.路由钩子 路由跳转后afterEach
+
+    5 生命周期 other beforeCreate 创建前状态
+
+    6 生命周期 other created 创建完毕状态
+
+    7 生命周期 other beforeMount 挂载前状态
+
+    8 动画钩子 beforeEnter 
+    9 动画钩子 beforeLeave
+
+    10 动画钩子 leave
+
+    11 动画钩子 afterLeave
+
+    12 生命周期 home beforeDestroy 销毁前状态
+
+    13 生命周期 home destroyed 销毁完成状态
+
+    14 生命周期 other mounted 挂载结束状态
+
+    15 动画钩子 enter
+
+    16 动画钩子 afterEnter
+```
 
 
 

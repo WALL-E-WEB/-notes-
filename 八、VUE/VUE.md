@@ -417,6 +417,14 @@ computed：{
         }
     }
 }
+写法三:传入参数
+computed:{
+    Compute_data(){
+        return (params)=>{
+            return params+2
+        }
+    }
+}
 
 设置全选:
 <span @click="isAll = !isAll"></span>
@@ -628,6 +636,7 @@ try{
 }catch{
     return
 }
+0123 4444
 ```
 
 # ES6导入导出
@@ -2571,6 +2580,19 @@ https://router.vuejs.org/zh/api/#路由对象
 
 ```
 页面通过mapAction异步提交事件到action。action通过commit把对应参数同步提交到mutation。 mutation会修改state中对应的值。 最后通过getter把对应值跑出去，在页面的计算属性中通过mapGetter来动态获取state中的值;
+```
+
+vuex持久化
+
+```js
+ localStorage.getItem("routeInfo") && this.$store.replaceState(Object.assign(this.$store.state, JSON.parse(localStorage.getItem("routeInfo"))));
+
+    localStorage.clear()
+
+    //在页面刷新时将vuex里的信息保存到localStorage里
+    window.addEventListener("beforeunload", () => {
+      localStorage.setItem("routeInfo", JSON.stringify(this.$store.state))
+    })
 ```
 
 

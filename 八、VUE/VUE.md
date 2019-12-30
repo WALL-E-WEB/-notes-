@@ -909,9 +909,35 @@ export default {
 
 ## moment-Js
 
+```js
+npm install moment --save  
+
+import moment from 'moment'
+
+//全局过滤属性
+Vue.filter('dateFormat', function (daraStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
+  return moment(daraStr).format(pattern)
+})
+
+计算属性中使用:
+com_date:function(){
+     return moment(new Date()).add(7,'days').format('YYYY-MM-DD')
+    }
 ```
 
-```
+| Input      | Example          | Description                                            |
+| :--------- | :--------------- | :----------------------------------------------------- |
+| `YYYY`     | `2014`           | 4 or 2 digit year                                      |
+| `YY`       | `14`             | 2 digit year                                           |
+| `Y`        | `-25`            | Year with any number of digits and sign                |
+| `Q`        | `1..4`           | Quarter of year. Sets month to first month in quarter. |
+| `M MM`     | `1..12`          | Month number                                           |
+| `MMM MMMM` | `Jan..December`  | Month name in locale set by `moment.locale()`          |
+| `D DD`     | `1..31`          | Day of month                                           |
+| `Do`       | `1st..31st`      | 每月中的第几天                                         |
+| `DDD DDDD` | `1..365`         | 一年中的第几天                                         |
+| `X`        | `1410715640.579` | Unix timestamp                                         |
+| `x`        | `1410715640579`  | Unix ms timestamp                                      |
 
 ## bigint
 
@@ -2640,7 +2666,11 @@ const store = new Vuex.Store({
         // 需引入:import { mapGetters } from 'vuex'
         ...mapGetters([
             'namelen' //调用{{namelen}},调用getters中的namelen计算方法
-        ])
+        ]),
+        // 对象写法,改变名称
+        ...mapGetters({
+            newName:'namelen' //调用{{namelen}},调用getters中的namelen计算方法
+        })
     },
     // 
     getters:{ //调用:$store.getters.namelen
@@ -2818,6 +2848,60 @@ html引用:
 >>    tagNav: tagNav
 >>}
 >>```
+
+### 5.vuex-持久化插件
+
+```js
+https://github.com/robinvdvleuten/vuex-persistedstate
+npm install --save vuex-persistedstate
+
+import Vue from 'vue'
+import Vuex from 'vuex'
+import createPersistedState from "vuex-persistedstate"
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  state: {
+    name:'walle',
+    routeInfo:'',
+    age:'18888888888888'
+  },
+  mutations: {
+  },
+  actions: {
+  },
+  modules: {
+  },
+  plugins: [createPersistedState({
+    storage: window.localStorage,
+    key:'store',
+    reducer(state) { //指定需要持久化state
+      return {
+      // 只储存state中的assessmentData
+      assessmentData: state.age
+     }
+     }
+  })]
+})
+
+```
+
+### 6.刷新事件beforunload解决持久化
+
+```js
+created(){
+    window.localStorage.getItem('store') && this.$store.replaceState(Object.assign({},this.$store.state,JSON.parse(localStorage.getItem('store'))))
+
+    //window.localStorage.clear() 防止用户看到 或 加密
+    
+    // window.addEventListener('beforeunload',()=>{
+    window.addEventListener('pagehide',()=>{ //移动端beforeunload不生效 代替方案
+      localStorage.setItem('store',JSON.stringify(this.$store.state))
+    })
+  }
+```
+
+
 
 # VUE-Axios
 

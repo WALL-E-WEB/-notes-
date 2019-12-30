@@ -594,7 +594,42 @@ undate(){
 }
 ```
 
+## $nextTick
 
+```js
+async created() {
+    localStorage.setItem("login", "login");
+    setTimeout(() => {
+      console.log(4);
+    }, 1000);
+    console.log(1);
+  },
+mounted() {
+    console.log(2);
+    setTimeout(() => {
+      this.data = 2000;
+      console.log(5);
+      this.$nextTick(() => {
+        console.log(7);
+        console.log(this.$refs.divbox1);
+        console.log(document.getElementsByClassName("box")[12].offsetLeft);
+      });
+    }, 1000);
+    this.$nextTick(()=>{
+          console.log(3);
+          
+    })
+  },
+updated() {
+    console.log(6);
+    this.data=20
+    this.$nextTick(() => {
+      console.log(8);
+    });
+  }
+```
+
+![image-20191230170209052](C:%5CUsers%5CAdministrator%5CDesktop%5C%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C%E5%85%AB%E3%80%81VUE%5Cimage-20191230170209052.png)
 
 ## 自定义指令-directives
 

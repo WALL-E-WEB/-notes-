@@ -29,8 +29,10 @@ module.exports = {
   entry: './path/to/my/entry/file.js', //入口
   output: {
     path: path.resolve(__dirname, 'dist'), //出口绝对路径拼接
-    filename: 'my-first-webpack.bundle.js'
-  }
+    //path:path.join(__dirname,'./dist/'),
+    filename: 'bundle.js'
+  },
+    mode:'development' //默认production
 };
 ```
 
@@ -96,6 +98,179 @@ npx webpack
 >
 > 它也可以打包模块化的JS，让浏览器认识
 
+## 开发自动编译
+
+### watch
+
+1. 在`webpack`指令后面加上`--watch`参数即可
+
+    ```js
+    npm webpack --watch
+    ```
+
+2. 配置文件添加watch:true
+
+    ```js
+    const path = require('path')
+    
+    // webpack的配置文件遵循着CommonJS规范
+    module.exports = {
+      entry: './src/main.js',
+      output: {
+        // path.resolve() : 解析当前相对路径的绝对路径
+        // path: path.resolve('./dist/'),
+        // path: path.resolve(__dirname, './dist/'),
+        path: path.join(__dirname, './dist/'),
+        filename: 'bundle.js'
+      },
+      mode: 'development',
+      watch: true
+    }
+    ```
+
+3. 配置package.json指定build
+
+    ```js
+    {
+      "name": "walle-webc",
+      "version": "1.0.0",
+      "main": "index.js",
+      "scripts": {
+        "build":"webpack --config",
+        "build:watch":"webpack --watch"
+      },
+      "author": "",
+      "license": "ISC",
+      "devDependencies": {
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.10"
+      },
+      "dependencies": {},
+      "keywords": [],
+      "description": ""
+    }
+    -------
+        npm run build:watch
+    ```
+
+
+
+### webpack-dev-server
+
+devServer会在内存中生成一个打包好的`bundle.js`;
+
+并不是生成在dist文件里;位置如下图:
+
+index.html中引入js为 /
+
+![image-20191230221821528](../image/image-20191230221821528.png)
+
+```js
+安装: 需要先安装webpack
+npm i webpack-dev-server webpack -D
+```
+
+1. package.json
+
+    ```json
+    {
+      "name": "walle-webc",
+      "version": "1.0.0",
+      "main": "index.js",
+      "scripts": {
+        "build:watch":"webpack --watch",
+        "dev":"webpack-dev-server",
+         "dev2":"webpack-dev-server --hot --open --port 8090"
+          //--hot  热更替 只会重新加载修改部分
+          //--open 自动启动浏览器
+          //--port 指定端口
+          //--compress 打包压缩gzip压缩
+          //--contentBase src 当index位于src下 指定路径为src下
+      },
+    }
+    
+    --------------
+    运行npm run dev
+    ```
+
+    
+
+2. 配置文件webpack.config.js–devServer
+
+    ```js
+    const path = require('path')
+    
+    module.exports = {
+      // 入口文件配置
+      entry: './src/index.js',
+      // 出口文件配置项
+      output: {
+        // 输出的路径，webpack2起就规定必须是绝对路径
+        path: path.join(__dirname, 'dist'),
+        // 输出文件名字
+        filename: 'bundle.js'
+      },
+      devServer: {
+        port: 8090,
+        open: true,
+        hot: true,
+        contentBase:'./src'
+      },
+      mode: 'development'
+    }
+    ```
+
+    ```js
+    修改:package.json的scripts: "dev": "webpack-dev-server"
+    运行 npm run dev
+    ```
+
+    
+
+### webpack-dev-middleware
+
+`webpack-dev-middleware` 是一个容器(wrapper)，它可以把 webpack 处理后的文件传递给一个服务器(server)。 `webpack-dev-server` 在内部使用了它，同时，它也可以作为一个单独的包来使用，以便进行更多自定义设置来实现更多的需求。
+
+1. 安装 `express` 和 `webpack-dev-middleware`：
+
+    `npm i express webpack-dev-middleware -D`
+
+2. 新建`server.js`
+
+    ```js
+    const express = require('express');
+    const webpack = require('webpack');
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+    const config = require('./webpack.config.js');
+    
+    const app = express();
+    const compiler = webpack(config);
+    
+    app.use(webpackDevMiddleware(compiler, {
+      publicPath: '/'
+    }));
+    
+    app.listen(3000, function () {
+      console.log('http://localhost:3000');
+    });
+    ```
+
+3. 配置`package.json`中的scripts:`"server": "node server.js"`
+
+4. 运行: `npm run server`
+
+注意: 如果要使用`webpack-dev-middleware`, 必须使用`html-webpack-plugin`插件, 否则html文件无法正确的输出到express服务器的根目录
+
+#### 小结
+
+只有在开发时才需要使用自动编译工具, 例如: webpack-dev-server
+
+项目上线时都会直接使用webpack进行打包构建, 不需要使用这些自动编译工具
+
+自动编译工具只是为了**提高开发体验**
+
+
+
 # webpack有四大核心概念:
 
 - 入口(entry): 程序的入口js
@@ -113,6 +288,8 @@ npx webpack
 
 ```npm
 npx webpack --config webpack.config.js
+
+--config 后面指定按 指定文件打包
 ```
 
 - 这个意思是打包，并且用webpack.config.js的配置来打包
@@ -346,17 +523,20 @@ babeljs.com
     plugins: [
           new HtmlWebpackPlugin({
                 //title设置打包后的html标题
-                title: '测试'
+                title: '测试',
+              filename: 'index.html', //打包后的文件名称
               template:'./src/index.html' //导入自己的html;
             })
         ],
-    ```
-
+```
+    
     - 会自动把入口文件的js  打包后的js文件 导入到打包后的html里面来
     - 如果只是写title，它会帮你创建新的空的html,并导入js依赖
     - 如果写template跟路径，就代表找到template对应的路径的html文件，把它打包起来，并添加依赖
 
-
+1. devServer时根据模板在express项目根目录下生成html文件(类似于devServer生成内存中的bundle.js)
+2. devServer时自动引入bundle.js
+3. 打包时会自动生成index.html
 
 ## clean-webpack-plugin 
 
@@ -1528,7 +1708,7 @@ module: {
 
     - [webpack-chart](https://alexkuz.github.io/webpack-chart/)
     - [webpack-visualizer](https://chrisbateman.github.io/webpack-visualizer/)
-    - [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)  推荐
+    - [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)  推荐
     - [webpack bundle optimize helper](https://webpack.jakoblind.no/optimize)
 
     其中webpack-bundle-analyzer是一个插件，可以以插件的方式安装到项目中

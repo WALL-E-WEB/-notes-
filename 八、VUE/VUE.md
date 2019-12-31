@@ -2620,13 +2620,13 @@ https://router.vuejs.org/zh/api/#路由对象
 vuex持久化
 
 ```js
- localStorage.getItem("routeInfo") && this.$store.replaceState(Object.assign(this.$store.state, JSON.parse(localStorage.getItem("routeInfo"))));
+ localStorage.getItem("store") && this.$store.replaceState(Object.assign(this.$store.state, JSON.parse(localStorage.getItem("store"))));
 
     localStorage.clear()
 
     //在页面刷新时将vuex里的信息保存到localStorage里
     window.addEventListener("beforeunload", () => {
-      localStorage.setItem("routeInfo", JSON.stringify(this.$store.state))
+      localStorage.setItem("store", JSON.stringify(this.$store.state))
     })
 ```
 
@@ -2702,6 +2702,9 @@ import { mapState, mapActions,mapMutations } from 'vuex'
         ...mapState({ //将state映射 为 计算属性
             lang: state => state.lang,
             theme: state => state.theme
+            homemodule: state=> state.Home.homemodule
+            //命名空间写法 
+            //模块中写入 namespaced: true,
         })
     },
     methods: {
@@ -2853,6 +2856,158 @@ html引用:
 >>    tagNav: tagNav
 >>}
 >>```
+
+### 5.命名空间
+
+默认情况下，模块内部的 action、mutation 和 getter 是注册在**全局命名空间**的
+
+```js
+未命名写法: 
+...mapState({
+      homename: "homename",
+      homemodule: state=> state.Home.homemodule
+    })
+...mapMutations({
+      SET_homeName: "SET_homeName",
+      SET_homemodule: "SET_homemodule" //直接使用
+    }),
+```
+
+当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
+
+#### 命名空间写法
+
+1. 写法-1-
+
+```js
+modules: {
+    moduleA: {
+      namespaced: true, //指定为命名空间
+      state:{}
+    }
+
+...mapState({
+      homename: "homename",
+      homemodule: state=> state.Home.homemodule
+    })
+...mapMutations({
+      SET_homeName: "SET_homeName",
+      SET_homemodule: "moduleA/SET_homemodule"
+    }),
+    
+ -写法-2-
+
+```
+
+2. 写法-2	
+
+```js
+computed: {
+  ...mapState('moduleA', {
+    a: state => state.a,
+    b: state => state.b
+  })
+},
+methods: {
+  ...mapActions('moduleA', [
+    'foo', // -> this.foo()
+    'bar' // -> this.bar()
+  ])
+}
+```
+
+3. 写法-3
+
+```js
+import { createNamespacedHelpers } from 'vuex'
+
+const { mapState, mapActions } = createNamespacedHelpers('some/nested/module')
+
+export default {
+  computed: {
+    // 在 `some/nested/module` 中查找
+    ...mapState({
+      a: state => state.a,
+      b: state => state.b
+    })
+  },
+  methods: {
+    // 在 `some/nested/module` 中查找
+    ...mapActions([
+      'foo',
+      'bar'
+    ])
+  }
+}
+```
+
+
+
+#### 在带命名空间的模块内访问全局内容
+
+1. 希望使用全局 state 和 getter，`rootState` 和 `rootGetters` 会作为第三和第四参数传入 getter，也会通过 `context` 对象的属性传入 action。
+2. 若需要在全局命名空间内分发 action 或提交 mutation，将 `{ root: true }` 作为第三参数传给 `dispatch` 或 `commit` 即可。
+
+```js
+modules: {
+  foo: {
+    namespaced: true,
+
+    getters: {
+      // 在这个模块的 getter 中，`getters` 被局部化了
+      // 你可以使用 getter 的第四个参数来调用 `rootGetters`
+      someGetter (state, getters, rootState, rootGetters) {
+        getters.someOtherGetter // -> 'foo/someOtherGetter'
+        rootGetters.someOtherGetter // -> 'someOtherGetter'
+      },
+      someOtherGetter: state => { ... }
+    },
+
+    actions: {
+      // 在这个模块中， dispatch 和 commit 也被局部化了
+      // 他们可以接受 `root` 属性以访问根 dispatch 或 commit
+      someAction ({ dispatch, commit, getters, rootGetters }) {
+        getters.someGetter // -> 'foo/someGetter'
+        rootGetters.someGetter // -> 'someGetter'
+
+        dispatch('someOtherAction') // -> 'foo/someOtherAction'
+        dispatch('someOtherAction', null, { root: true }) // -> 'someOtherAction'
+
+        commit('someMutation') // -> 'foo/someMutation'
+        commit('someMutation', null, { root: true }) // -> 'someMutation'
+      },
+      someOtherAction (ctx, payload) { ... }
+    }
+  }
+}
+```
+
+#### 在带命名空间的模块注册全局 action
+
+1. 若需要在带命名空间的模块注册全局 action，你可添加 `root: true`，并将这个 action 的定义放在函数 `handler` 中。例如：
+
+```js
+{
+  actions: {
+    someOtherAction ({dispatch}) {
+      dispatch('someAction')
+    }
+  },
+  modules: {
+    foo: {
+      namespaced: true,
+      actions: {
+        someAction: {
+          root: true,
+          handler (namespacedContext, payload) { ... } // -> 'someAction'
+        }
+      }
+    }
+  }
+}
+```
+
+
 
 # VUE-Axios
 

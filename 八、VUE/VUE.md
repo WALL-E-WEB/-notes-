@@ -3036,8 +3036,11 @@ modules: {
     }
   }
 }
-=======
-### 5.vuex-持久化插件
+```
+
+### 6.刷新事件beforunload解决持久化
+
+持久化插件:
 
 ```js
 https://github.com/robinvdvleuten/vuex-persistedstate
@@ -3071,10 +3074,9 @@ export default new Vuex.Store({
      }
   })]
 })
-
 ```
 
-### 6.刷新事件beforunload解决持久化
+刷新
 
 ```js
 created(){

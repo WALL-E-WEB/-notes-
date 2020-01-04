@@ -2887,10 +2887,12 @@ html引用:
 >>}
 >>```
 
-<<<<<<< HEAD
+
 ### 5.命名空间
 
-默认情况下，模块内部的 action、mutation 和 getter 是注册在**全局命名空间**的
+默认情况下，模块内部的 action、mutation 和 getter 是注册在**全局命名空间**的。
+
+注意：SET_A_name 命名不可用。
 
 ```js
 未命名写法: 

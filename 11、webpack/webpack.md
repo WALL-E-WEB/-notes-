@@ -38,38 +38,6 @@ module.exports = {
 
 
 
-## vue_cli打包项目
-
-> 为什么要打包？
->
-> ​	浏览器不认识.vue文件
->
-> ​	代码需要被压缩
->
-> ​	浏览器不认识很多ES6的语法 例如： import xxx from '路径'，要不要把ES6翻译成ES5让浏览器认识
->
-> ​	我在index.vue里导入了 a.js  a.js 也有可能导入了b.js  然后b.js里也导入了c.js  有多重依赖，我们需要把这些路径好好管理并解决依赖问题，要记得先要导入c，再导入b，再导入a，自己要注重导入顺序
->
-> ​    .......
->
-> 如果自己做，挺麻烦的，这些东西通过webpack可以帮我们解决
->
-> vue_cli其实是基于webpack的，webpack如果自己用有一堆要配置，比较复杂。所以vue官方提供了一个      vue-cli这样的东西，它可以方便我们不用做什么配置，就能帮我们打包项目
-
-- 命令：
-
-```node
-npm run build
-```
-
-- 项目上线
-
-> 把打包后的代码，上传到自己服务器的根目录就能通过这个服务器的ip地址来访问了
-
-
-
-
-
 ## webpack的介绍
 
 - `webpack` 就是一个打包工具，类似的工具还有 `gulp` 这之类的
@@ -383,12 +351,14 @@ package.json
 
     - style-loader  css-loader
 
-    - ```bash
+    - ```js
         npm install --save-dev style-loader css-loader
+        npm install --save-dev less-loader less
+npm install sass-loader node-sass webpack --save-dev
         ```
-
+    
     - webpack.config.js
-
+    
     - ```js
         module: {
           rules: [
@@ -396,9 +366,9 @@ package.json
               {test: /\.less$/,use: ['style-loader','css-loader','less-loader']},
               {test: /\.s(a|c)ss$/,use: ['style-loader','css-loader','sass-loader']},
           ]
-        }
+    }
         ```
-
+    
         
 
 ## 打包图片,font
@@ -528,7 +498,8 @@ babeljs.com
               template:'./src/index.html' //导入自己的html;
             })
         ],
-```
+    ```
+```js
     
     - 会自动把入口文件的js  打包后的js文件 导入到打包后的html里面来
     - 如果只是写title，它会帮你创建新的空的html,并导入js依赖
@@ -544,11 +515,15 @@ babeljs.com
 
 [英文官网](https://webpack.js.org/guides/output-management/#cleaning-up-the-dist-folder)
 
-- 下载清空dist的插件
+- 
 
-    - ```bash
-        npm install clean-webpack-plugin --save-dev
-        ```
+```
+
+## 下载清空dist的插件
+
+```
+npm install clean-webpack-plugin --save-dev
+```
 
 - webpack.config.js
 

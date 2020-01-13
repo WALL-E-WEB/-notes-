@@ -1030,6 +1030,276 @@ import './common/stylus/index.styl'
  @import "assets/base.styl";
 ```
 
+# vue渲染
+
+https://www.jianshu.com/p/7508d2a114d3
+
+## 	一、vue渲染方式
+
+- **独立构建**：包含模板编译器，渲染过程`HTML字符串 → render函数 → VNode → 真实DOM节点`
+- **运行时构建**：不包含模板编译器，渲染过程`render函数 → VNode → 真实DOM节点`
+
+运行时构建的包，会比独立构建少一个模板编译器。在`$mount`函数上也不同。而`$mount`方法又是整个渲染过程的起始点。用一张流程图来说明：
+
+![img](https://upload-images.jianshu.io/upload_images/13429147-7f193c6cb2e36da0.png?imageMogr2/auto-orient/strip|imageView2/2/format/webp)
+
+### 1.	自定义`render函数`
+
+```js
+Vue.component('anchored-heading', {
+    render: function (createElement) {
+        return createElement (
+            'h' + this.level,   // tag name标签名称
+            this.$slots.default // 子组件中的阵列
+        )
+    },
+    props: {
+        level: {
+            type: Number,
+            required: true
+        }
+    }
+})
+```
+
+### 2.	 `template`写法
+
+```js
+let app = new Vue({
+    template: `<div>{{ msg }}</div>`,
+    data () {
+        return {
+            msg: ''
+        }
+    }
+})
+```
+
+### 3.	`el`写法
+
+```js
+let app = new Vue({
+    el: '#app',
+    data () {
+        return {
+            msg: 'Hello Vue!'
+        }
+    }
+})
+```
+
+## 二、Vue.createElement
+
+### 1.	参数:
+
+- param-1: `{String | Object | Function}` 元素
+
+```js
+#String 
+<div id="app">
+    <custom-element></custom-element>
+</div>
+
+Vue.component('custom-element', {
+    render: function (createElement) {
+        return createElement('div')
+    }
+})
+
+let app = new Vue({
+    el: '#app'
+})
+```
+
+![img](https://upload-images.jianshu.io/upload_images/13429147-eb35f142664bda0c.png?imageMogr2/auto-orient/strip|imageView2/2/format/webp)
+
+```js
+#Object 
+Vue.component('custom-element', {
+    render: function (createElement) {
+        return createElement({
+            template: `<div>Hello Vue!</div>`
+        })
+    }
+})
+```
+
+```js
+#Function
+Vue.component('custom-element', {
+    render: function (createElement) {
+        var eleFun = function () {
+            return {
+                template: `<div>Hello Vue!</div>`
+            }
+        }
+        return createElement(eleFun())
+    }
+})
+```
+
+
+
+- param-2: `{Object}`  元素属性
+
+```js
+<div id="app">
+    <custom-element></custom-element>
+</div>
+
+Vue.component('custom-element', {
+    render: function (createElement) {
+        var self = this
+
+        // 第一个参数是一个简单的HTML标签字符 “必选”
+        // 第二个参数是一个包含模板相关属性的数据对象 “可选”
+        return createElement('div', {
+            'class': {
+                foo: true,
+                bar: false
+            },
+            style: {
+                color: 'red',
+                fontSize: '14px'
+            },
+            attrs: {
+                id: 'boo'
+            },
+            domProps: {
+                innerHTML: 'Hello Vue!'
+            }
+        })
+    }
+})
+
+let app = new Vue({
+    el: '#app'
+})
+```
+
+- param-3: `{String | Array}` 可选 子元素
+
+```js
+<div id="app">
+    <custom-element></custom-element>
+</div>
+
+Vue.component('custom-element', {
+    render: function (createElement) {
+        var self = this
+
+        return createElement(
+            'div', // 第一个参数是一个简单的HTML标签字符 “必选”
+            {
+                class: {
+                    title: true
+                },
+                style: {
+                    border: '1px solid',
+                    padding: '10px'
+                }
+            }, // 第二个参数是一个包含模板相关属性的数据对象 “可选”
+            [
+                createElement('h1', 'Hello Vue!'),
+                createElement('p', '开始学习Vue!')
+            ] // 第三个参数是传了多个子元素的一个数组 “可选”
+        )
+    }
+})
+
+let app = new Vue({
+    el: '#app'
+})
+```
+
+### 2.属性
+
+```js
+{
+  // 和`v-bind:class`一样的 API
+  // 接收一个字符串、对象或字符串和对象组成的数组
+  'class': {
+    foo: true,
+    bar: false
+  },
+  // 和`v-bind:style`一样的 API
+  // 接收一个字符串、对象或对象组成的数组
+  style: {
+    color: 'red',
+    fontSize: '14px'
+  },
+  // 正常的 HTML 特性
+  attrs: {
+    id: 'foo'
+  },
+  // 组件 props
+  props: {
+    myProp: 'bar'
+  },
+  // DOM 属性
+  domProps: {
+    innerHTML: 'baz'
+  },
+  // 事件监听器基于 `on`
+  // 所以不再支持如 `v-on:keyup.enter` 修饰器
+  // 需要手动匹配 keyCode。
+  on: {
+    click: this.clickHandler
+  },
+  // 仅对于组件，用于监听原生事件，而不是组件内部使用
+  // `vm.$emit` 触发的事件。
+  nativeOn: {
+    click: this.nativeClickHandler
+  },
+  // 自定义指令。注意，你无法对 `binding` 中的 `oldValue`
+  // 赋值，因为 Vue 已经自动为你进行了同步。
+  directives: [
+    {
+      name: 'my-custom-directive',
+      value: '2',
+      expression: '1 + 1',
+      arg: 'foo',
+      modifiers: {
+        bar: true
+      }
+    }
+  ],
+  // 作用域插槽格式
+  // { name: props => VNode | Array<VNode> }
+  scopedSlots: {
+    default: props => createElement('span', props.text)
+  },
+  // 如果组件是其他组件的子组件，需为插槽指定名称
+  slot: 'name-of-slot',
+  // 其他特殊顶层属性
+  key: 'myKey',
+  ref: 'myRef'
+}
+```
+
+
+
+## 三、挂载方式
+
+```js
+var MyComponent = Vue.extend({
+  template: '<div>Hello!</div>'
+})
+
+// 创建并挂载到 #app (会替换 #app)
+new MyComponent().$mount('#app')
+
+// 同上
+new MyComponent({ el: '#app' })
+
+// 或者，在文档之外渲染并且随后挂载
+var component = new MyComponent().$mount()
+document.getElementById('app').appendChild(component.$el)
+
+```
+
+
+
 # mixin
 
  来分发 Vue 组件中的可复用功能 
@@ -1146,7 +1416,7 @@ new Vue({
 });
 ```
 
-$attrs 和 $listeners
+# $attrs 和 $listeners
 
 ```js
 $attrs 所有组件标签中的行内属性,除class和style
@@ -1546,36 +1816,37 @@ export default {
 
 > ```js
 > props: {
->  // 基础的类型检查 (`null` 和 `undefined` 会通过任何类型验证)
->  propA: Number,
->      
->  // 多个可能的类型
->  propB: [String, Number],
->      
->  // 必填的字符串
->  propC: {
->    type: String,
->    required: true, //必填
->    default: 100		//默认值
->      default:()=>[1,2,3] //如默认为object则用函数写法
->  },     
->      
->  // 带有默认值的对象
->  propE: {
->    type: Object,
->    // 对象或数组默认值必须从一个工厂函数获取
->    default: function () {
->      return { message: 'hello' }
->    }
->  },
->      
->  // 自定义验证函数
->  propF: {
->    validator: function (value) {
->      // 这个值必须匹配下列字符串中的一个
->      return ['success', 'warning', 'danger'].indexOf(value) !== -1
->    }
+> // 基础的类型检查 (`null` 和 `undefined` 会通过任何类型验证)
+> propA: Number,
+>   
+> // 多个可能的类型
+> propB: [String, Number],
+>   
+> // 必填的字符串
+> propC: {
+> type: String,
+> required: true, //必填
+> default: 100		//默认值
+>   default:()=>[1,2,3] //如默认为object则用函数写法
+> },     
+>   
+> // 带有默认值的对象
+> propE: {
+> type: Object,
+> // 对象或数组默认值必须从一个工厂函数获取
+> default: function () {
+>   return { message: 'hello' }
+> }
+> },
+>   
+> // 自定义验证函数
+> propF: {
+>     validator: function (value) {
+>       // 这个值必须匹配下列字符串中的一个
+>       return ['success', 'warning', 'danger'].indexOf(value) !== -1
+>     }
 >  }
+>     
 > }
 > ```
 >
@@ -3106,7 +3377,7 @@ created(){
 > 需要导包
 > 使用箭头函数,this指向vue
 >
-> 
+> https://www.cnblogs.com/chaoyuehedy/p/9931146.html
 
 ### axios与ajax
 
@@ -3138,14 +3409,16 @@ axios：
 
 ```js
 
-axios.get('url').then((backdata)=>{
-	
+axios.get('url',{
     headers:{ //设置请求头
         `Bearer $(res.token)`
     },
     params:{//geturl不传参,可在此写参
          page:page,
     }
+}).then((backdata)=>{
+	
+   
 }).catch((err)=>{
 
 })
@@ -3237,7 +3510,43 @@ this.axios.get('url').then((response)=>{});
 this.$http.get('url').then((respose)=>{});
 ```
 
-#### 3.多基地址
+#### 3.接口封装方式
+
+```js
+import axios from 'axios'
+export const http = axios.create({
+    baseURL:'http://ttapi.research.itcast.cn'
+})
+
+1.接口方式:
+export const login = (data)=>{
+    return http.post('/app/v1_0/authorizations',data)
+}
+
+2.接口类型方式:
+export const postRequests = (url, params) => {
+      return service({
+            method: 'post',
+            url: url,
+            data: params,
+            headers: {
+                  'Authorization': getStore("Authorization") || '',
+                  'schoolCode': getStore('schoolCode')
+            }
+      });
+};
+
+	引入:
+import {postRequests} from './api'
+export const postFind = (params) => {
+   return postRequests('/travelPlanWeb', params)
+}
+>>>>>>>>>>>>>>>>>>^^^^
+```
+
+
+
+#### 4.多基地址
 
 ```js
 import axios from 'axios'
@@ -3268,6 +3577,7 @@ export const http = axios.create({
     baseURL:'http://ttapi.research.itcast.cn'
 })
 
+接口方式:
 export const login = (data)=>{
     return http.post('/app/v1_0/authorizations',data)
 }
@@ -3491,6 +3801,43 @@ const instance = axios.create({
   headers: {'X-Custom-Header': 'foobar'}
 });
 ```
+
+### post请求方式
+
+```js
+文件上传:
+export const uploadFileRequest = (url, params) => {
+  return axios({
+    method: 'post',
+    url: `${base}${url}`,
+    data: params,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
+
+
+export const postRequest = (url, params) => {
+  return axios({
+    method: 'post',
+    url: `${base}${url}`,
+    data: params,
+    transformRequest: [function (data) {
+      let ret = ''
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  });
+}
+```
+
+
 
 # 路由 生命周期 动画钩子 顺序
 
@@ -4325,5 +4672,43 @@ devServer : {
 
 
 
+```
+
+Date格式化
+
+```js
+Date.prototype.format = function (fmt) {
+      var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            S: this.getMilliseconds() //毫秒
+      };
+
+      if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(
+                  RegExp.$1,
+                  (this.getFullYear() + "").substr(4 - RegExp.$1.length)
+            );
+      }
+
+      for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                  fmt = fmt.replace(
+                        RegExp.$1,
+                        RegExp.$1.length == 1
+                              ? o[k]
+                              : ("00" + o[k]).substr(("" + o[k]).length)
+                  );
+            }
+      }
+
+      return fmt;
+};
+调用:
+new Date().format("yyyy-MM-dd")
 ```
 

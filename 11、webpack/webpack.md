@@ -559,6 +559,14 @@ plugins:[
 new webpack.BannerPlugin  生成头部注释
 ```
 
+## webpack-spritesmith
+
+```js
+多图片生成雪碧图且生成css
+
+https://www.npmjs.com/package/webpack-spritesmith
+```
+
 
 
 # 用webpack模拟出vue-cli

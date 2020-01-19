@@ -325,22 +325,38 @@ this.$refs.box.$el  //获取到该dom元素
 #### 作用域插槽
 
 ```js
-解决子组件数据向父传递
-
-新语法:
-父:
-<template v-slot:a="xx" > //指定插槽并接收数据 a为插件槽名,默认:difault
-    <div>{{xx}}</div> //啦啦
-</template>
-
 子:
-<slot v-bind:a="sondata"> </slot>
-
+<slot  name="slotName" :b="sondata"> </slot>
 data(){
 	return{
         sondata:'啦啦'
     }
 }
+```
+
+```js
+解决子组件数据向父传递
+
+新语法:
+父:
+`1.正常写法:`
+<template v-slot:slotName="c" > //指定插槽并接收数据 slotName为插件槽名,默认:difault
+    <div>{{c.b}}</div> //啦啦
+</template>
+```
+
+```js
+`2.解构写法:`
+<template v-slot:slotName="{b}" > 
+    <div>{{b}}</div> //啦啦
+</template>
+```
+
+```js
+动态插槽名
+<template v-slot:[slotName]="{b}" > 
+    <div>{{b}}</div> //啦啦
+</template>
 ```
 
 

@@ -1155,6 +1155,21 @@ var s = [...new Set(nums)] //转为真数组
 //不改变原数组
 ```
 
+8.ES6-Map
+
+```js
+  let Arr  = [123,'mdf',[12,8],[12,3],[12,'3'],[12,3],{a:1},{a:{b:99}},{a:1}]
+    function filterMap(arr) {
+      var map1 = new Map()
+      arr.forEach(item=>{
+          map1.set(JSON.stringify(item),item)
+      })
+      return [...map1.values()]
+    }
+
+    console.log(filterMap(Arr));
+```
+
 
 
 ------

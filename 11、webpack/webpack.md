@@ -341,7 +341,14 @@ package.json
 
 # 打包loader
 
+基本使用方法:
 
+```js
+1.安装loader:
+	npm install --save-dev style-loader css-loader
+2.module中添加rules:
+
+```
 
 ## 打包css less sass
 
@@ -383,7 +390,7 @@ npm install sass-loader node-sass webpack --save-dev
     url路径的
     ```
 
-- ```diff
+- ```json
     webpack.config.js
     
     
@@ -413,6 +420,38 @@ npm install sass-loader node-sass webpack --save-dev
       };
     ```
 
+## url-loader
+
+```js
+npm install --save-dev url-loader
+
+url-loader 功能类似于 file-loader，但是在文件大小（单位 byte）低于指定的限制时，可以返回一个 DataURL。
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(png|jpg|gif)$/,
+        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+        use: [
+          {
+            loader: 'url-loader',
+             options: {
+              outputPath:'img',
+              name: '[name].[ext]'
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+
+
 ## img标签图片资源loader
 
 ```js
@@ -421,7 +460,7 @@ npm install -s html-withimg-loader
 html 标签中img src 中引入的图片会被打包
 ```
 
-```
+```js
 webpack.config.js
 
 {
@@ -438,7 +477,7 @@ webpack.config.js
 ES6 ES7 转换为 ES5
 babeljs.com
 
-安装:npm i babel-loader @babel/core @babel/preset-env webpack -D
+安装最新:npm i babel-loader @babel/core @babel/preset-env webpack -D
 @babel/core  核心包
 @babel/preset-env 预设包,语言包
 
@@ -450,7 +489,8 @@ babeljs.com
 -                    presets:['@babel/env'],
 -                    plugins:['@babel/plugin-proposal-class-properties']
 -                }
-        }
+        },
+		exclude: /node_modules/ //不打包node_modules
 }
 
 建一个 .babelrc文件,json格式 把options写入这个文件
@@ -463,7 +503,118 @@ babeljs.com
 }
 ```
 
+### `generator`
+
+如果需要使用`generator`，无法直接使用babel进行转换，因为会将`generator`转换为一个`regeneratorRuntime`，然后使用`mark`和`wrap`来实现`generator`
+
+但由于babel并没有内置`regeneratorRuntime`，所以无法直接使用
+
+需要安装插件:
+
+​	`npm i @babel/plugin-transform-runtime -D`
+
+同时还需安装运行时依赖:
+
+​	`npm i @babel/runtime -D`
+
+在`.babelrc`中添加插件:
+
+```json
+{
+  "presets": [
+    "@babel/env"
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-transform-runtime"
+  ]
+}
+```
+
+如果需要使用ES6/7中对象原型提供的新方法，babel默认情况无法转换，即使用了`transform-runtime`的插件也不支持转换原型上的方法
+
+需要使用另一个模块:
+
+​	`npm i @babel/polyfill -S`
+
+该模块需要在使用新方法的地方直接引入:
+
+​	`import '@babel/polyfill'`
+
+## source map的使用
+
+#### devtool
+
+此选项控制是否生成，以及如何生成 source map。
+
+使用 [`SourceMapDevToolPlugin`](https://www.webpackjs.com/plugins/source-map-dev-tool-plugin) 进行更细粒度的配置。查看 [`source-map-loader`](https://www.webpackjs.com/loaders/source-map-loader) 来处理已有的 source map。
+
+选择一种 [source map](http://blog.teamtreehouse.com/introduction-source-maps) 格式来增强调试过程。不同的值会明显影响到构建(build)和重新构建(rebuild)的速度。
+
+> 可以直接使用 `SourceMapDevToolPlugin`/`EvalSourceMapDevToolPlugin` 来替代使用 `devtool` 选项，它有更多的选项，但是切勿同时使用 `devtool` 选项和 `SourceMapDevToolPlugin`/`EvalSourceMapDevToolPlugin` 插件。因为`devtool` 选项在内部添加过这些插件，所以会应用两次插件。
+
+| devtool                        | 构建速度 | 重新构建速度 | 生产环境 | 品质(quality)          |
+| ------------------------------ | -------- | ------------ | -------- | ---------------------- |
+| (none)                         | +++      | +++          | yes      | 打包后的代码           |
+| eval                           | +++      | +++          | no       | 生成后的代码           |
+| cheap-eval-source-map          | +        | ++           | no       | 转换过的代码（仅限行） |
+| cheap-module-eval-source-map   | o        | ++           | no       | 原始源代码（仅限行）   |
+| eval-source-map                | --       | +            | no       | 原始源代码             |
+| cheap-source-map               | +        | o            | no       | 转换过的代码（仅限行） |
+| cheap-module-source-map        | o        | -            | no       | 原始源代码（仅限行）   |
+| inline-cheap-source-map        | +        | o            | no       | 转换过的代码（仅限行） |
+| inline-cheap-module-source-map | o        | -            | no       | 原始源代码（仅限行）   |
+| source-map                     | --       | --           | yes      | 原始源代码             |
+| inline-source-map              | --       | --           | no       | 原始源代码             |
+| hidden-source-map              | --       | --           | yes      | 原始源代码             |
+| nosources-source-map           | --       | --           | yes      | 无源代码内容           |
+
+#### 这么多模式用哪个好？
+
+开发环境推荐：
+
+​	**cheap-module-eval-source-map**
+
+```js
+plugins:[],
+module:{},
+devtool:'cheap-module-eval-source-map'
+在webpack.config.js中
+```
+
+生产环境推荐：
+
+​	**none(不使用source map)**
+
+原因如下：
+
+1. **使用 cheap 模式可以大幅提高 soure map 生成的效率。**大部分情况我们调试并不关心列信息，而且就算 source map 没有列，有些浏览器引擎（例如 v8） 也会给出列信息。
+2. **使用 module 可支持 babel 这种预编译工具，映射转换前的代码**。
+3. **使用 eval 方式可大幅提高持续构建效率。**官方文档提供的速度对比表格可以看到 eval 模式的重新构建速度都很快。
+4. **使用 eval-source-map 模式可以减少网络请求。**这种模式开启 DataUrl 本身包含完整 sourcemap 信息，并不需要像 sourceURL 那样，浏览器需要发送一个完整请求去获取 sourcemap 文件，这会略微提高点效率。而生产环境中则不宜用 eval，这样会让文件变得极大。
+
+### 插件
+
 # plugin插件
+
+基本使用方法:
+
+```js
+1.安装插件: 
+	npm i clean-webpack-plugin -D`
+2.引入插件: 
+	const CleanWebpackPlugin = require('clean-webpack-plugin')
+3.使用插件, 在plugins中直接创建对象即可:
+    plugins: [
+        new HtmlWebpackPlugin({
+          filename: 'index.html',
+          template: './src/index.html'
+        }),
+        new CleanWebpackPlugin()
+     ],
+```
+
+
 
 ## html-webpack-plugin
 
@@ -543,6 +694,8 @@ npm install clean-webpack-plugin --save-dev
 ```js
 npm i copy-webpack-puugin -D
 
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 plugins:[
     new copyWebpackPuugin([
         {
@@ -558,6 +711,31 @@ plugins:[
 ```js
 new webpack.BannerPlugin  生成头部注释
 ```
+
+   1. 引入webpack
+
+      ```js
+      const webpack = require('webpack')
+      ```
+
+   2. 创建插件对象
+
+      ```js
+      plugins: [
+          new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: './src/index.html'
+          }),
+          new CleanWebpackPlugin(),
+          new CopyWebpackPlugin([
+            {
+              from: path.join(__dirname, 'assets'),
+              to: 'assets'
+            }
+          ]),
+          new webpack.BannerPlugin('程序员牛逼!')
+        ],
+      ```
 
 
 

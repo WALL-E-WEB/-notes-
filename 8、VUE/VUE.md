@@ -359,6 +359,17 @@ data(){
 </template>
 ```
 
+#### this.$slots
+
+```js
+子组件中判断是否有用某个slots
+mounted() {
+    this.desc = this.$slots.slotName !== undefined;
+  }
+
+默认为slotName为 default
+```
+
 
 
 ## template

@@ -712,6 +712,7 @@ plugins:[
 new webpack.BannerPlugin  生成头部注释
 ```
 
+<<<<<<< HEAD
    1. 引入webpack
 
       ```js
@@ -736,6 +737,15 @@ new webpack.BannerPlugin  生成头部注释
           new webpack.BannerPlugin('程序员牛逼!')
         ],
       ```
+=======
+## webpack-spritesmith
+
+```js
+多图片生成雪碧图且生成css
+
+https://www.npmjs.com/package/webpack-spritesmith
+```
+>>>>>>> ea05b67cfe300825f0bac46dab0ee838a92702d1
 
 
 

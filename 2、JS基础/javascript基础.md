@@ -2500,39 +2500,6 @@ js原生:
 
 
 
-### 节流防抖
-
-```js
-防抖
-多次只执行一次
-function debounce(callback,delay){
-    var t = unll;
-    return function(){
-        clearTimeout(t);
-        t=setTimeout(callback,delay);
-    }
-}
-window.onscroll = debounce(function(){
-    
-},500);
-
-节流
-一段时间只执行一次
-function throttle(callback,duration){
-    var lasttime = new Date().getTime();
-    return function(){
-        var nowtime = new Date().getTime()
-        if(nowtime-lasttime>duration){
-            cllback();
-            lasttime=nowtime;
-        }
-    }
-}
-window.onscroll = throttle(function(){
-    
-},500);
-```
-
 
 
 ### H5拖拽事件
@@ -5042,5 +5009,109 @@ oDiv.addEventListener('click',function(e){
  9 console.log(a.call(function() {}));
 10 console.log(a.call({}));
 改动原型也可用
+```
+
+# 常用函数封装
+
+### 1.节流防抖
+
+```js
+防抖
+多次只执行一次
+function debounce(callback,delay){
+    var t = unll;
+    return function(){
+        clearTimeout(t);
+        t=setTimeout(callback,delay);
+    }
+}
+window.onscroll = debounce(function(){
+    
+},500);
+
+节流
+一段时间只执行一次
+function throttle(callback,duration){
+    var lasttime = new Date().getTime();
+    return function(){
+        var nowtime = new Date().getTime()
+        if(nowtime-lasttime>duration){
+            cllback();
+            lasttime=nowtime;
+        }
+    }
+}
+window.onscroll = throttle(function(){
+    
+},500);
+```
+
+### 2.类型判断函数
+
+```js
+function isType(type) {
+    return function(obj) {
+        return Object.prototype.toString.call(obj) === `[object ${type}]
+    }
+}
+const isArray = isType('Array');
+console.log(isArray([1, 2, [3,4]]); // true
+```
+
+### 3.预置函数
+
+```js
+function after(time, cb) {
+    return function() {
+        if (--time === 0) {
+            cb();
+        }
+    }
+}
+let eat = after(3, function() {
+    console.log('吃饱了');
+});
+eat();
+eat();
+eat(); //'吃饱了'
+```
+
+### 4.分时函数
+
+```js
+function timeChunk(data, fn, count = 1, wait) {
+    let obj, timer;
+
+    function start() {
+        let len = Math.min(count, data.length);
+        for (let i = 0; i < len; i++) {
+            val = data.shift();     // 每次取出一个数据，传给fn当做值来用
+            fn(val);
+        }
+    }
+
+    return function() {
+        timer = setInterval(function() {
+            if (data.length === 0) {    // 如果数据为空了，就清空定时器
+                return clearInterval(timer);
+            }
+            start();    
+        }, wait);   // 分批执行的时间间隔
+    }
+}
+
+// 测试用例
+let arr = [];
+for (let i = 0; i < 100000; i++) {  // 这里跑了10万数据
+    arr.push(i);
+}
+let render = timeChunk(arr, function(n) {   // n为data.shift()取到的数据
+    let div = document.createElement('div');
+    div.innerHTML = n;
+    document.body.appendChild(div);
+}, 8, 20);
+
+render();
+
 ```
 

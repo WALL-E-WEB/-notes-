@@ -2510,15 +2510,27 @@ const routes = [{path: '/foo/:id',component: Foo}]
 
 ### 3.children-子路由
 
-```
+```js
 子路由
 routes:[{
 	path:'/index',
-	component:template1,name:'templatel',
-	childer:[
-		
+	component:template1,
+	name:'templatel',
+	children:[
+        {
+          	path:'son',
+			component:'son'
+        }，
+        {
+        	path："/son",
+        	component:'xxx'
+        }
 	]
 }]
+
+子路由带‘/’与不带‘/’区别：
+带‘/’：路由会解析为 baseUrl/son；
+不带’/‘：路由会解析为：baseUrl/index/son
 ```
 
 ### 4.导航守卫
@@ -2797,14 +2809,105 @@ route为当前路由对象
 router为VueRouter的实例
 
 1.$router.path   //当前路由的路径
-2.$route.params  //参数对象 动态片段和全匹配片段的键值对
-3.$route.query   //路由中参数的键值对
-4.$route.matched //当前匹配的路径中所包含的所有片段所对应的配置参数对象
-5.$route.name    //路径的名字，如果没有使用具名路径
-  $route.back()  //
+2.$router.replace() //
+3.$router.go(Number) //
+4.$router.back()  //
+
+1.$route.params  //参数对象 动态片段和全匹配片段的键值对
+2.$route.query   //路由中参数的键值对
+3.$route.matched //当前匹配的路径中所包含的所有片段所对应的配置参数对象
+4.$route.name    //路径的名字，如果没有使用具名路径
+
 ```
 
-### 7.写法
+### 7.router-link的props属性
+
+#### 1.to
+
+```js
+<router-link :to="‘home‘">Home</router-link>
+
+<router-link :to="{ path: ‘home‘ }">Home</router-link>
+
+//命名路由
+<router-link :to="{ name: ‘user‘, params: {userId: 123} }">Home</router-link>
+
+//带查询参数，下面的结果为/register?plan=private-->
+<router-link :to="{ path: ‘register‘, query: {plan: ‘private‘}}">Register</router-link>
+```
+
+#### 2.replace
+
+```js
+<router-link :to="{path: ‘/abc‘}" replace>ABC</router-link>
+
+会调用roter.replace()
+```
+
+#### 3. append 
+
+```js
+<router-link to="b" append>Home</router-link>
+
+设置append属性后，则在当前路径前添加基路径；
+如：当前路由为/index；则如上为/index/b
+```
+
+#### 4. tag 
+
+```js
+<router-link to="/foo" tag="li">FOO</router-link>
+// 渲染结果 
+<li>FOO</li>
+
+指定<router-link>渲染成某标签；
+```
+
+#### 5.active-class
+
+```js
+export default New Router({
+   linkActiveClass: ‘active‘ 
+})
+
+设置链接激活时使用的css类名。默认值可以通过路由的构造选项linkActiveClass来全局配置, 默认值为 ‘router-link-active‘
+```
+
+#### 6.exact
+
+```js
+"是否激活"，默认是false 。举个粟子，如果当前的路径是/a 开头的，那么<router-link to="/a"> 也会被设置css类名
+
+　　按照这个规则，<router-link to="/"> 将会点亮各个路由！想要链接使用"exact匹配模式"，则使用exact属性：
+  
+// 这个链接只会在地址为 / 的时候被激活 
+<router-link to="/" exact>Home</router-link>
+
+<router-link to="/user">USER</router-link>
+
+<router-link to="/user/userinfo">USER-info</router-link>
+
+// 如果不设置exact，则当路由到了/user/userinfo 页面时，USER也是被设置了router-link-active样式的！
+```
+
+#### 7.events
+
+　　声明可以用来触发导航的事件（默认是‘click‘）。可以是一个字符串或者是一个包含字符串的数组
+
+#### 8、将"激活时的css类名"应用在外层元素
+
+　　有时候我们要让"激活的css类名"应用在外层元素，而不是<a>标签本身，那么可以用<router-link>渲染外层元素，包裹着内层的原生<a>标签
+
+```js
+<router-link tag="li" to="/foo">
+    <a>/foo</a>
+</router-link>
+//在这种情况下，<a>将作为真实的链接（能获取到正确的href的），而"激活时的css类名"则设置到外层的<li>
+```
+
+
+
+### 8.写法
 
 ```js
 正常写法:
@@ -2834,7 +2937,7 @@ const login = ()=> import('./login')  //异步加载
 
 ```
 
-### 8.路由登陆判断
+### 9.路由登陆判断
 
 ```js
 routes:

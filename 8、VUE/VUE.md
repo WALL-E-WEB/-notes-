@@ -2448,8 +2448,9 @@ this.$router.push({ name: 'news', params: { userId: 123 }});
 	传参:
 router.push({path: '/foo/' + 'aaaa'})
 const routes = [{path: '/foo/:id',component: Foo}]
-
+const routes = [{path: '/foo/:id/:name',component: Foo}] //多个参数
 	接收: console.log(this.$route.params.id) //输出aaaa
+	接受：this.$router.params
 
 四、prop解耦传参;
     routes:[

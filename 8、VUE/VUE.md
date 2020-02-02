@@ -1468,6 +1468,26 @@ $listeners
     //接收所有父组件写在子组件的事件
 ```
 
+# $options
+
+```js
+this.$options 获取data外得值
+
+export default {
+	name:'拉拉',
+    data(){
+        return{
+            
+        }
+    },
+    methods:{
+        btn(){
+            this.$options.name // 拉拉
+        }
+    }
+}
+```
+
 
 
 # SPA单页面

@@ -2823,22 +2823,42 @@ history.go()
 
 
 
-### 6.route-属性
+### 6.-属性
+
+#### router
+
+- route为当前路由对象
+- router为VueRouter的实例
 
 ```js
-route为当前路由对象
-router为VueRouter的实例
-
 1.$router.path   //当前路由的路径
 2.$router.replace() //
 3.$router.go(Number) //
 4.$router.back()  //
+5.$router.resolve('/login',this.$route,append=true/false)
+{
+  location: Location;
+  route: Route;
+  href: string;
+} = router.resolve(loction,current?,append?)
+```
 
+```js
+解决$router.push()不能打开新页面
+let routeData = this.$router.resolve({ path: '/reportpreview', query: { id: id } });
+
+window.open(routeData.href, '_blank');
+```
+
+
+
+#### route
+
+```js
 1.$route.params  //参数对象 动态片段和全匹配片段的键值对
 2.$route.query   //路由中参数的键值对
 3.$route.matched //当前匹配的路径中所包含的所有片段所对应的配置参数对象
 4.$route.name    //路径的名字，如果没有使用具名路径
-
 ```
 
 ### 7.router-link的props属性

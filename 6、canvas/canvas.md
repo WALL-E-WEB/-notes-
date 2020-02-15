@@ -125,10 +125,11 @@ ctx.fillstyle=linearGradient;
 
 ```js
 var image = new Image();
-image.onload = function(){
-    ctx.drawImage(image,x0,y0,w,h);//w,h是缩放
-}
 image.src='image/01.png';
+image.onload = function(){
+    ctx.drawImage(image,x0,y0,w,h);//w,h是缩放 image可换成this
+}
+
 
 drawImage(image,px,py,vw,vh,x0,y0,w,h);
 vw,图片可视区;

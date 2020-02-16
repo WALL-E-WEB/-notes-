@@ -87,6 +87,16 @@ data: {
 
 数组三元表达式:
 <div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+
+计算属性类名:
+computer:{
+    Aclass(){
+        return [
+            'active',
+            activeA:true,
+        ]
+    }
+}
 ```
 
 ##### 3.组件类名叠加
@@ -1057,7 +1067,7 @@ import './common/stylus/index.styl'
  @import "assets/base.styl";
 ```
 
-# vue渲染
+# vue渲染render()
 
 https://www.jianshu.com/p/7508d2a114d3
 
@@ -1724,13 +1734,215 @@ const app =new Vue({
 
 ```
 
-## 父组件向子组件传值
+## 1.组件的创建方式
+
+1. vue.component
+
+   ```jsx
+   Vue.component('my-component', {
+     template: '<div>A custom component!</div>'
+   })
+   var vm = new Vue({
+     el: '#example',
+     data: {
+          
+     } 
+   })
+   ```
+
+2. vue.component - 2
+
+    `Vue.component` 返回的结果是一个 `function`！它返回的并不是 组件实例，而是一个构造函数。
+
+   那到这里其实我们就清楚了。 对于 `Vue.component` 声明的组件，我们先通过 `Vue.component` 获取它的构造函数，再 `new` 出一个组件实例，最后 通过`$mount` 挂载到 `html` 上。
+
+   ```js
+   Vue.component("button-counter", {
+     data: function() {
+       return {
+         count: 0
+       };
+     },
+     template:
+       '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+   });
+   
+   Vue.component("app", {
+     data: function() {
+       return {
+         count: 0
+       };
+     },
+     template:
+       '<div> <h1>App Component</h1><button @click="insert">click to insert new Component</button> <div id="appId"> </div></div>',
+     methods: {
+       insert() {
+         const component = Vue.component("button-counter");
+         const instance = new component();
+         instance.$mount("#appId");
+       }
+     }
+   });
+   
+   new Vue({
+     el: "#app"
+   });
+   ```
+
+   
+
+3. vue.extend
+
+    通过传入一个包含 `Component options` 的对象， `Vue.extend` 帮助我们创建一个 继承了 `Vue constructor` 的子类，也就是我们之前需要的构造函数。 （）
+
+   ```js
+   var MyComponent = Vue.extend({
+     template: '<div>A custom component!</div>'
+   });
+   
+   // 注册
+   Vue.component('my-component', MyComponent);
+   var vm = new Vue({
+     el: '#example',
+     data: {  }
+   })
+   ```
+
+   ```js
+   // 创建构造器
+   var Profile = Vue.extend({
+     template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
+     data: function () {
+       return {
+         firstName: 'Walter',
+         lastName: 'White',
+         alias: 'Heisenberg'
+       }
+     }
+   })
+   // 创建 Profile 实例，并挂载到一个元素上。
+   new Profile().$mount('#mount-point')
+   ```
+
+   
+
+4. vm.$mount
+
+   ```js
+   var MyComponent = Vue.extend({
+     template: '<div>Hello!</div>'
+   })
+   
+   // 创建并挂载到 #app (会替换 #app)
+   new MyComponent().$mount('#app')
+   
+   // 同上
+   new MyComponent({ el: '#app' })
+   
+   // 或者，在文档之外渲染并且随后挂载
+   var component = new MyComponent().$mount()
+   document.getElementById('app').appendChild(component.$el)
+   
+   ```
+
+   
+
+5. template
+
+   ```js
+   <div id="app1">
+       <my-love></my-love>
+   </div>
+   
+   <template id="temp-com">
+       <div>
+           <h3>使用template定义的组件</h3>
+           <p>使用template定义的组件的内容！</p>
+       </div>
+   </template>
+   
+   Vue.component('my-love', {
+       template: '#temp-com'
+   });
+   ```
+
+   
+
+6.  使用script定义 
+
+   ```js
+   <div id="app1">
+       <my-love></my-love>
+   </div>
+   
+   <script type="text/template" id="temp-com">
+       <div>
+           <h3>使用template定义的组件</h3>
+           <p>使用template定义的组件的内容！</p>
+       </div>
+   </script>
+   
+   Vue.component('my-love', {
+       template: '#temp-com'
+   });
+   
+   ```
+
+   
+
+7. vue-cli组件挂载方式
+
+    通过传入一个包含 `Component options` 的对象， `Vue.extend` 帮助我们创建一个 继承了 `Vue constructor` 的子类，也就是我们之前需要的构造函数。 （传入一个组件，获取构造函数）
+
+   ```js
+   <template>
+     <div id="app">
+       <div>
+       <img width="25%" src="./assets/logo.png">
+     </div>
+       <div>
+       <button @click="insert">click me to insert ButtonCounter</button>
+     </div>
+       <div id="container"></div>
+     </div>
+   </template>
+   
+   <script>
+   import ButtonCounter from './components/ButtonCounter';
+   import Vue from 'vue';
+   export default {
+     name: 'App',
+     components: {
+       ButtonCounter,
+     },
+     methods: {
+       insert() {
+         const bcConstructor = Vue.extend(ButtonCounter);
+         const instance = new bcConstructor();
+         instance.$mount('#container');
+       },
+     },
+   };
+   </script>
+   ```
+
+   
+
+
+
+组件构造函数的构造实例.$mount进行挂载。
+
+$mount为构造实例的方法。
+
+
+
+## 2.组件传值
 
 ```js
 在组件中的使用props中设置 自定义属性名 、html调用组件中 设置同名自定义属性名,绑定v-bind后,可调用父data里的数据
 ```
 
-## 子向父传
+### 子向父传
 
 ```js
 <div id="sonapp">
@@ -1767,7 +1979,7 @@ const app = new Vue({
 	</div>
 ```
 
-## 子父,父子相互传
+### 子父,父子相互传
 
 ```js
 子:
@@ -1842,7 +2054,7 @@ export default {
 
 ```
 
-## 组件传参方式
+## 3.组件传参方式
 
 ### 1.prop
 
@@ -1956,7 +2168,7 @@ import Bus from './bus.js'
    })
 ```
 
-## Vue子组件调用父组件的方法
+## 4.Vue子组件调用父组件的方法
 
  https://www.cnblogs.com/jin-zhe/p/9523782.html 
 
@@ -1979,7 +2191,7 @@ this.$emit('fatherMethod');
 
 
 
-## 组件缓存方法
+## 5.组件缓存方法
 
 ```js
 使用keep-alive 钩子执行顺序
@@ -2152,161 +2364,146 @@ router-view 也是一个组件，所有路径匹配到的视图组件都会被
 [参考](https://blog.csdn.net/liangcha007/article/details/84763438)
 
 ```js
->4.1前进刷新>后退不刷新
->
->```js
-><keep-alive>
->    <router-view v-if="$route.meta.keepAlive">
-></router-view>
-></keep-alive>
->    <router-view v-if="!$route.meta.keepAlive">
-></router-view>
->```
->
->```js
->var routerList = [];
->var keepAlived = ['dispatchIndex', 'serviceIndex', 'manageIndex'];
->router.beforeEach((to, from, next) => {
->  var li = routerList.length;
->  if (li > 0 && routerList[li - 1] == to.name) { // 后退
->    routerList.splice(routerList.length - 1, 1)
->    if (keepAlived.indexOf(from.name) > -1) {
->      from.meta.keepAlive = true;
->    }
->  } else { // 前进
->    if (!ctool.strIsEmpty(from.name)) {
->      routerList.push(from.name);
->      if (keepAlived.indexOf(to.name) > -1) {
->        if (to.meta.keepAlive) {
->          to.meta.keepAlive = false;
->        } else {
->          to.meta.keepAlive = true;
->        }
->      }
->      if (keepAlived.indexOf(from.name) > -1) {
->        from.meta.keepAlive = true;
->      }
->    } else {
->      console.log("-------------");
->    }
->  }
->  next()
->})
->```
->
->4.2后退可能需要刷新
->
->```js
-><keep-alive :include="includedComponents" :exclude="excludedComponents">
->        <router-view></router-view>
-></keep-alive>
->```
->
->```js
->computed:{
->      includedComponents(){
->        return this.$store.state.includedComponents;
->      },
->      excludedComponents(){
->        return this.$store.state.excludedComponents;
->      }
->}
->```
->
->```js
-> -main.js
->var routerList = [];
->router.beforeEach((to,from,next)=>{
->  var li = routerList.length;
-> 
->  console.log(store.state.includedComponents);
->  if(li > 0 && routerList[li - 1] == to.name){
->    /*
->      如果发现to.name等于list中当前最后一个，则说明是返回操作。
->      返回操作的时候，第一步是从list中清掉第一个路由对象。
->      第二步是判断一下当前的from.name是不是在缓存属性中，在的话，就从里面拿掉，因为下一次进入的时候，
->      要重新刷新。
->     */
->    routerList.splice(routerList.length - 1, 1);
->    if(store.state.includedComponents.indexOf(from.name)>-1){
->      console.log('rm',from.name);
->      store.commit('removeInclude',from.name);
->      store.commit('addToExclude',from.name);
->    }
->  }else{
->    if (!ctool.strIsEmpty(from.name)) {
->      routerList.push(from.name);
->      if (store.state.excludedComponents.indexOf(to.name) > -1) {
->        console.log('ad',to.name);
->        store.commit('removeExclude', to.name);
->        store.commit('addToInclude', to.name);
->      }
->    }
->  }
->  next();
->});
->```
->
->```js
->	-vuex
->import Vue from 'vue'
->import vuex from 'vuex'
->Vue.use(vuex);
-> 
->const state = {
->  includedComponents:['dispatchIndex', 'serviceIndex', 'manageIndex'],
->  excludedComponents:[]
->}
-> 
->const mutations  = {
->  removeInclude(state,str){
->    state.includedComponents.splice(state.includedComponents.indexOf(str),1);
->  },
->  addToInclude(state,str){
->    state.includedComponents.push(str);
->  },
->  removeExclude(state,str){
->    state.excludedComponents.splice(state.excludedComponents.indexOf(str),1);
->  },
->  addToExclude(state,str){
->    state.excludedComponents.push(str);
->  }
->}
-> 
->var store = new vuex.Store({
->  state:state,
->  mutations:mutations
->})
-> 
->export default store;
->```
->
->```js
->	-utils.js
->clearCache:function(router_name){
->    store.commit('removeInclude',router_name);
->    store.commit('addToExclude',router_name);
-> }
->```
->
->```js
->调用修改
->ctool.clearCache('B');//ctool挂载在windows上全局对象
->this.$router.go(-1);
->```
->
->
+4.1前进刷新>后退不刷新
+​```js
+<keep-alive>
+    <router-view v-if="$route.meta.keepAlive">
+</router-view>
+</keep-alive>
+    <router-view v-if="!$route.meta.keepAlive">
+</router-view>
+​```
+
+js
+var routerList = [];
+var keepAlived = ['dispatchIndex', 'serviceIndex', 'manageIndex'];
+router.beforeEach((to, from, next) => {
+  var li = routerList.length;
+  if (li > 0 && routerList[li - 1] == to.name) { // 后退
+    routerList.splice(routerList.length - 1, 1)
+    if (keepAlived.indexOf(from.name) > -1) {
+      from.meta.keepAlive = true;
+    }
+  } else { // 前进
+    if (!ctool.strIsEmpty(from.name)) {
+      routerList.push(from.name);
+      if (keepAlived.indexOf(to.name) > -1) {
+        if (to.meta.keepAlive) {
+          to.meta.keepAlive = false;
+        } else {
+          to.meta.keepAlive = true;
+        }
+      }
+      if (keepAlived.indexOf(from.name) > -1) {
+        from.meta.keepAlive = true;
+      }
+    } else {
+      console.log("-------------");
+    }
+  }
+  next()
+})
+
+4.2后退可能需要刷新
+
+<keep-alive :include="includedComponents" :exclude="excludedComponents">
+        <router-view></router-view>
+</keep-alive>
+
+computed:{
+      includedComponents(){
+        return this.$store.state.includedComponents;
+      },
+      excludedComponents(){
+        return this.$store.state.excludedComponents;
+      }
+}
+
+ -main.js
+var routerList = [];
+router.beforeEach((to,from,next)=>{
+  var li = routerList.length;
+ 
+  console.log(store.state.includedComponents);
+  if(li > 0 && routerList[li - 1] == to.name){
+    /*
+      如果发现to.name等于list中当前最后一个，则说明是返回操作。
+      返回操作的时候，第一步是从list中清掉第一个路由对象。
+      第二步是判断一下当前的from.name是不是在缓存属性中，在的话，就从里面拿掉，因为下一次进入的时候，
+      要重新刷新。
+     */
+    routerList.splice(routerList.length - 1, 1);
+    if(store.state.includedComponents.indexOf(from.name)>-1){
+      console.log('rm',from.name);
+      store.commit('removeInclude',from.name);
+      store.commit('addToExclude',from.name);
+    }
+  }else{
+    if (!ctool.strIsEmpty(from.name)) {
+      routerList.push(from.name);
+      if (store.state.excludedComponents.indexOf(to.name) > -1) {
+        console.log('ad',to.name);
+        store.commit('removeExclude', to.name);
+        store.commit('addToInclude', to.name);
+      }
+    }
+  }
+  next();
+});
+
+	-vuex
+import Vue from 'vue'
+import vuex from 'vuex'
+Vue.use(vuex);
+ 
+const state = {
+  includedComponents:['dispatchIndex', 'serviceIndex', 'manageIndex'],
+  excludedComponents:[]
+}
+ 
+const mutations  = {
+  removeInclude(state,str){
+    state.includedComponents.splice(state.includedComponents.indexOf(str),1);
+  },
+  addToInclude(state,str){
+    state.includedComponents.push(str);
+  },
+  removeExclude(state,str){
+    state.excludedComponents.splice(state.excludedComponents.indexOf(str),1);
+  },
+  addToExclude(state,str){
+    state.excludedComponents.push(str);
+  }
+}
+ 
+var store = new vuex.Store({
+  state:state,
+  mutations:mutations
+})
+ 
+export default store;
+
+	-utils.js
+clearCache:function(router_name){
+    store.commit('removeInclude',router_name);
+    store.commit('addToExclude',router_name);
+ }
+
+调用修改
+ctool.clearCache('B');//ctool挂载在windows上全局对象
+this.$router.go(-1);
+
 ```
 
 
 
-## 动态组件
+## 6.动态组件
 
 ```js
 <components is="组件名"> </components> //所有的组件,is指定组件,:is判断显示
 ```
 
-## 异步组件
+## 7.异步组件
 
 ```js
 通过导入方式来生实现
@@ -2314,15 +2511,21 @@ router-view 也是一个组件，所有路径匹配到的视图组件都会被
 import login from "./login"
 
 异步写法:
-const login = ()=> import('./login') //按需才加载 懒加载
+const login = ()=> import('./login') //按需才加载 懒加载;再放到路由中
 ```
 
-## 边界情况
+## 8.边界情况
 
 ```js
 - $root ：    找到vue根实例
 - $parent： 找到它的父组件
 - $children：只是找到儿子们
+```
+
+## 9.递归组件
+
+```
+
 ```
 
 

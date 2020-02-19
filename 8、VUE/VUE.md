@@ -2524,8 +2524,49 @@ const login = ()=> import('./login') //按需才加载 懒加载;再放到路由
 
 ## 9.递归组件
 
-```
+```js
+<template>
+    <ul class = "dataBaseTree">
+        <li v-for = "(item,index) in folder" :key = "index">
+            <span @click = "select(item)" :class = "{'active':currentId == item.id}">
+                <i class = "folderIcon" v-if = "item.children">
+                    <icon :icon = "'xiala'" v-if = "item.show"></icon>
+                    <icon :icon = "'xiala2'" v-else></icon>
+                </i>
+                {{ item.label }}
+            </span>
+            <el-collapse-transition>
+                <DatabaseTree v-if = "item.children && item.show" :folder = "item.children" :select = "select" :currentId = "currentId"></DatabaseTree>
+            </el-collapse-transition>
+        </li>
+    </ul>
+</template>
 
+<script>
+    import { mapGetters , mapActions} from 'vuex';
+    export default{
+        name:"DatabaseTree",
+        props:["folder","select","currentId"],
+        data(){
+            return{
+                addParams:{
+                    label:"",
+                    children:[]
+                },
+                noteData:{
+                    children:[]
+                }
+            }
+        },
+         computed:{
+            ...mapGetters(["catalog"])
+        },
+        methods:{}
+    }
+</script>
+————————————————
+版权声明：本文为CSDN博主「三哥玩前端」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/zhaoxiang66/article/details/80940762
 ```
 
 

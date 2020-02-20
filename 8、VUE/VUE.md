@@ -1082,6 +1082,8 @@ https://www.jianshu.com/p/7508d2a114d3
 
 ### 1.	自定义`render函数`
 
+​	非单页写法：
+
 ```js
 Vue.component('anchored-heading', {
     render: function (createElement) {
@@ -1098,6 +1100,79 @@ Vue.component('anchored-heading', {
     }
 })
 ```
+
+​	vue-cli写法：
+
+```vue
+.vue文件
+去掉<template>即可
+
+
+<script>
+export default {
+  methods: {
+    btn() {
+      console.log("bbb");
+    }
+  },
+  render(h) {
+    return h(
+      "div",
+      {
+        class: "menb",
+        attrs: {
+          id: "boo",
+          data: "789"
+        },
+        // domProps: {
+        //   innerText: "啦啦啦"
+        // }
+        on: {
+          click: this.btn
+        }
+      },
+      [h("p", "hellso"), h("p", "lalla")]
+    );
+  }
+};
+</script>
+
+<style>
+</style>
+```
+
+```js
+导入：
+<template>
+	<menA />    
+</template>
+
+import menA from './menB'
+export default {
+	components:{
+	menA
+	}
+}
+```
+
+​	jsx写法：
+
+```jsx
+export default {
+    data(){
+        return {
+            title:'我们'
+        }
+    },
+    render(){
+        return <div>
+            jsxjsx,{this.title}
+        </div>
+    }
+}
+```
+
+
 
 ### 2.	 `template`写法
 

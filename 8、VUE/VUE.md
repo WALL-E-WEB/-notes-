@@ -1082,7 +1082,7 @@ https://www.jianshu.com/p/7508d2a114d3
 
 ### 1.	自定义`render函数`
 
-​	非单页写法：
+#### 	非单页写法：
 
 ```js
 Vue.component('anchored-heading', {
@@ -1101,7 +1101,7 @@ Vue.component('anchored-heading', {
 })
 ```
 
-​	vue-cli写法：
+#### 	vue-cli写法：
 
 ```vue
 .vue文件
@@ -1155,7 +1155,7 @@ export default {
 }
 ```
 
-​	jsx写法：
+#### 	jsx写法：
 
 ```jsx
 export default {
@@ -1204,7 +1204,7 @@ let app = new Vue({
 
 ### 1.	参数:
 
-- param-1: `{String | Object | Function}` 元素
+- #### param-1: `{String | Object | Function}` 元素
 
 ```js
 #String 
@@ -1410,7 +1410,212 @@ document.getElementById('app').appendChild(component.$el)
 
 ```
 
+# Vue-extend()
 
+​	Vue.extend({ })
+
+```js
+import Vue from 'vue'
+
+const testComponent = Vue.extend({
+  template: '<div>{{ text }}</div>',
+  data: function () {
+    return {
+      text: 'extend test'
+    }
+  }
+})
+
+1.
+//手动渲染
+const extendComponent = new testComponent().$mount()
+//可以通过 $el 属性来访问 extendComponent 组件实例
+document.body.appendChild(extendComponent.$el)
+
+2.渲染并挂载
+new testComponent().$mount('#boxId')
+
+3.作为组件挂载到#box
+let todowarp = new testComponent()
+Vue.component('todo', todoWarp)
+var vm = new Vue({
+         el: "#box"
+     });
+
+4.vue-cli
+let Todowarp = new testComponent()
+extend defalut {
+	components:{
+    	Todowarp
+    }
+}
+```
+
+new.extend({})合并规则
+
+```js
+var myVue = Vue.extend({
+// 预设选项
+})
+
+var vm = new myVue({
+// 其他选项
+})
+
+实例化extends组件构造器时传入的属性必须是propsDate,而不是props
+new testComponent({
+	propData:{
+        text:'dd'
+    }
+})
+
+new myVue({})后会合并预设选项和其他选项中的所有属性选项：
+
+1.data数据对象在内部会进行浅合并 (一层属性深度)。
+
+2.钩子函数会先执行预设选项中的
+
+3.值为对象的选项，例如 methods, components 将被混合为同一个对象，两个对象键名冲突时，会以new myVue({})对象的选项为准。
+
+注意：混入 (mixins) 也使用同样的策略进行合并。
+```
+
+应用:
+
+>```js
+>.vue
+>
+><template>
+><transition name="fade">
+>    <div class="message" :class="type" v-show="show">
+>      <i class="icon"></i>
+>      <span class="text">{{text}}</span>
+>    </div>
+></transition>
+></template>
+>
+><script type="text/ecmascript-6">
+>  export default {
+>    name: 'message',
+>    props: {
+>      type: {
+>        type: String,
+>        default: 'info',
+>        validator: val => ['info', 'success', 'warning', 'error'].includes(val)
+>//['info', 'success', 'warning', 'error'] 表示type只接收这四个字符串作为参数传入message组件
+>      },
+>      text: {
+>        type: String,
+>        default: ''
+>      },
+>      show: {
+>        type: Boolean,
+>        default: false
+>      }
+>    }
+>  }
+></script>
+>```
+>
+>
+>
+>```js
+>index.js
+>import Message from './Message.vue'
+>
+>const MESSAGE = {
+>  duration: 3000, // 显示的时间 ms
+>  animateTime: 300, // 动画时间,表示这个组件切换show的动画时间
+>  install(Vue) {
+>    if (typeof window !== 'undefined' && window.Vue) {
+>      Vue = window.Vue
+>    }
+>    Vue.component('Message', Message)
+>
+>    function msg(type, text, callBack) {
+>      let msg
+>      let duration = MESSAGE.duration
+>      if (typeof text === 'string') {
+>        msg = text
+>      } else if (text instanceof Object) {
+>        msg = text.text || ''
+>        if (text.duration) {
+>          duration = text.duration
+>        }
+>      }
+>      let VueMessage = Vue.extend({
+>        render(h) {
+>          let props = {
+>            type,
+>            text: msg,
+>            show: this.show
+>          }
+>          return h('message', {props})
+>        },
+>        data() {
+>          return {
+>            show: false
+>          }
+>        }
+>      })
+>      let newMessage = new VueMessage()
+>      let vm = newMessage.$mount()
+>      let el = vm.$el
+>      document.body.appendChild(el) // 把生成的提示的dom插入body中
+>      vm.show = true
+>      let t1 = setTimeout(() => {
+>        clearTimeout(t1)
+>        vm.show = false  //隐藏提示组件，此时会有300ms的动画效果，等动画效果过了再从body中移除dom
+>        let t2 = setTimeout(() => {
+>          clearTimeout(t2)
+>          document.body.removeChild(el) //从body中移除dom
+>          newMessage.$destroy()
+>          vm = null // 设置为null，好让js垃圾回收算法回收，释放内存
+>
+>          callBack && (typeof callBack === 'function') && callBack() 
+>      // 如果有回调函数就执行，没有就不执行，用&&操作符，
+>      // 只有&&左边 的代码为true才执行&&右边的代码，避免用面条代码：
+>      // if(true){
+>      //   ... 
+>      //   if(true){
+>      //   ...
+>      //   }
+>      // }
+>        }, MESSAGE.animateTime)
+>      }, duration)
+>    }
+>
+>// 挂载到vue原型上，暴露四个方法
+>    Vue.prototype.$message = {
+>      info(text, callBack) {
+>        if (!text) return
+>        msg('info', text, callBack)
+>      },
+>      success(text, callBack) {
+>        if (!text) return
+>        msg('success', text, callBack)
+>      },
+>      error(text, callBack) {
+>        if (!text) return
+>        msg('error', text, callBack)
+>      },
+>      warning(text, callBack) {
+>        if (!text) return
+>        msg('warning', text, callBack)
+>      }
+>    }
+>  }
+>}
+>export default MESSAGE
+>```
+>
+>```js
+>import Vue from 'vue'
+>import vMessage from './components/Message/index' 
+>Vue.use(vMessage)
+>```
+>
+>
 
 # mixin
 
@@ -1437,7 +1642,7 @@ var Component = Vue.extend({
 var component = new Component() // => "hello from mixin!"
 ```
 
-基础用法
+### 1.基础用法
 
 ```js
 let mixin = {
@@ -1478,7 +1683,7 @@ index.vue
 </script>
 ```
 
-main.js中直接全局注册
+### 2.main.js中直接全局注册
 
 ```js
 import Vue from 'vue';
@@ -1498,7 +1703,7 @@ new Vue({
 });
 ```
 
-模块化注册
+### 3.模块化注册
 
 ```js
 export default {
@@ -1756,6 +1961,12 @@ this.$router.params.key
 
 # VUE-Component 组件
 
+组件化与模块化的不同：
+
+　　　模块化：是从代码逻辑的角度进行分析，方便代码分层开发，保证每个功能模块的只能单一　　
+
+　　　组件化：是从UI界面的角度进行划分，前端的组件化，方便UI组件的重用。
+
 ```js
 <script type='html/text' id="tempid">  //type="text/x-component"
     <div>
@@ -1811,197 +2022,197 @@ const app =new Vue({
 
 ## 1.组件的创建方式
 
-1. vue.component
+### 	1.vue.component
 
-   ```jsx
-   Vue.component('my-component', {
-     template: '<div>A custom component!</div>'
-   })
-   var vm = new Vue({
-     el: '#example',
-     data: {
-          
-     } 
-   })
-   ```
+```jsx
+Vue.component('my-component', {
+  template: '<div>A custom component!</div>'
+})
+var vm = new Vue({
+  el: '#example',
+  data: {
+       
+  } 
+})
+```
 
-2. vue.component - 2
+### 	2.vue.component - 2
 
-    `Vue.component` 返回的结果是一个 `function`！它返回的并不是 组件实例，而是一个构造函数。
+`Vue.component` 返回的结果是一个 `function`！它返回的并不是 组件实例，而是一个构造函数。
 
-   那到这里其实我们就清楚了。 对于 `Vue.component` 声明的组件，我们先通过 `Vue.component` 获取它的构造函数，再 `new` 出一个组件实例，最后 通过`$mount` 挂载到 `html` 上。
+那到这里其实我们就清楚了。 对于 `Vue.component` 声明的组件，我们先通过 `Vue.component` 获取它的构造函数，再 `new` 出一个组件实例，最后 通过`$mount` 挂载到 `html` 上。
 
-   ```js
-   Vue.component("button-counter", {
-     data: function() {
-       return {
-         count: 0
-       };
-     },
-     template:
-       '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
-   });
-   
-   Vue.component("app", {
-     data: function() {
-       return {
-         count: 0
-       };
-     },
-     template:
-       '<div> <h1>App Component</h1><button @click="insert">click to insert new Component</button> <div id="appId"> </div></div>',
-     methods: {
-       insert() {
-         const component = Vue.component("button-counter");
-         const instance = new component();
-         instance.$mount("#appId");
-       }
-     }
-   });
-   
-   new Vue({
-     el: "#app"
-   });
-   ```
+```js
+Vue.component("button-counter", {
+  data: function() {
+    return {
+      count: 0
+    };
+  },
+  template:
+    '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+});
 
-   
+Vue.component("app", {
+  data: function() {
+    return {
+      count: 0
+    };
+  },
+  template:
+    '<div> <h1>App Component</h1><button @click="insert">click to insert new Component</button> <div id="appId"> </div></div>',
+  methods: {
+    insert() {
+      const component = Vue.component("button-counter");
+      const instance = new component();
+      instance.$mount("#appId");
+    }
+  }
+});
 
-3. vue.extend
+new Vue({
+  el: "#app"
+});
+```
 
-    通过传入一个包含 `Component options` 的对象， `Vue.extend` 帮助我们创建一个 继承了 `Vue constructor` 的子类，也就是我们之前需要的构造函数。 （）
 
-   ```js
-   var MyComponent = Vue.extend({
-     template: '<div>A custom component!</div>'
-   });
-   
-   // 注册
-   Vue.component('my-component', MyComponent);
-   var vm = new Vue({
-     el: '#example',
-     data: {  }
-   })
-   ```
 
-   ```js
-   // 创建构造器
-   var Profile = Vue.extend({
-     template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
-     data: function () {
-       return {
-         firstName: 'Walter',
-         lastName: 'White',
-         alias: 'Heisenberg'
-       }
-     }
-   })
-   // 创建 Profile 实例，并挂载到一个元素上。
-   new Profile().$mount('#mount-point')
-   ```
+### 	3.vue.extend({ })
 
-   
+通过传入一个包含 `Component options` 的对象， `Vue.extend` 帮助我们创建一个 继承了 `Vue constructor` 的子类，也就是我们需要的构造函数。 
 
-4. vm.$mount
+```js
+var MyComponent = Vue.extend({
+  template: '<div>A custom component!</div>'
+});
 
-   ```js
-   var MyComponent = Vue.extend({
-     template: '<div>Hello!</div>'
-   })
-   
-   // 创建并挂载到 #app (会替换 #app)
-   new MyComponent().$mount('#app')
-   
-   // 同上
-   new MyComponent({ el: '#app' })
-   
-   // 或者，在文档之外渲染并且随后挂载
-   var component = new MyComponent().$mount()
-   document.getElementById('app').appendChild(component.$el)
-   
-   ```
+// 注册
+Vue.component('my-component', MyComponent);
+var vm = new Vue({
+  el: '#example',
+  data: {  }
+})
+```
 
-   
+```js
+// 创建构造器
+var Profile = Vue.extend({
+  template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
+  data: function () {
+    return {
+      firstName: 'Walter',
+      lastName: 'White',
+      alias: 'Heisenberg'
+    }
+  }
+})
+// 创建 Profile 实例，并挂载到一个元素上。
+new Profile().$mount('#mount-point')
+```
 
-5. template
 
-   ```js
-   <div id="app1">
-       <my-love></my-love>
-   </div>
-   
-   <template id="temp-com">
-       <div>
-           <h3>使用template定义的组件</h3>
-           <p>使用template定义的组件的内容！</p>
-       </div>
-   </template>
-   
-   Vue.component('my-love', {
-       template: '#temp-com'
-   });
-   ```
 
-   
+### 	4.vm.$mount
 
-6.  使用script定义 
+```js
+var MyComponent = Vue.extend({
+  template: '<div>Hello!</div>'
+})
 
-   ```js
-   <div id="app1">
-       <my-love></my-love>
-   </div>
-   
-   <script type="text/template" id="temp-com">
-       <div>
-           <h3>使用template定义的组件</h3>
-           <p>使用template定义的组件的内容！</p>
-       </div>
-   </script>
-   
-   Vue.component('my-love', {
-       template: '#temp-com'
-   });
-   
-   ```
+// 创建并挂载到 #app (会替换 #app)
+new MyComponent().$mount('#app')
 
-   
+// 同上
+new MyComponent({ el: '#app' })
 
-7. vue-cli组件挂载方式
+// 或者，在文档之外渲染并且随后挂载
+var component = new MyComponent().$mount()
+document.getElementById('app').appendChild(component.$el)
 
-    通过传入一个包含 `Component options` 的对象， `Vue.extend` 帮助我们创建一个 继承了 `Vue constructor` 的子类，也就是我们之前需要的构造函数。 （传入一个组件，获取构造函数）
+```
 
-   ```js
-   <template>
-     <div id="app">
-       <div>
-       <img width="25%" src="./assets/logo.png">
-     </div>
-       <div>
-       <button @click="insert">click me to insert ButtonCounter</button>
-     </div>
-       <div id="container"></div>
-     </div>
-   </template>
-   
-   <script>
-   import ButtonCounter from './components/ButtonCounter';
-   import Vue from 'vue';
-   export default {
-     name: 'App',
-     components: {
-       ButtonCounter,
-     },
-     methods: {
-       insert() {
-         const bcConstructor = Vue.extend(ButtonCounter);
-         const instance = new bcConstructor();
-         instance.$mount('#container');
-       },
-     },
-   };
-   </script>
-   ```
 
-   
+
+### 	5.template
+
+```js
+<div id="app1">
+    <my-love></my-love>
+</div>
+
+<template id="temp-com">
+    <div>
+        <h3>使用template定义的组件</h3>
+        <p>使用template定义的组件的内容！</p>
+    </div>
+</template>
+
+Vue.component('my-love', {
+    template: '#temp-com'
+});
+```
+
+
+
+### 	6.使用script定义 
+
+```js
+<div id="app1">
+    <my-love></my-love>
+</div>
+
+<script type="text/template" id="temp-com">
+    <div>
+        <h3>使用template定义的组件</h3>
+        <p>使用template定义的组件的内容！</p>
+    </div>
+</script>
+
+Vue.component('my-love', {
+    template: '#temp-com'
+});
+
+```
+
+
+
+### 	7.vue-cli组件挂载方式
+
+通过传入一个包含 `Component options` 的对象， `Vue.extend` 帮助我们创建一个 继承了 `Vue constructor` 的子类，也就是我们之前需要的构造函数。 （传入一个组件，获取构造函数）
+
+```js
+<template>
+  <div id="app">
+    <div>
+    <img width="25%" src="./assets/logo.png">
+  </div>
+    <div>
+    <button @click="insert">click me to insert ButtonCounter</button>
+  </div>
+    <div id="container"></div>
+  </div>
+</template>
+
+<script>
+import ButtonCounter from './components/ButtonCounter';
+import Vue from 'vue';
+export default {
+  name: 'App',
+  components: {
+    ButtonCounter,
+  },
+  methods: {
+    insert() {
+      const bcConstructor = Vue.extend(ButtonCounter);
+      const instance = new bcConstructor();
+      instance.$mount('#container');
+    },
+  },
+};
+</script>
+```
+
+
 
 
 

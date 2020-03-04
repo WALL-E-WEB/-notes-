@@ -4262,6 +4262,59 @@ export const postFind = (params) => {
 >>>>>>>>>>>>>>>>>>^^^^
 ```
 
+```js
+import axios from 'axios'
+var baseUrl = ''
+// var version = '1.0.1'
+// 环境判断
+if (process.env.NODE_ENV === 'development') {
+  // baseUrl = 'http://192.168.8.32:8082/'
+} else if (process.env.NODE_ENV === 'test') {
+  baseUrl = 'test'
+} else if (process.env.NODE_ENV === 'production') {
+  baseUrl = 'prodction'
+}
+
+// http://localhost:9010/department/querySubDepar
+let axi = axios.create({
+  baseUrl: baseUrl,
+  timeOut: 8000,
+  headers: {
+    'Content-Type': 'application/json; charset=UTF-8'
+  }
+})
+var getData = (params) => {
+  return axi.get(params.url).then(response => {
+    params.success && params.success(response.data)
+  }).catch((error) => {
+    params.fail && params.fail(error)
+  })
+}
+let postData = (refs) => {
+  // 判断是否有数据 转换为表单数据
+  var formData = new FormData()
+  if (refs.data) {
+    for (var key in refs.data) {
+      formData.append(key, refs.data[key])
+    }
+    refs.data = formData
+  }
+  return axi({
+    method: 'post',
+    url: refs.url,
+    data: refs.data,
+    headers: {
+            'Content-Type': 'application/json; charset=UTF-8'
+        }
+  }).then(res => {
+    refs.success && refs.success(res.data)
+  }).catch(error => {
+    refs.fail && refs.fail(error)
+  })
+}
+export {postData, getData}
+```
+
 
 
 #### 4.多基地址
@@ -5351,7 +5404,7 @@ vue-cli3.0
 
 ```js
 根目录中创建vue.config.js文件:
-
+module.exports = {
 devServer : {
         proxy : {
             '/index' : {
@@ -5364,9 +5417,17 @@ devServer : {
             }
         }
     }
+}
 
+axios.defaults.baseURL = '/index'
 链接：https://juejin.im/post/5d1cc073f265da1bcb4f486d
 
+第二种:无需配置axios.defaults.baseURL
+module.exports = {
+devServer : {
+      proxy: "http://localhost:3000",
+      port: 8080
+}
 ```
 
 

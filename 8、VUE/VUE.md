@@ -1617,6 +1617,23 @@ new myVue({})后会合并预设选项和其他选项中的所有属性选项：
 >
 >
 
+# vue.component
+
+vue.component用于全局注册组件
+
+```js
+// 注册组件，传入一个扩展过的构造器
+Vue.component('my-component', Vue.extend({ /* ... */ }))
+
+// 注册组件，传入一个选项对象 (自动调用 Vue.extend)
+Vue.component('my-component', { /* ... */ })
+
+// 获取注册的组件 (始终返回构造器)
+var MyComponent = Vue.component('my-component')
+```
+
+
+
 # mixin
 
  来分发 Vue 组件中的可复用功能 

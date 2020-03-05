@@ -5400,7 +5400,7 @@ axios.defaults.baseURL=apiConfig.baseURL
 
  encodeURIComponent() 函数可把字符串作为 URI 组件进行编码。 
 
-vue-cli3.0
+## vue-cli3.0+
 
 ```js
 根目录中创建vue.config.js文件:
@@ -5422,12 +5422,186 @@ devServer : {
 axios.defaults.baseURL = '/index'
 链接：https://juejin.im/post/5d1cc073f265da1bcb4f486d
 
+build后 基地在为运行时的地址
+
+
+```
+
+```js
+import axios from 'axios'
+var baseUrl = ''
+
+// 环境判断
+if (process.env.NODE_ENV === 'development') {
+   baseUrl = '/index'
+} else if (process.env.NODE_ENV === 'test') {
+  baseUrl = 'test'
+} else if (process.env.NODE_ENV === 'production') {
+  baseUrl = 'www.prodction.com'
+}
+
+axios.defaults.baseURL = baseUrl
+
+build后 基地址为 production 的地址
+	如:www.prodction.com/user
+
+```
+
+
+
+```js
 第二种:无需配置axios.defaults.baseURL
 module.exports = {
 devServer : {
       proxy: "http://localhost:3000",
       port: 8080
 }
+    
+build后 基地在为运行时的地址;
+    如:生产环境地址为www.baidu.com
+    	请求接口地址为:www.baidu.com/user;
+    	而不是http://localhost:3000/user
+```
+
+## vue-cli3.0+ 配置文件+命令行跨域解决方案
+
+1. 在package.json同级目录下创建 环境配置文件 .env.xxx (xxx一般为:dev / pro /test )
+2. package.json配置 命令行
+3. 配置axios.defaults.baseURL
+4. vue.config.js配置跨域
+
+>1.在package.json同级目录下创建 环境配置文件
+>
+>![image-20200305161012418](C:%5CUsers%5CAdministrator%5CDesktop%5C%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C8%E3%80%81VUE%5Cimage-20200305161012418.png)
+>
+>```js
+>文件内容格式如下:按需
+>NODE_ENV="development"                            //环境名
+>VUE_APP_BASE_URL="http://xxx.xxx.xxx"             //服务器地址
+>VUE_APP_BASE_API="http://xxx.xxx.xxx:port"        //接口地址
+>VUE_APP_DIR_NAME="xxx"                            //打包名
+>
+>注意:
+>	1.必须以VUE_APP开头
+>    2.上面地址引号后不可有空格
+>    3.设置跨域后VUE_APP_BASE_API接上vue.config.js文件中proxy设置的'/api'
+>	如:VUE_APP_BASE_API="http://xxx.xxx.xxx:port/api"
+>```
+>
+>2.package.json配置 命令行
+>
+>```json
+>{
+>  "name": "qywx",
+>  "version": "0.1.0",
+>  "private": true,
+>  "scripts": {
+>    "serve": "vue-cli-service serve",
+>    "build": "vue-cli-service build",
+>      //'development'为.env.xxx文件中NODE_ENV对应
+>      // --mode 后制定执行的文件
+>    "serve:dev": "vue-cli-service serve --mode development",
+>    "build:pro": "vue-cli-service build --mode production"
+>  },
+>} 
+>
+>命令窗口运行:npm run serve:dev 开发模式
+>命令窗口运行:npm run build:pro 打包生产模式
+>```
+>
+>3.配置axios.defaults.baseURL
+>
+>```js
+>import axios from 'axios'
+>axios.defaults.baseURL = process.env.VUE_APP_BASE_API
+>```
+>
+>4.vue.config.js中devserver配置跨域;
+>
+>```js
+>let env = process.env.NODE_ENV;
+>// npm i compression-webpack-plugin -D
+>const CompressionWebpackPlugin = require("compression-webpack-plugin");
+>module.exports = {
+>    // 如果是hash模式
+>    publicPath: env === 'production' ? './' : '/',
+>
+>    // 如果是history模式
+>    // publicPath: env === 'production' ? '/' : '/',
+>    outputDir: 'dist/c',
+>    filenameHashing: false,
+>    productionSourceMap: false,
+>
+>    // 输出文件目录默认'dist
+>    outputDir: "dist",
+>
+>    runtimeCompiler: false,
+>
+>    // 静态资源目录 (js, css, img, fonts)
+>
+>    assetsDir: "assets",
+>    //设置打包之后是否打包.map文件
+>    productionSourceMap: env !== "development" ? false : true,
+>
+>    // 所有 webpack-dev-server 的选项都支持
+>    devServer: {
+>        port: 8083,
+>        host: "0.0.0.0",
+>        hot: true,
+>        open: false,
+>        disableHostCheck: true,
+>        proxy: {
+>            // axios.defaults.baseURL = '/api'
+>            //或axios.defaults.baseURL = 'http://xxxxx/api'
+>            '/api': {
+>                target: "http://localhost:3000",
+>                // ws: true,
+>                changeOrigin: true,
+>                pathRewrite: {
+>                    '^/api': ''
+>                }
+>            },
+>        }
+>        // proxy: "http://localhost:3000",
+>
+>    },
+>    configureWebpack: config => {
+>        if (env !== "development") {
+>            // 配置打包 压缩js
+>            config.plugins.push(
+>                new CompressionWebpackPlugin({
+>                    algorithm: "gzip",
+>                    test: /\.js$|\.html$|.\css/, //匹配文件名
+>                    threshold: 10240, //对超过10k的数据压缩
+>                    deleteOriginalAssets: false, //不删除源文件
+>                    minRatio: 0.8
+>                })
+>            );
+>        }
+>    }
+>}
+>```
+>
+>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```js
+1
 ```
 
 
@@ -5489,5 +5663,20 @@ Date.prototype.format = function (fmt) {
 };
 调用:
 new Date().format("yyyy-MM-dd")
+```
+
+# git项目
+
+```js
+https://github.com/nieyangyang712/vuecli4.0-admin
+vue-cli4 状态管理器vuex UI框架,element-ui 路由vue-router,HTTP请求,axios 接口,api.js 环境,dev test uat prod 本地存储,localStorage 登录, 兼容性ie9及以上
+```
+
+```js
+移动端饿了么
+https://github.com/bailicangdu/vue2-elm
+
+node接口
+https://github.com/bailicangdu/node-elm
 ```
 

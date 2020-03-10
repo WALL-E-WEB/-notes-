@@ -2922,6 +2922,16 @@ this.$route.query	获取路由传递参数
 query则是我们通常看到的url后面跟上的？后跟的显示参数
 ```
 
+```js
+// 路由重复点击异常处理
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+```
+
+
+
 #### vue-router路由
 
 ```js
@@ -5859,7 +5869,7 @@ merge
 
 ```
 
-无感刷新token
+# 无感刷新token
 
 ```js
 https://segmentfault.com/a/1190000020210980

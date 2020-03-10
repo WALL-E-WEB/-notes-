@@ -1876,6 +1876,22 @@ module: {
 
     其中webpack-bundle-analyzer是一个插件，可以以插件的方式安装到项目中
 
+**webpack-bundle-analyzer**
+
+```js
+npm install --save-dev webpack-bundle-analyzer
+
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+module.exports = {
+  plugins: [
+    new BundleAnalyzerPlugin()
+  ]
+}
+
+运行打包后访问：127.0.0.1：8888
+```
+
 
 
 # 覆盖率Prefetching和Preloading

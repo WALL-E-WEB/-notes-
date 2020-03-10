@@ -1,4 +1,4 @@
-## Vue指令
+
 
 - vue提供给HTML标签新增的属性
 
@@ -2884,6 +2884,25 @@ const login = ()=> import('./login') //按需才加载 懒加载;再放到路由
 
 ```
 
+## build
+
+### 1.分析：
+
+```json
+"build": "cross-env FILE_NAME=ui vue-cli-service build --report",
+
+packagejson中设置命令行 添加 --report
+
+dist生成report,html打开即可。
+```
+
+### 2.打包优化
+
+```json
+productionSourceMap: false， //取消生成map文件
+productionGzip：true， //开启gzip压缩
+```
+
 
 
 # VUE-Router 路由
@@ -5616,7 +5635,7 @@ build后 基地在为运行时的地址;
 
 >1.在package.json同级目录下创建 环境配置文件
 >
->![image-20200305161012418](C:%5CUsers%5CAdministrator%5CDesktop%5C%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C8%E3%80%81VUE%5Cimage-20200305161012418.png)
+>![image-20200305161012418](D:\walle笔记\-notes-\8、VUE\VUE.assets\image-20200305161012418-1583633264842.png)
 >
 >```js
 >文件内容格式如下:按需

@@ -4921,10 +4921,83 @@ export default instance
 
 ---
 
+<<<<<<< HEAD
 # 插件封装
 
-​	html引入:
+	html引入:
+=======
+# install
 
+
+
+```js
+MyPlugin.install = function (Vue, options) {
+  // 1. 添加全局方法或属性
+  Vue.myGlobalMethod = function () {
+    // 逻辑...
+  }
+
+  // 2. 添加全局资源
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 3. 注入组件
+  Vue.mixin({
+    created: function () {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 4. 添加实例方法
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // 逻辑...
+  }
+}
+```
+
+
+
+## 插件
+
+```js
+export const bdLoading = {
+    install (vue) {
+        let LoadingConstructor = vue.extend(Loading)
+
+        let instance = new LoadingConstructor()
+
+
+        // instance.$mount(document.createElement('div'))
+        instance.$mount(document.createElement('div'))
+        instance.$el.className = '444'
+        document.body.appendChild(instance.$el)
+        vue.prototype.$bdLoading = (options = {}) => {
+            instance.show = options.show
+            instance.text = options.text
+        }
+    }
+}
+
+main.js
+
+Vue.use(bdLoading)
+
+this.$bdLoading({
+	show:'',
+    text:'ddd'
+})
+```
+
+
+
+# 插件封装
+
+## 	html引入:
 ```js
 -loading.vue
 
@@ -4987,7 +5060,7 @@ src
 ```
 
 js引入:
-
+=======
 ```js
 import ToastComponent from './toast.vue'
 
@@ -5979,5 +6052,8 @@ ly-tab  移动端可滑动（惯性滑动&回弹）Vue导航栏组件 ly-tab
 fastclick 解决移动端300毫秒
 ```
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 2d52ec57beb0199a6b8b41519035d61b6a7dae41

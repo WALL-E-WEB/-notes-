@@ -4637,7 +4637,7 @@ export const postRequest = (url, params) => {
 }
 ```
 
-拦截处理
+### 拦截处理
 
 ```js
 /**
@@ -4958,6 +4958,30 @@ MyPlugin.install = function (Vue, options) {
     // 逻辑...
   }
 }
+```
+
+注册全局组件
+
+```js
+import a from './a'
+import b from './b'
+let components = { a, b }
+const installBase = {
+  install (Vue) {
+    Object.keys(components).map(key => Vue.component(key, components[key]))
+  }
+}
+
+```
+
+```js
+import Vue from 'vue'
+import base from './base.js'
+Vue.use(base)
+
+new Vue({
+  ...
+})
 ```
 
 

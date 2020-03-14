@@ -1,10 +1,14 @@
 
 
+# 一、VUE-指令
+
 - vue提供给HTML标签新增的属性
 
 - 是带有v-前缀的特殊特性
 
-    ### 1.v-text
+    
+
+## 1. v-text
 
 ```js
 
@@ -23,13 +27,15 @@
 		--数据可是arr,obj
 ```
 
-### 	2.v-html
+## 2. v-html
 
 ```
 强制覆盖里面的内容
 ```
 
-### 	3.v-bind
+## 3. v-bind
+
+#### 3.0 - 基本使用
 
 ```js
 简写: :
@@ -61,132 +67,141 @@ style操作:
 
 ```
 
-#### class
+#### 3.1 - class
 
-##### 1.对象语法
+##### 	3.1.1 	-	对象语法
 
-```js
- v-bind:class="{ active: isActive, 'text-danger': hasError }"
- data: {
-  isActive: true,
-  error: null
-},
-```
+- ```js
+   v-bind:class="{ active: isActive, 'text-danger': hasError }"
+   data: {
+    isActive: true,
+    error: null
+  },
+  ```
 
-##### 2.数组语法
+#####    3.1.2 	-	数组语法
 
-```js
-<div v-bind:class="[activeClass, errorClass]"></div>
-data: {
-  activeClass: 'active',
-  errorClass: 'text-danger'
-}
+- ```js
+  <div v-bind:class="[activeClass, errorClass]"></div>
+  data: {
+    activeClass: 'active',
+    errorClass: 'text-danger'
+  }
+  
+  结果:<div class="active text-danger"></div>
+  
+  
+  数组三元表达式:
+  <div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+  
+  计算属性类名:
+  <div :class="Aclass"></div>
+  computer:{
+      Aclass(){
+          return [
+              'active',
+              activeA:true,
+          ]
+      }
+  }
+  ```
 
-结果:<div class="active text-danger"></div>
+#####   3.1.3 	-	组件类名叠加
 
+- ```js
+  组件类目叠加规则：
+  Vue.component('my-component', {
+    template: '<p class="foo bar">Hi</p>'
+  })
+  
+  <my-component class="baz boo"></my-component>
+  
+  渲染结果:<p class="foo bar baz boo">Hi</p>
+  
+  标签类名叠加：
+  <p class="foo" ：calss="bar">Hi</p>
+  ```
 
-数组三元表达式:
-<div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+####  3.2 - style
 
-计算属性类名:
-computer:{
-    Aclass(){
-        return [
-            'active',
-            activeA:true,
-        ]
-    }
-}
-```
+##### 	3.2.1 - 对象语法
 
-##### 3.组件类名叠加
+- ```js
+  <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
+  
+  data: {
+    activeColor: 'red',
+    fontSize: 30
+  }
+  ```
 
-```js
-Vue.component('my-component', {
-  template: '<p class="foo bar">Hi</p>'
-})
+##### 	3.2.2 - 数组语法
 
-<my-component class="baz boo"></my-component>
+- ```js
+  <div v-bind:style="[baseStyles, overridingStyles]"></div>
+  
+  baseStyles 为对象
+  ```
 
-渲染结果:<p class="foo bar baz boo">Hi</p>
-```
+##### 	3.2.3 - 多重值
 
-#### style
+- ```js
+  <div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"></div>
+  
+  这样写只会渲染数组中最后一个被浏览器支持的值。在本例中，如果浏览器支持不带浏览器前缀的 flexbox，那么就只会渲染 display: flex。
+  ```
 
-##### 1.对象语法
+## 	4. v-on
 
-```js
-<div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
+#### 	4.0 - 基本
 
-data: {
-  activeColor: 'red',
-  fontSize: 30
-}
-```
+- ```js
+  简写:@
+  作用:给元素绑定事件
+  	
+  	事件声明用:methods
+      
+  <div id="app" >
+          <button v-on:click = 'fn'>点击</button>
+  		<button @:click = 'fn'>点击2</button>
+  </div>
+  
+  const app = new Vue({
+      el:"#app",
+      data:{
+          msg:"库"
+      },
+      methods:{
+          fn(){
+             this.msg = '酷酷' //改变msg的属性值
+          },
+          fn2(){
+              console.log(event) //vue的事件对象是event
+          }
+      }
+  })
+  ```
 
-##### 2.数组语法
+  
 
-```
-<div v-bind:style="[baseStyles, overridingStyles]"></div>
-```
+#### 	   4.1 - 事件修饰符
 
-##### 3.多重值
-
-```js
-<div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"></div>
-
-这样写只会渲染数组中最后一个被浏览器支持的值。在本例中，如果浏览器支持不带浏览器前缀的 flexbox，那么就只会渲染 display: flex。
-```
-
-
-
-### 	4.v-on
-
-```js
-简写:@
-作用:给元素绑定事件
-	
-	事件声明用:methods
-    
-<div id="app" >
-        <button v-on:click = 'fn'>点击</button>
-		<button @:click = 'fn'>点击2</button>
-</div>
-
-const app = new Vue({
-    el:"#app",
-    data:{
-        msg:"库"
-    },
-    methods:{
-        fn(){
-           this.msg = '酷酷' //改变msg的属性值
-        },
-        fn2(){
-            console.log(event) //vue的事件对象是event
-        }
-    }
-})
-```
-
-#### 	事件修饰符
-
-```
-阻止事件默认行为
-	<button v-on:click.prevent = 'fn'>点击</button>
-
-.stop - 调用 event.stopPropagation()。
-.prevent - 调用 event.preventDefault()。
-.capture - 添加事件侦听器时使用 capture 模式。
-.self - 只当事件是从侦听器绑定的元素本身触发时才触发回调。
-.{keyCode | keyAlias} - 只当事件是从特定键触发时才触发回调。
-.native - 监听组件根元素的原生事件。
-.once - 只触发一次回调。
-.left - (2.2.0) 只当点击鼠标左键时触发。
-.right - (2.2.0) 只当点击鼠标右键时触发。
-.middle - (2.2.0) 只当点击鼠标中键时触发。
-.passive - (2.3.0) 以 { passive: true } 模式添加侦听器
-```
+- ```js
+  阻止事件默认行为
+  	<button v-on:click.prevent = 'fn'>点击</button>
+  
+  .stop - 调用 event.stopPropagation()。
+  .prevent - 调用 event.preventDefault()。
+  .capture - 添加事件侦听器时使用 capture 模式。
+  .self - 只当事件是从侦听器绑定的元素本身触发时才触发回调。
+  .{keyCode | keyAlias} - 只当事件是从特定键触发时才触发回调。
+  .native - 监听组件根元素的原生事件。
+  .once - 只触发一次回调。
+  .left - (2.2.0) 只当点击鼠标左键时触发。
+  .right - (2.2.0) 只当点击鼠标右键时触发。
+  .middle - (2.2.0) 只当点击鼠标中键时触发。
+  .passive - (2.3.0) 以 { passive: true } 模式添加侦听器
+  ```
 
 #### 	this
 
@@ -196,7 +211,7 @@ this指向vue的实例;
 箭头函数:this指向的是window//参数指向的是window
 ```
 
-### 	v-model
+## 5. v-model
 
 ```js
 用于input textarea select ,动态绑定,双向绑定
@@ -207,19 +222,154 @@ this指向vue的实例;
 .lazy - 取代 input 监听 change 事件
 .number - 输入字符串转为有效的数字
 .trim - 输入首尾空格过滤
- .sync 修饰符多个v-model
+.sync 修饰符多个v-model
 <my-dialog  :visible="dialogVisible"  @update:visible="newVisible => dialogVisible = newVisible"/>
 
 ```
 
-### 	v-for
+## 6. v-for
 
-```js
-<p v-for="(item,index) in arr"></p>
-<p v-for="item in arr"></p>
-```
+作用：用于渲染列表；必须带key
 
-### 	v-if
+#### 	6.1 - 数组渲染
+
+- ```js
+  <p v-for="(item,index) in arr"></p>
+  <p v-for="item in arr"></p>
+  
+  ```
+
+####    6.2 - 对象渲染
+
+- ```js
+  <div v-for="(value, key, index) in object">
+  ```
+
+####    6.3 - 计算属性 方法
+
+- ```js
+  用于过滤数据后渲染
+  
+  <li v-for="n in evenNumbers">{{ n }}</li>
+  <li v-for="n in even(numbers)">{{ n }}</li>
+  
+  data: {
+    numbers: [ 1, 2, 3, 4, 5 ]
+  },
+  computed: {
+    evenNumbers: function () {
+      return this.numbers.filter(function (number) {
+        return number % 2 === 0
+      })
+    }，
+    even: function (numbers) {
+      return numbers.filter(function (number) {
+        return number % 2 === 0
+      })
+    }
+  }
+  ```
+
+####    6.4 - 使用template
+
+- ```js
+  用template 包裹多个标签，template不会被渲染到页面，避免多余标签。
+  <template v-if='true'>
+  	<p>1</p>
+  	<p>1</p>
+  	.......
+  </template>
+  ----------------
+  
+  应用：渲染不同的 li标签
+  <ul>
+    <template v-for="item in items">
+      <li>{{ item.msg }}</li>
+      <li class="divider"></li>
+    </template>
+  </ul>
+  ```
+
+  
+
+####   6.5 - 渲染组件
+
+- ```js
+  有些 HTML 元素，<ul>、<ol>、<table> 和 <select>，
+  内部只能放特定标签<li>,<tr> <option>等；
+  
+  <blog-post-row /> 为组件
+  
+  <ul>
+    <blog-post-row></blog-post-row>
+  </ul>
+  <blog-post-row> 会被作为无效的内容提升到外部，并导致最终渲染结果出错。
+  
+  <ul>
+    <tr is="blog-post-row"></tr>
+  </ul>
+  
+  需要注意的是如果我们从以下来源使用模板的话，这条限制是不存在的：
+  
+  字符串 (例如：template: '...')
+  单文件组件 (.vue)
+  <script type="text/x-template">
+  ```
+
+  
+
+#### 6.6 - v-for中获取不到DOM解决
+
+##### 	6.6.1 - this.$nextTick
+
+- ```js
+  1.
+  mounted（）{
+      this.$nextTick(() => {
+        //获取DOM
+   	});
+  }，
+  
+  2.当-for中渲染数据为异步请求时；1中方法可能获取不到；需要把this.$nextTick放在获取数据之后；
+  
+  mounted(){
+  	this.$axios.get('/data').then((res=>{
+          //data 为渲染for的数据
+          this.data = res.data
+          this.$nextTick(() => {
+        		//获取DOM
+   		});
+      }))
+  }
+  
+  ```
+
+##### 	6.6.2 - 放入updated中获取
+
+- ```
+  每次跟新视图，都会触发该操作。
+  ```
+
+#####     6.6.3 - 放入setTimeout中获取
+
+- ```js
+  mounted(){
+      setTimeout(() => {
+  		//获取DOM
+      }, timeout);
+  }
+  ```
+
+#### 6.7 - v-for强制渲染
+
+- ```js
+  层级过深可能影响渲染：用如下强制渲染
+  this.$forceUpdate()
+  ```
+
+  
+
+## 	v-if
 
 ```js
 v-if
@@ -229,7 +379,7 @@ v-else
 v-else 元素必须立即跟在 v-if 或 v-show 元素的后面——否则它不能被识别。
 ```
 
-### 	v-show
+## 	v-show
 
 ```js
 v-show='isshow=false'
@@ -240,7 +390,7 @@ data:{
 通过控制data的isshow,来控制v-show
 ```
 
-#### v-cloak
+## v-cloak
 
 ```js
 防止暴露{{val}}语法
@@ -253,14 +403,14 @@ data:{
 </div>
 ```
 
-### v-once
+## v-once
 
 ```js
 只被渲染一次
 <p v-once>{{msg}}</p> 
 ```
 
-### v-pre
+## v-pre
 
 ```js
 不解析
@@ -269,15 +419,9 @@ data:{
 
 
 
-## vue获取dom
 
-```js
-<div ref="box"></div>
 
-this.$refs.box.$el  //获取到该dom元素
-```
-
-## 插槽slot
+# 插槽slot
 
 ```js
 父用子组件时标签内的内容不会被渲染;所以在子组件加入<slot></slot>插槽,接收父调用子组件标签内的内容.
@@ -382,49 +526,68 @@ mounted() {
 
 
 
-## template
 
-```js
-<template v-if='true'>
-	<p>1</p>
-	<p>1</p>
-	.......
-</template>
-----------------
-<ul>
-  <template v-for="item in items">
-    <li>{{ item.msg }}</li>
-    <li class="divider"></li>
-  </template>
-</ul>
 
-用template 包裹多个标签
-```
+# 二、VUE-方法
 
 ## filters-过滤器
 
 ```js
-获取源值,改变样式,不改变源值
+html中使用：
+
+<p> {{val | fn(a) }} </p>
+<div :id="message | fn(a)"></div>
+
+
+1.filter的第一个参数为html中的值；
+2.需要return 新值
+3.可传参；
 filters:{
 	fn(val,a){
 		return ~~(val/60)+'分'+(val%60)+'a'; //使用val不使用this
 	}
 }
 
-{{val | fn(a) }} //模版使用 使用管道符
 
-<p> {{val | fn(a) }} </p>
 
 1.过滤器可传参数;
 
 2.链式调用
 {{val | fn | fn2```}}//顺序左到右
 
+
 3.全局过滤器
+ 单个
 Vue.filter('formaTime',(val)=>{
 	return 
 })
+
+	多个：
+import * as filters from './filters'
+
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+})
 ```
+
+filters中获取this的方法
+
+- ```js
+  var that = this
+  export default {
+  	beforeCreate () {
+      	that = this
+  	},
+  	filters:{
+  		fn(val){
+  			
+  			return x
+  		}
+  	}
+  }
+  ```
+
+
 
 ## computed-计算属性
 
@@ -463,7 +626,7 @@ computed:{
     }
 }
 
-设置全选:
+案例设置全选:
 <span @click="isAll = !isAll"></span>
 isAll: {
       get () {
@@ -513,7 +676,7 @@ watch:{
             
         },
         deep:true //深度监听 复杂类型侦听
-        mmediate: true //true为立即执行,首次绑定是否执行
+        immediate: true //true为立即执行,首次绑定是否执行
     },
     
 }
@@ -548,7 +711,7 @@ deep:true//深侦听
 
 
 
-## 生命周期
+# 三、生命周期
 
  ![Vue å®ä¾çå½å¨æ](../image/lifecycle-1571713470849.png) 
 
@@ -711,7 +874,11 @@ try{
 0123 4444
 ```
 
-# ES6导入导出
+
+
+# vue-ES6
+
+## ES6导入导出
 
 ```js
 所有方式的导入,都会执行被导入文件.
@@ -744,7 +911,7 @@ import name from "./one.js" // abc
 import {name} from "./one.js" // jack
 ```
 
-# async await
+## async await
 
 ```js
 // async 是用来修饰函数（方法）的
@@ -6078,6 +6245,6 @@ fastclick 解决移动端300毫秒
 
 <<<<<<< HEAD
 
-
 =======
+
 >>>>>>> 2d52ec57beb0199a6b8b41519035d61b6a7dae41

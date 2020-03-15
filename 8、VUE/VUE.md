@@ -3049,6 +3049,14 @@ const login = ()=> import('./login') //按需才加载 懒加载;再放到路由
 创建项目: vue create 文件名
 运行:npm run serve
 
+查看webpack配置：
+npx vue-cli-service serve [options] [entry]
+
+//查看production配置，并输出到webpack.config.production.js 文件
+//加入module.exports ={ }包住，index后加“：”格式化即可无报错。
+npx vue-cli-service inspect --mode production >> webpack.config.production.js
+npx vue-cli-service inspect --mode development //查看development环境下cli的webpack配置
+npx vue-cli-service help serve  //帮助
 ```
 
 ## build

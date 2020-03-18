@@ -1325,6 +1325,14 @@ x();//b()
 
 ## 对象object
 
+对象拓展性和四个特性
+
+```
+https://www.cnblogs.com/Juaoie/p/12004176.html
+```
+
+
+
 ### 创建方式
 
 ```js
@@ -1399,7 +1407,7 @@ var p1 = new Person('张三', 22, 'actor'); //需要加入new,创建函数规则
 
 #### 访问
 
-```
+```js
 Person.name;
 Person['name'];
 

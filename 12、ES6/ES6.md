@@ -373,6 +373,10 @@ for (let value of values(obj)) {
 for (let [key, value] of entries(obj)) {
   console.log([key, value]); // ['a', 1], ['b', 2], ['c', 3]
 }
+const obj = { foo: 'bar', baz: 42 };
+Object.entries(obj)
+// [ ["foo", "bar"], ["baz", 42] ]
+
 
 Object.fromEntries([
   ['foo', 'bar'],
@@ -392,7 +396,7 @@ Set实例方法:
 
 ```js
 Set 结构的实例有以下属性。
-
+Set 对象类似于数组，且成员的值都是唯一的。
 Set.prototype.constructor：构造函数，默认就是Set函数。
 Set.prototype.size：返回Set实例的成员总数。
 Set 实例的方法分为两大类：操作方法（用于操作数据）和遍历方法（用于遍历成员）。下面先介绍四个操作方法。
@@ -490,5 +494,97 @@ WeakSet.prototype.has(value)：返回一个布尔值，表示某个值是否在 
 
 
 WeakSet为弱引用类型;不可遍历
+```
+
+## Map
+
+```js
+Map 对象是键值对集合，和 JSON 对象类似，但是 key 不仅可以是字符串还可以是对象
+```
+
+Map实例方法:
+
+```js
+size
+Map.prototype.set(key, value)
+let map = new Map()
+  .set(1, 'a')
+  .set(2, 'b')
+  .set(3, 'c');
+
+Map.prototype.get(key)
+Map.prototype.has(key)
+Map.prototype.delete(key)
+Map.prototype.clear()
+```
+
+Map遍历方法:
+
+```js
+Map 结构原生提供三个遍历器生成函数和一个遍历方法。
+
+Map.prototype.keys()：返回键名的遍历器。
+Map.prototype.values()：返回键值的遍历器。
+Map.prototype.entries()：返回所有成员的遍历器。
+Map.prototype.forEach()：遍历 Map 的所有成员。
+需要特别注意的是，Map 的遍历顺序就是插入顺序。
+const map = new Map([
+  ['F', 'no'],
+  ['T',  'yes'],
+]);
+
+for (let key of map.keys()) {
+  console.log(key);
+}
+// "F"
+// "T"
+
+for (let value of map.values()) {
+  console.log(value);
+}
+// "no"
+// "yes"
+
+for (let item of map.entries()) {
+  console.log(item[0], item[1]);
+}
+// "F" "no"
+// "T" "yes"
+
+// 或者
+for (let [key, value] of map.entries()) {
+  console.log(key, value);
+}
+// "F" "no"
+// "T" "yes"
+
+// 等同于使用map.entries()
+for (let [key, value] of map) {
+  console.log(key, value);
+}
+// "F" "no"
+// "T" "yes"
+```
+
+Map 结构转为数组结构
+
+```js
+const map = new Map([
+  [1, 'one'],
+  [2, 'two'],
+  [3, 'three'],
+]);
+
+[...map.keys()]
+// [1, 2, 3]
+
+[...map.values()]
+// ['one', 'two', 'three']
+
+[...map.entries()]
+// [[1,'one'], [2, 'two'], [3, 'three']]
+
+[...map]
+// [[1,'one'], [2, 'two'], [3, 'three']]
 ```
 

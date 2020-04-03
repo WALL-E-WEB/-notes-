@@ -5094,16 +5094,8 @@ export default instance
 >
 >
 
----
 
-<<<<<<< HEAD
-# 插件封装
-
-	html引入:
-=======
 # install
-
-
 
 ```js
 MyPlugin.install = function (Vue, options) {
@@ -5194,7 +5186,7 @@ this.$bdLoading({
 
 
 
-# 插件封装
+## 插件封装
 
 ## 	html引入:
 ```js
@@ -5799,6 +5791,105 @@ html中{{countTimeDown(参数)}}
 
 
 ```
+
+```js
+ Vue.prototype.$Time = {
+            selectTime: function (e) {
+                var allTime = e
+                var dateTime = e.split(" ")[0]
+                var time = e.split(" ")[1]
+                var week = this.getWeek(e.split(" ")[0], '-')
+                return {
+                    allTime,
+                    dateTime,
+                    time,
+                    week
+                }
+            },
+            addOneDay: function (e) {
+
+                var time = e.split(" ")[1]
+                var dateTime = e.split(" ")[0].split('-')
+                dateTime[2] = ++dateTime[2]
+                dateTime = dateTime.join('-')
+                var week = this.getWeek(dateTime, '-')
+                var allTime = `${dateTime} ${time}`
+                return {
+                    allTime,
+                    dateTime,
+                    time,
+                    week
+                }
+            },
+            getWeek: function (date, type) {
+                var arys1 = date.split(type); //日期为输入日期，格式为 2013-3-10
+                var ssdate = new Date(arys1[0], parseInt(arys1[1] - 1), arys1[2]);
+                var week1 = String(ssdate.getDay())
+                    .replace("0", "日")
+                    .replace("1", "一")
+                    .replace("2", "二")
+                    .replace("3", "三")
+                    .replace("4", "四")
+                    .replace("5", "五")
+                    .replace("6", "六");
+                var week = "星期" + week1;
+                return week;
+            },
+            getNewTime: function (e, time) {
+                if (time) {
+
+                    var myDate = new Date(Number(`${time}000`));
+                } else {
+                    var myDate = new Date();
+                }
+                var year = myDate.getFullYear();
+                var month = myDate.getMonth() + 1 < 10 ? '0' + (myDate.getMonth() + 1) : myDate.getMonth() + 1;
+                var day = myDate.getDate() < 10 ? '0' + myDate.getDate() : myDate.getDate()
+                var hours = myDate.getHours() < 10 ? '0' + myDate.getHours() : myDate.getHours()
+                var minutes = myDate.getMinutes() < 10 ? '0' + myDate.getMinutes() : myDate.getMinutes()
+
+                if (e == '2') {
+                    ++day
+                }
+                return {
+                    allTime: `${year}-${month}-${day} ${hours}:${minutes}`,
+                    time: `${hours}:${minutes}`,
+                    dateTime: `${year}-${month}-${day}`,
+                    week: this.getWeek(`${year}-${month}-${day}`, '-')
+                }
+            },
+            timeTamp: function (e) {
+                return new Date(e).getTime()
+            },
+            getSTime: function (date) { //开始时间转成时间戳
+
+                return String(new Date(date).setHours(0, 0, 0, 0)).substring(0, 10)
+
+            },
+            getETime: function (date) { //结束时间转成时间戳
+
+                return String(new Date(date).getTime() + 16 * 60 * 60 * 1000 - 1).substring(0, 10)
+
+            },
+            getTime: function () { //获取当前时间戳
+
+                return String(new Date().getTime()).substring(0, 10)
+
+            },
+            payEndTime: function (date) {
+                return String(new Date(date).getTime()).substring(0, 10)
+            },
+            getOnlineStatus: function (time) { // 1离线 0在线
+                var status = 0;
+
+                var timeDiff = (this.getTime() - time) / 60;
+                status = timeDiff >= 10 ? 1 : 0;
+                return status;
+            },
+        },
+```
+
+
 
 # vue开发环境与生产环境 跨域
 

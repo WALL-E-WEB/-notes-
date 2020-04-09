@@ -83,6 +83,12 @@ git diff HEAD
 
 # 查看两个版本之间的不同
 git diff c265262 de4845b
+
+# 查看pull下来的和上一次提交的差别
+git diff HEAD^1
+
+# 比当前提交新2个的提交的比较：
+git diff HEAD~2
 ```
 
 ![git02](../image/git02.png)

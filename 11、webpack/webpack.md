@@ -1,5 +1,13 @@
 # webpack
 
+英文官网:
+
+```js
+https://webpack.js.org/
+```
+
+
+
 ```js
 打包压缩混淆代码工具
 官网:webpack.js.org
@@ -1551,7 +1559,26 @@ if (module.hot) {
     { test: /\.s(a|c)ss$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'] },
     ```
 
-3. 项目根目录下添加`postcss`的配置文件：`postcss.config.js`
+    ```js
+    vue-loader中css配置			
+    {
+    				test: /\.css$/,
+    				use: [
+    					'vue-style-loader',
+    					{
+    					  loader: 'css-loader',
+    					  options: { importLoaders: 1 }
+    					},
+    					'postcss-loader'
+    				],
+    			},
+    ```
+
+    
+
+3. 
+
+    项目根目录下添加`postcss`的配置文件：`postcss.config.js`
 
 4. 在`postcss`的配置文件中使用插件
 

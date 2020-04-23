@@ -2981,7 +2981,30 @@ this.$router.go(-1);
 import login from "./login"
 
 异步写法:
-const login = ()=> import('./login') //按需才加载 懒加载;再放到路由中
+const login = ()=> import('./login') //按需才加载 懒加载;
+
+components:{
+//****
+    login:()=>import ('./login'),//方式1
+    login:(resolve)=>require (['./login'],resolve),//方式2
+},
+
+//import()返回promise,利用promise的then执行异步
+const fn=()=>import('./ddd.vue');
+fn.then(function(item){
+    console.log(item)
+});
+//返回不是promise,利用普通的回调执行异步
+const fn=(resolve)=>require (['./ddd.vue'],resolve);
+fn(function(item){
+    console.log(item);
+});
+    
+    
+ {
+    path: '/test',
+    component: () => import(/* webpackChunkName: "test" */ '@/views/test')
+  },   
 ```
 
 ## 8.边界情况

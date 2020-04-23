@@ -1805,6 +1805,21 @@ module.exports = {
 };
 ```
 
+### prefetching和preloading
+
+```js
+prefetching:当核心 代码加载完毕，偷偷的去加载 这些暂时还没用到的 模块;
+preloading:核心模块 一起加载;
+
+
+import(/* webpackPrefetch: true */'axios').then(() =>{
+        console.log('懒加载 axios')
+    })
+
+```
+
+
+
 ### 减少打包时间
 
 #### noParse
@@ -1958,5 +1973,37 @@ new webpack.DefinePlugin({
      }
 });
 
+```
+
+# webpack懒加载
+
+```js
+import(/* webpackChunkName: "lodash" */ 'lodash');
+import(/* webpackChunkName: "lodash" */ 'lodash2');
+同名模块lodash会打包成一个包
+```
+
+# hash区别
+
+- **hash**
+
+`hash` 和每次 `build`有关，没有任何改变的情况下，每次编译出来的 `hash`都是一样的，但当你改变了任何一点东西，它的`hash`就会发生改变。
+
+简单理解，你改了任何东西，`hash` 就会和上次不一样了。
+
+- **chunkhash**
+
+`chunkhash`是根据具体每一个模块文件自己的的内容包括它的依赖计算所得的`hash`，所以某个文件的改动只会影响它本身的`hash`，不会影响其它文件。
+
+- **contenthash**
+
+它的出现主要是为了解决，让`css`文件不受`js`文件的影响。比如`foo.css`被`foo.js`引用了，所以它们共用相同的`chunkhash`值。但这样子是有问题的，如果`foo.js`修改了代码，`css`文件就算内容没有任何改变，由于是该模块的 `hash` 发生了改变，其`css`文件的`hash`也会随之改变。
+
+这个时候我们就可以使用`contenthash`了，保证即使`css`文件所处的模块里有任何内容的改变，只要 css 文件内容不变，那么它的`hash`就不会发生变化。
+
+# dev-serve 打包时间 分析
+
+```js
+npm install --save-dev speed-measure-webpack-plugin
 ```
 

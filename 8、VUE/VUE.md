@@ -6365,8 +6365,103 @@ ly-tab  移动端可滑动（惯性滑动&回弹）Vue导航栏组件 ly-tab
 fastclick 解决移动端300毫秒
 ```
 
-<<<<<<< HEAD
+# VUE+TS
 
-=======
+```js
 
->>>>>>> 2d52ec57beb0199a6b8b41519035d61b6a7dae41
+<script lang="ts">
+import { Component, Emit, Inject, Model, Prop, Provide, Vue, Watch } from 'vue-property-decorator'
+import draggable from "vuedraggable";
+@Component({
+    components: { draggable }
+})
+export default class HelloWorld extends Vue {
+  @Prop() private msg!:string;
+  @Prop(Number) msg2!: string;
+  @Prop({type:Number,default:1}) msg3!: number;
+  mesage: number = 1;
+  private created() {
+    console.log(222);
+  }
+  btn(): void {
+    this.mesage++;
+  }
+  // changemsg():void{
+  //   console.log('bbb')
+  // };
+  get computedMSG() {
+    return this.mesage + "123344";
+  }
+  @Watch("mesage")
+  changemsg() {
+    console.log("bbb");
+  }
+  @Watch("msg2")
+  changemsg2() {
+    console.log("ccc");
+  }
+}
+</script>
+```
+
+# vue-cli Eslint + prettier\- Code formatter
+
+https://www.jianshu.com/p/65462d2dd51e
+
+```js
+setting
+
+{
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.trailingComma": "none",
+  "eslint.autoFixOnSave": true,
+  "eslint.migration.2_x": "off"
+}
+
+```
+
+```js
+.eslintrc.js
+module.exports = {
+  root: true,
+  env: {
+    node: true
+  },
+  extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
+  parserOptions: {
+    parser: 'babel-eslint'
+  },
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'prettier/prettier': [
+      'error',
+      {
+        tabWidth: 2,
+        useTabs: false,
+        semi: true,
+        singleQuote: true,
+        trailingComma: 'none',
+        bracketSpacing: true,
+        jsxBracketSameLine: false,
+        arrowParens: 'always',
+        printWidth: 200
+      }
+    ]
+    // 'vue/singleline-html-element-content-newline': true,
+    // 'vue/multiline-html-element-content-newline': true
+  },
+  parserOptions: {
+    parser: 'babel-eslint'
+  },
+  globals: {
+    $App: true
+  }
+};
+
+```
+

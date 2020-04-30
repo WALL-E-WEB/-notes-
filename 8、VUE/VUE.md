@@ -6465,3 +6465,21 @@ module.exports = {
 
 ```
 
+vue data中的时间个格式的字符串,请求传参时会转为UTC格式
+
+```js
+changeDate(e) {
+      var dateee = new Date(e).toJSON();
+      var date = new Date(new Date(dateee).getTime() + 8 * 3600 * 1000)
+        .toISOString()
+        .replace(/T/g, " ")
+        .replace(/\.[\d]{3}Z/, "");
+
+      return date;
+    }
+
+
+2020-04-28T16:00:00.000Z 转 2020-04-29 12:00:20
+UTC转北京时间
+```
+

@@ -198,20 +198,6 @@ git stash pop
 
 
 
-### 远程仓库github
-
-是代码托管平台
-
-1.github
-
-2.gitlab
-
-3.码云
-
-4.公司机房
-
-
-
 ### 本地同步至githab
 
 ```js
@@ -243,121 +229,26 @@ git clone https://
 git push 
 ```
 
-​               
-
-### 本地git工作流程
-
-### ![1561261071875](../../../%E5%89%8D%E7%AB%AF41%E6%9C%9F/06.%E5%A4%A7%E4%BA%8B%E4%BB%B6/git/01-%E6%95%99%E5%AD%A6%E8%B5%84%E6%96%99/assets/1561261071875.png)
-
-
-
-# github
-
-### 远程仓库
-
-以下这些都可以作为远程仓库.
-
-1.github
-
-2.gitlab
-
-3.码云
-
-4.公司的机房里某一台服务器(电脑)
-
-5.....
-
-### github 是什么
-
-<https://github.com/>
-
-1.是一个免费的远程仓库
-
-2.是一个代码托管平台,很多优秀的开源的项目都有放在github上,供大家学习/使用.
-
-3.自嘲:"全球最大的同性交友网站"
-
-##### github和git有关系吗?
-
-没有,就是名字长的很像而已, 就像北大和北大某鸟的关系...
-
-git是代码版本管理工具, 同样的工具还要svn等之类的.
-
-github是一个代码托管平台.
-
-
-
-
-
-
-
-### git辅助工具
-
-#### 1.vscode自带的小黑框-终端
-
-1. 1vscode自带小黑框(终端)
-
-    ![1561263411725](../../../%E5%89%8D%E7%AB%AF41%E6%9C%9F/06.%E5%A4%A7%E4%BA%8B%E4%BB%B6/git/01-%E6%95%99%E5%AD%A6%E8%B5%84%E6%96%99/assets/1561263411725.png)
-
-2. 2注意,一定要注意路径的问题,  一定要是在git管理的那个文件夹下.
-
-#### 2.vscode自带了一个不用写命令的工具
-
- ![1561263961785](../../../%E5%89%8D%E7%AB%AF41%E6%9C%9F/06.%E5%A4%A7%E4%BA%8B%E4%BB%B6/git/01-%E6%95%99%E5%AD%A6%E8%B5%84%E6%96%99/assets/1561263961785.png)
-
-2.1 选中你要add的文件, 点加号,  就相当于git add .
-
-2.2 点击勾勾√  , 就相当于  git commit -m""
-
-2.3 点击...后,选择推送  ,  就相当于是git push
-
-
-
-#### 3.像vscode自带的git这样的工具有很多种.
-
- TortoiseGit  小乌龟
-
-  sourceTree  
-
-  GitHubDeskTop  小紫猫     GitBub官方推出的.
-
- 
-
-3.1  小紫猫的使用.​     ![1561264738404](../../../%E5%89%8D%E7%AB%AF41%E6%9C%9F/06.%E5%A4%A7%E4%BA%8B%E4%BB%B6/git/01-%E6%95%99%E5%AD%A6%E8%B5%84%E6%96%99/assets/1561264738404.png) 
-
- 
-
- 
-
-# 制作github个人主页
-
-![1561273343450](../../../%E5%89%8D%E7%AB%AF41%E6%9C%9F/06.%E5%A4%A7%E4%BA%8B%E4%BB%B6/git/01-%E6%95%99%E5%AD%A6%E8%B5%84%E6%96%99/assets/1561273343450.png)
-
-把这个新建的库克隆到本地
-
-   
-
-![1561273420643](../../../%E5%89%8D%E7%AB%AF41%E6%9C%9F/06.%E5%A4%A7%E4%BA%8B%E4%BB%B6/git/01-%E6%95%99%E5%AD%A6%E8%B5%84%E6%96%99/assets/1561273420643.png)
-
-这个文件夹里面一定要有一个index.html页面
-
-
-
-![1561273674764](../../../%E5%89%8D%E7%AB%AF41%E6%9C%9F/06.%E5%A4%A7%E4%BA%8B%E4%BB%B6/git/01-%E6%95%99%E5%AD%A6%E8%B5%84%E6%96%99/assets/1561273674764.png)
-
-
-
-注意:
-
-​       不要往这个个人主页这个文件夹里面丢java,c#等其他语言的代码.
-
-​       不要丢之前写的图灵的聊天机器人
-
-
-
-
-
-
+git commit 常用
+
+```
+feat： 新增 feature
+fix: 修复 bug
+docs: 仅仅修改了文档，比如 README, CHANGELOG, CONTRIBUTE等等
+style: 仅仅修改了空格、格式缩进、逗号等等，不改变代码逻辑
+refactor: 代码重构，没有加新功能或者修复 bug
+perf: 优化相关，比如提升性能、体验
+test: 测试用例，包括单元测试、集成测试等
+chore: 改变构建流程、或者增加依赖库、工具等
+revert: 回滚到上一个版本
+
+updata
+delete
+add
+fix
+perf
+
+```
 
 廖雪峰讲git:
 
@@ -384,60 +275,4 @@ http://es6.ruanyifeng.com/
 ​    
 
 
-
-# 大事件
-
-## iframe
-
-```js
- <iframe src="" frameborder="0" name="myiframe"></iframe>
-
- <a href="" target="myiframe"></a>
-iframe为子页面;
-修改父主页时,需要parent.
-```
-
-serialize()
-
-```js
-serialize()是jq方法
-获取form表单里带有name属性的标签的值,一次性获取.
-var data = $('form').serialize();
-
-返回key1=value1;的字符串;
-```
-
-# 插件
-
-## 分页插件
-
-```js
-http://josecebe.github.io/twbs-pagination/
---------------
-$('#pagination-demo').twbsPagination({
-        totalPages: 35,
-        visiblePages: 7,
-        onPageClick: function (event, page) {
-            $('#page-content').text('Page ' + page);
-        }
-    });
------------------动态总页数
-    var $pagination = $('selector');
-    var defaultOpts = {
-        totalPages: 20
-    };
-    $pagination.twbsPagination(defaultOpts);
-    $.ajax({
-        ...,
-        success: function (data) {
-            var totalPages = data.newTotalPages;
-            var currentPage = $pagination.twbsPagination('getCurrentPage');
-            $pagination.twbsPagination('destroy');
-            $pagination.twbsPagination($.extend({}, defaultOpts, {
-                startPage: currentPage,
-                totalPages: totalPages
-            }));
-        }
-    });  
-```
 

@@ -274,11 +274,18 @@ let someValue: any = "this is a string";
 let strLength: number = (someValue as string).length;
 ```
 
-两种形式是等价的。 至于使用哪个大多数情况下是凭个人喜好；然而，当你在 TypeScript 里使用 JSX 时，只有`as`语法断言是被允许的。
+```js
+断言
+function getLength(something: string | number) :number {
+    if ((<string>something).length {
+        return (<string>something).length
+    }else{
+        return something.toString().length;
+}
+}
+```
 
-### 关于`let`
 
-你可能已经注意到了，我们使用`let`关键字来代替大家所熟悉的 JavaScript 关键字`var`。 `let`关键字是 JavaScript 的一个新概念，TypeScript 实现了它。 我们会在以后详细介绍它，很多常见的问题都可以通过使用`let`来解决，所以尽可能地使用`let`来代替`var`吧。
 
 ## 类
 
@@ -304,11 +311,7 @@ class Greeter {
 let greeter = new Greeter("world");
 ```
 
-如果你使用过 C#或 Java，你会对这种语法非常熟悉。 我们声明一个`Greeter`类。这个类有 3 个成员：一个叫做`greeting`的属性，一个构造函数和一个`greet`方法。
 
-你会注意到，我们在引用任何一个类成员的时候都用了`this`。 它表示我们访问的是类的成员。
-
-最后一行，我们使用`new`构造了`Greeter`类的一个实例。 它会调用之前定义的构造函数，创建一个`Greeter`类型的新对象，并执行构造函数初始化它。
 
 ### 继承
 
@@ -335,11 +338,9 @@ dog.move(10);
 dog.bark();
 ```
 
-这个例子展示了最基本的继承：类从基类中继承了属性和方法。 这里，`Dog`是一个*派生类*，它派生自`Animal`*基类*，通过`extends`关键字。 派生类通常被称作*子类*，基类通常被称作*超类*。
+`Dog`是一个*派生类*，
 
-因为`Dog`继承了`Animal`的功能，因此我们可以创建一个`Dog`的实例，它能够`bark()`和`move()`。
-
-下面我们来看个更加复杂的例子。
+*Animal超类*。
 
 ```ts
 class Animal {
@@ -928,3 +929,81 @@ class Location {}
 在上面的例子里，`SelectableControl`包含了`Control`的所有成员，包括私有成员`state`。 因为`state`是私有成员，所以只能够是`Control`的子类们才能实现`SelectableControl`接口。 因为只有`Control`的子类才能够拥有一个声明于`Control`的私有成员`state`，这对私有成员的兼容性是必需的。
 
 在`Control`类内部，是允许通过`SelectableControl`的实例来访问私有成员`state`的。 实际上，`SelectableControl`就像`Control`一样，并拥有一个`select`方法。 `Button`和`TextBox`类是`SelectableControl`的子类（因为它们都继承自`Control`并有`select`方法），但`Image`和`Location`类并不是这样的。
+
+## 函数
+
+```js
+let myAdd = function(x: number, y: number): number { 
+					return x + y; 
+			};
+```
+
+可选参数
+
+```js
+function buildName(firstName: string, lastName?: string) {
+    if (lastName)
+        return firstName + " " + lastName;
+    else
+        return firstName;
+}
+```
+
+默认参数
+
+```js
+function buildName(firstName = "Will", lastName: string) {
+    return firstName + " " + lastName;
+}
+let result3 = buildName("Bob", "Adams");         // okay and returns "Bob Adams"
+let result4 = buildName(undefined, "Adams");     // okay and returns "Will Adams"
+```
+
+剩余参数
+
+```js
+function buildName(firstName: string, ...restOfName: string[]) {
+    
+  return firstName + " " + restOfName.join(" ");
+}
+
+buildName("Joseph", "Samuel", "Lucas", "MacKinzie");
+```
+
+函数重载
+
+```js
+概念:
+函数根据传参 个数,类型,顺序 的不同, 执行不同的同名函数, 返回不同的结果;
+
+声明
+function  add(age: string, name: string): string;
+function  add(age: number, name: number): number;
+具体业务实现
+function  add(age: any, name: any): any {
+	return age + name
+};
+```
+
+## 泛型
+
+概念:动态指定类型;类型作为调用时传入
+
+```js
+function identity<T>(arg: T): T {
+    return arg;
+}
+
+//调用时指定
+let output = identity<string>("myString");
+
+//编译器自动识别
+let output = identity("myString");
+```
+
+# Vue-TS
+
+```
+
+```
+

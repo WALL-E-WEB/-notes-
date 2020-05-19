@@ -229,9 +229,9 @@ git clone https://
 git push 
 ```
 
-git commit 常用
+### git commit 常用
 
-```
+```js
 feat： 新增 feature
 fix: 修复 bug
 docs: 仅仅修改了文档，比如 README, CHANGELOG, CONTRIBUTE等等

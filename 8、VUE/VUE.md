@@ -6506,3 +6506,205 @@ dateFormat:function(time) {
 使用dateFormat(2020-04-30T01:00:000+000Z) //2020-04-30 01:00:00
 ```
 
+# Vue-TS
+
+```js
+<script lang="ts">
+import {
+    Prop, 
+    PropSync, 
+    Model, 
+    Watch, 
+    Provide, 
+    Inject,
+    ProvideReactive, 
+    InjectReactive, 
+    Emit, 
+    Ref,   
+    Component, 
+    Mixins, 
+    Vue} from "vue-property-decorator";
+<script>
+```
+
+@Prop
+
+```js
+@Component
+export default class YourComponent extends Vue {
+  @Prop(Number) readonly propA: number | undefined
+  @Prop({ default: 'default value' }) readonly propB!: string
+  @Prop([String, Boolean]) readonly propC: string | boolean | undefined
+}
+ 	@Prop() age!: number
+```
+
+@PropSync
+
+```js
+<HelloWorld :name.sync="name" /> //父组件
+```
+
+```js
+<template>
+	<input type="text" v-model="syncedName" />
+    <div>{{name}}</div>    
+</template>
+
+<script lang="ts">
+import { Component, Prop, Vue, Watch, PropSync } from "vue-property-decorator";
+export default class HelloWorld extends Vue {
+    @PropSync("name", { type: String }) syncedName!: string;
+}
+</script>
+```
+
+@Model
+
+子父双向绑定
+
+```js
+<HelloWorld @change="onchange" v-model="checked" />
+    <div>{{checked}}</div>
+
+onchange(e) {
+   console.log(e);
+ }
+```
+
+```js
+ <input type="checkbox"
+      @change="changed"
+      :checked="checked">
+      
+@Model("change", { type: Boolean }) checked!: boolean;
+
+changed(ev: any) {
+    console.log(ev);
+    this.$emit("change", ev.target.checked);
+  }
+```
+
+### @Watch
+
+```js
+@Watch('child')
+  onChildChanged(val: string, oldVal: string) {}
+
+  @Watch('person', { immediate: true, deep: true })
+  onPersonChanged1(val: Person, oldVal: Person) {}
+
+  @Watch('person')
+  onPersonChanged2(val: Person, oldVal: Person) {}
+```
+
+### @Provide
+
+```js
+@Provide() foo = 'foo'
+@Provide('bar') baz = 'bar'
+```
+
+@Inject
+
+```js
+@Inject() readonly foo!: string
+@Inject('bar') readonly bar!: string
+@Inject({ from: 'optional', default: 'default' }) readonly optional!: string
+@Inject(symbol) readonly baz!: string
+```
+
+### @ProvideReactive
+
+```js
+父级变化 子也会变化
+const key = Symbol()
+@Component
+class ParentComponent extends Vue {
+  @ProvideReactive() one = 'value'
+  @ProvideReactive(key) two = 'value'
+}
+
+@Component@Component
+class ChildComponent extends Vue {
+  @InjectReactive() one!: string
+  @InjectReactive(key) two!: string
+}
+
+```
+
+@Emit
+
+```js
+
+  @Emit()
+  addToCount(n: number) {
+    this.count += n
+  }
+
+  @Emit('reset')
+  resetCount() {
+    this.count = 0
+  }
+
+  @Emit()
+  returnValue() {
+    return 10
+  }
+
+  @Emit()
+  onInputChange(e) {
+    return e.target.value
+  }
+    @Emit()
+  promise() {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(20)
+      }, 0)
+    })
+  }
+```
+
+```js
+methods: {
+    addToCount(n) {
+      this.count += n
+      this.$emit('add-to-count', n)
+    },
+    resetCount() {
+      this.count = 0
+      this.$emit('reset')
+    },
+    returnValue() {
+      this.$emit('return-value', 10)
+    },
+    onInputChange(e) {
+      this.$emit('on-input-change', e.target.value, e)
+    },
+    promise() {
+      const promise = new Promise(resolve => {
+        setTimeout(() => {
+          resolve(20)
+        }, 0)
+      })
+
+      promise.then(value => {
+        this.$emit('promise', value)
+      })
+    }
+  }
+```
+
+@Ref
+
+```js
+<div ref="getdom">two:{{two}}</div>
+  
+@Ref("getdom") readonly button: any;
+   
+     mounted() {
+     console.log("button", this.button);
+     }
+```
+

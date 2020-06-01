@@ -1,3 +1,9 @@
+public 公共的
+
+private 私有的
+
+protected 受保护的
+
 ## TypeScript 数据类型
 
 ### 介绍

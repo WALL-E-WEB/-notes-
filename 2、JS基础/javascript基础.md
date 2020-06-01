@@ -5123,3 +5123,47 @@ render();
 
 ```
 
+# post传参方式
+
+https://www.cnblogs.com/mmzuo-798/p/11634055.html
+
+## 1.form-data
+
+ 就是http请求中的multipart/form-data,它会将表单的数据处理为一条消息，以标签为单元，用分隔符分开。**既可以上传键值对，也可以上传文件**。当上传的字段是文件时，会有Content-Type来说明文件类型；content-disposition，用来说明字段的一些信息；
+
+由于有boundary隔离，所以multipart/form-data既可以上传文件，也可以上传键值对，它采用了键值对的方式，所以可以上传多个文件。
+
+浏览器会把整个表单以控件为单位分割，并为每个部分加上 Content-Disposition(form-data或者file),Content-Type(默认为text/plain),name(控件 name)等信息，并加上分割符(boundary)。
+
+```js
+ header:{
+     "content-type": "multipart/form-data;charset=utf-8",
+    }
+```
+
+![img](https://img-blog.csdn.net/20151118130954483?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+
+## 2.urlencoded
+
+```js
+header:{
+     "content-type": "application/x-www-form-urlencoded"
+    }
+```
+
+## 3.raw
+
+```js
+header:{
+     'content-type': 'application/json',
+    }
+```
+
+## 4.binary
+
+```js
+header:{
+     'content-type': 'application/octet-stream'
+    }
+```
+

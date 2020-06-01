@@ -203,6 +203,16 @@ style操作:
   .passive - (2.3.0) 以 { passive: true } 模式添加侦听器
   ```
 
+#### 4.2 - 滑动事件
+
+```js
+@touchmove.prevent //移动端禁止局部滚动 
+
+@scroll.prevent //PC端禁止局部滚动
+```
+
+
+
 #### 	this
 
 ```js
@@ -6523,6 +6533,7 @@ import {
     Ref,   
     Component, 
     Mixins, 
+    State
     Vue} from "vue-property-decorator";
 <script>
 ```
@@ -6706,5 +6717,12 @@ methods: {
      mounted() {
      console.log("button", this.button);
      }
+```
+
+vue  @State
+
+```js
+
+@State (state=> state.storekey) stateKey!:number
 ```
 

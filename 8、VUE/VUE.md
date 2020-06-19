@@ -275,6 +275,14 @@ export default {
 
 作用：用于渲染列表；必须带key
 
+```js
+<template v-for="item in list">
+	<div :key="item.id"></div>
+</template>
+```
+
+
+
 #### 	6.1 - 数组渲染
 
 - ```js
@@ -2728,6 +2736,18 @@ import Bus from './bus.js'
     this.name = data
    })
 ```
+
+5.问题
+
+1.子组件props获取不到父组件异步数据
+
+```js
+方法一、 wacth 监听
+方法二、 父组件 给子组件 加 if
+方法三、 自组件加宏异步
+```
+
+
 
 ## 4.Vue子组件调用父组件的方法
 

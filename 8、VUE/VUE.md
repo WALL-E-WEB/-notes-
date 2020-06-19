@@ -234,8 +234,42 @@ this指向vue的实例;
 .trim - 输入首尾空格过滤
 .sync 修饰符多个v-model
 <my-dialog  :visible="dialogVisible"  @update:visible="newVisible => dialogVisible = newVisible"/>
+   
 
 ```
+
+### 自定义v-model
+
+```js
+<template>
+  <div class="w-popup">
+    <div class="w-shade">ss</div>
+  </div>
+</template>
+
+<script>
+export default {
+  model: {
+    prop: 'show',
+    event: 'mEventChange'
+  },
+  props: {
+    show: Boolean
+  },
+  data() {
+    return {};
+  },
+  watch: {
+    show(val) {
+      this.$emit('watch mEventChange', val); 
+        //会把值传给v-model
+    }
+  }
+};
+</script>
+```
+
+
 
 ## 6. v-for
 
@@ -1227,7 +1261,7 @@ module.exports = {
 }
 ```
 
-stylus安装
+## stylus安装
 
 ```js
 npm install stylus stylus-loader --save-dev
@@ -1243,6 +1277,53 @@ import './common/stylus/index.styl'
 或style
  @import "assets/base.styl";
 ```
+
+## vue.ls
+
+```
+npm install vue-ls --save
+```
+
+```js
+import Storage from 'vue-ls';
+ 
+options = {
+  namespace: 'vuejs__', // key键前缀
+  name: 'ls', // 命名Vue变量.[ls]或this.[$ls],
+  storage: 'local', // 存储名称: session, local, memory
+};
+ 
+Vue.use(Storage, options);
+// 或 Vue.use(Storage);
+ 
+new Vue({
+    el: '#app',
+    mounted: function() {
+        Vue.ls.set('foo', 'boo');
+        // 设置有效期
+        Vue.ls.set('foo', 'boo', 60 * 60 * 1000); //有效1小时
+        Vue.ls.get('foo');
+        Vue.ls.get('boo', 10); // 无boo则设置boo默认值为10 
+        
+        let callback = (val, oldVal, url) => {
+          console.log('localStorage change', val);
+        } 
+        
+        Vue.ls.on('foo', callback) //监听改变foo键并触发回调 
+        Vue.ls.off('foo', callback) //删除监听
+        
+        Vue.ls.remove('foo'); // 移除
+        Vue.ls.clear();	//清除
+    }
+});
+```
+
+```js
+Global:Vue.ls
+Context:this.$ls
+```
+
+
 
 # vue渲染render()
 
@@ -5648,7 +5729,7 @@ beforeCreate 在服务端也会调用,两次调用
 
 ```
 
-touch事件
+# touch事件
 
 ```js
 touchstart事件：当手指触摸屏幕时候触发，即使已经有一个手指放在屏幕上也会触发。
@@ -6375,44 +6456,7 @@ ly-tab  移动端可滑动（惯性滑动&回弹）Vue导航栏组件 ly-tab
 fastclick 解决移动端300毫秒
 ```
 
-# VUE+TS
 
-```js
-
-<script lang="ts">
-import { Component, Emit, Inject, Model, Prop, Provide, Vue, Watch } from 'vue-property-decorator'
-import draggable from "vuedraggable";
-@Component({
-    components: { draggable }
-})
-export default class HelloWorld extends Vue {
-  @Prop() private msg!:string;
-  @Prop(Number) msg2!: string;
-  @Prop({type:Number,default:1}) msg3!: number;
-  mesage: number = 1;
-  private created() {
-    console.log(222);
-  }
-  btn(): void {
-    this.mesage++;
-  }
-  // changemsg():void{
-  //   console.log('bbb')
-  // };
-  get computedMSG() {
-    return this.mesage + "123344";
-  }
-  @Watch("mesage")
-  changemsg() {
-    console.log("bbb");
-  }
-  @Watch("msg2")
-  changemsg2() {
-    console.log("ccc");
-  }
-}
-</script>
-```
 
 # vue-cli Eslint + prettier\- Code formatter
 
@@ -6516,213 +6560,97 @@ dateFormat:function(time) {
 使用dateFormat(2020-04-30T01:00:000+000Z) //2020-04-30 01:00:00
 ```
 
-# Vue-TS
+# vue-quill-editor
 
-```js
-<script lang="ts">
-import {
-    Prop, 
-    PropSync, 
-    Model, 
-    Watch, 
-    Provide, 
-    Inject,
-    ProvideReactive, 
-    InjectReactive, 
-    Emit, 
-    Ref,   
-    Component, 
-    Mixins, 
-    State
-    Vue} from "vue-property-decorator";
-<script>
-```
+```html
+ <quill-editor v-model="content"
+                  class="rn_quilleditor_wrap"
+                  ref="QuillEditor"
+                  :options="editorOption"
+                  @change="onEditorChange($event)">
+     
+  <div>
+      <van-uploader class="rn_van-uploader"
+                    ref="vantUploader "
+                    :after-read="onUpImg">  //css隐藏起来
 
-@Prop
-
-```js
-@Component
-export default class YourComponent extends Vue {
-  @Prop(Number) readonly propA: number | undefined
-  @Prop({ default: 'default value' }) readonly propB!: string
-  @Prop([String, Boolean]) readonly propC: string | boolean | undefined
-}
- 	@Prop() age!: number
-```
-
-@PropSync
-
-```js
-<HelloWorld :name.sync="name" /> //父组件
+      </van-uploader>
+    </div>
 ```
 
 ```js
-<template>
-	<input type="text" v-model="syncedName" />
-    <div>{{name}}</div>    
-</template>
+import Quill from "quill";
+import { quillEditor } from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
-<script lang="ts">
-import { Component, Prop, Vue, Watch, PropSync } from "vue-property-decorator";
-export default class HelloWorld extends Vue {
-    @PropSync("name", { type: String }) syncedName!: string;
-}
-</script>
-```
 
-@Model
-
-子父双向绑定
-
-```js
-<HelloWorld @change="onchange" v-model="checked" />
-    <div>{{checked}}</div>
-
-onchange(e) {
-   console.log(e);
- }
-```
-
-```js
- <input type="checkbox"
-      @change="changed"
-      :checked="checked">
+ data() {
+    return {
+      content: this.text,
+      showHeight: "",
+      docmHeight: "",
+      hidshow: true,
+      editorOption: {
+        placeholder: "输入文本...",
+        theme: "snow", // 主题
+        readOnly: false,
+        modules: {
+          toolbar: {
+            container: [
+              [{ size: ["small", false, "large", "huge"] }],
+              ["bold", "italic", "underline"],
+              [{ color: [] }],
+              [{ align: [] }],
+              ["image"]
+            ],
+            handlers: {
+                // 自定义上传人文件方式
+                // quill-默认将图片压缩base64放入html中;导致文件过大
+                //所以用上传图片转成线上地址减少html的大小
+              image: function(value) {
+                // console.log("value", value);
+                if (value) {
+                  // 触发input框选择图片文件
+                  document.querySelector(".van-uploader__input").click();
+                } else {
+                  this.quill.format("image", false);
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  },
       
-@Model("change", { type: Boolean }) checked!: boolean;
+      
+methods:{
+       onUpImg(e) {
+      //   console.log("img", e);
+      let imgData = new FormData();
+      imgData.append("multipartFile", e.file);
 
-changed(ev: any) {
-    console.log(ev);
-    this.$emit("change", ev.target.checked);
-  }
-```
-
-### @Watch
-
-```js
-@Watch('child')
-  onChildChanged(val: string, oldVal: string) {}
-
-  @Watch('person', { immediate: true, deep: true })
-  onPersonChanged1(val: Person, oldVal: Person) {}
-
-  @Watch('person')
-  onPersonChanged2(val: Person, oldVal: Person) {}
-```
-
-### @Provide
-
-```js
-@Provide() foo = 'foo'
-@Provide('bar') baz = 'bar'
-```
-
-@Inject
-
-```js
-@Inject() readonly foo!: string
-@Inject('bar') readonly bar!: string
-@Inject({ from: 'optional', default: 'default' }) readonly optional!: string
-@Inject(symbol) readonly baz!: string
-```
-
-### @ProvideReactive
-
-```js
-父级变化 子也会变化
-const key = Symbol()
-@Component
-class ParentComponent extends Vue {
-  @ProvideReactive() one = 'value'
-  @ProvideReactive(key) two = 'value'
-}
-
-@Component@Component
-class ChildComponent extends Vue {
-  @InjectReactive() one!: string
-  @InjectReactive(key) two!: string
-}
-
-```
-
-@Emit
-
-```js
-
-  @Emit()
-  addToCount(n: number) {
-    this.count += n
-  }
-
-  @Emit('reset')
-  resetCount() {
-    this.count = 0
-  }
-
-  @Emit()
-  returnValue() {
-    return 10
-  }
-
-  @Emit()
-  onInputChange(e) {
-    return e.target.value
-  }
-    @Emit()
-  promise() {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(20)
-      }, 0)
-    })
-  }
-```
-
-```js
-methods: {
-    addToCount(n) {
-      this.count += n
-      this.$emit('add-to-count', n)
-    },
-    resetCount() {
-      this.count = 0
-      this.$emit('reset')
-    },
-    returnValue() {
-      this.$emit('return-value', 10)
-    },
-    onInputChange(e) {
-      this.$emit('on-input-change', e.target.value, e)
-    },
-    promise() {
-      const promise = new Promise(resolve => {
-        setTimeout(() => {
-          resolve(20)
-        }, 0)
-      })
-
-      promise.then(value => {
-        this.$emit('promise', value)
-      })
+      GET_ImgUrl(imgData).then(res => {  //http请求 img转线上地址
+        // console.log(res);
+        if (res.code === 200) {
+            //插入图片
+          let quill = this.$refs.QuillEditor.quill;
+          let length = quill.getSelection().index;
+          quill.insertEmbed(length, "image", res.result.url);
+          quill.setSelection(length + 1);
+        }
+      });
     }
-  }
+}
 ```
 
-@Ref
-
-```js
-<div ref="getdom">two:{{two}}</div>
-  
-@Ref("getdom") readonly button: any;
-   
-     mounted() {
-     console.log("button", this.button);
-     }
-```
-
-vue  @State
-
-```js
-
-@State (state=> state.storekey) stateKey!:number
+```html
+ //与编辑框展示相同样式
+<div class="ql-container ql-snow">
+          <div class="ql-editor"  v-html="newsData.content">
+          </div>
+ </div>
 ```
 

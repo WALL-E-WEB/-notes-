@@ -2737,14 +2737,22 @@ import Bus from './bus.js'
    })
 ```
 
-5.问题
+### 5.问题
 
 1.子组件props获取不到父组件异步数据
 
 ```js
-方法一、 wacth 监听
+方法一、 子组件watch 监听
 方法二、 父组件 给子组件 加 if
-方法三、 自组件加宏异步
+方法三、 子组件加宏异步
+```
+
+2.强制刷新方法
+
+```js
+this.$set(tag,key/index,newData)
+
+this.$forceUpdate()
 ```
 
 

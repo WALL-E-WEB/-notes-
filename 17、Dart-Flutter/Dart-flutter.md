@@ -1,3 +1,5 @@
+# Dart
+
 ## 变量
 
 ```js
@@ -271,5 +273,298 @@ class Impostor implements Person {
 	
   String greet(String who) => 'Hi $who. Do you know who I am?';
 }
+```
+
+------
+
+
+
+# flutter
+
+hello world
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(new MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Welcome to Flutter',
+      home: new Scaffold(
+        appBar: new AppBar(
+          title: new Text('Welcome to Flutter'),
+        ),
+        body: new Center(
+          child: new Text('Hello World'),
+        ),
+      ),
+    );
+  }
+}
+```
+
+## StatelessWidget
+
+### StatefullWidget
+
+```dart
+StatelessWidget //无状态
+StatefullWidget //可变状态
+```
+
+## MaterialApp
+
+https://api.flutter.dev/flutter/material/MaterialApp-class.html
+
+```dart
+MaterialApp({
+  Key key,
+  this.title = '', // 设备用于为用户识别应用程序的单行描述
+  this.home, // 应用程序默认路由的小部件,用来定义当前应用打开的时候，所显示的界面
+  this.color, // 在操作系统界面中应用程序使用的主色。
+  this.theme, // 应用程序小部件使用的颜色。
+  this.routes = const <String, WidgetBuilder>{}, // 应用程序的顶级路由表
+  this.navigatorKey, // 在构建导航器时使用的键。
+  this.initialRoute, // 如果构建了导航器，则显示的第一个路由的名称
+  this.onGenerateRoute, // 应用程序导航到指定路由时使用的路由生成器回调
+  this.onUnknownRoute, // 当 onGenerateRoute 无法生成路由(initialRoute除外)时调用
+  this.navigatorObservers = const <NavigatorObserver>[], // 为该应用程序创建的导航器的观察者列表
+  this.builder, // 用于在导航器上面插入小部件，但在由WidgetsApp小部件创建的其他小部件下面插入小部件，或用于完全替换导航器
+  this.onGenerateTitle, // 如果非空，则调用此回调函数来生成应用程序的标题字符串，否则使用标题。
+  this.locale, // 此应用程序本地化小部件的初始区域设置基于此值。
+  this.localizationsDelegates, // 这个应用程序本地化小部件的委托。
+  this.localeListResolutionCallback, // 这个回调负责在应用程序启动时以及用户更改设备的区域设置时选择应用程序的区域设置。
+  this.localeResolutionCallback, // 
+  this.supportedLocales = const <Locale>[Locale('en', 'US')], // 此应用程序已本地化的地区列表 
+  this.debugShowMaterialGrid = false, // 打开绘制基线网格材质应用程序的网格纸覆盖
+  this.showPerformanceOverlay = false, // 打开性能叠加
+  this.checkerboardRasterCacheImages = false, // 打开栅格缓存图像的棋盘格
+  this.checkerboardOffscreenLayers = false, // 打开渲染到屏幕外位图的图层的棋盘格
+  this.showSemanticsDebugger = false, // 打开显示框架报告的可访问性信息的覆盖
+  this.debugShowCheckedModeBanner = true, // 在选中模式下打开一个小的“DEBUG”横幅，表示应用程序处于选中模式
+}) 
+```
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(new MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Welcome to Flutter',
+      theme:new ThemeData(
+      	primaryColor: Colors.
+      ),
+    );
+  }
+}
+```
+
+## 布局
+
+### container
+
+```dart
+class HomeContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Text('ss'),
+      height: 200.0,
+      width: 300.0,
+      padding:EdgeInsets.all(20.0),
+      alignment:Alignment.centerRight,
+      decoration: BoxDecoration(
+          color: Colors.yellow,
+          border: Border.all(
+            width: 1.0,
+            color: Colors.blue,
+          )),
+    );
+  }
+}
+```
+
+### Align
+
+```dart
+const Align({
+    Key key,
+    this.alignment = Alignment.center,
+    this.widthFactor,
+    this.heightFactor,
+    Widget child,
+})
+```
+
+## Row
+
+```dart
+Row({
+    Key key,
+    // 主轴 水平方向
+    MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+    MainAxisSize mainAxisSize = MainAxisSize.max,
+    // 主轴 垂直方向
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+    TextDirection textDirection,
+    VerticalDirection verticalDirection = VerticalDirection.down,
+    TextBaseline textBaseline,
+    List<Widget> children = const <Widget>[],
+  })
+```
+
+## Column
+
+```dart
+ Column({
+    Key key,
+     // 主轴 垂直方向
+    MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+     // 盒子 max=block min=aline
+    MainAxisSize mainAxisSize = MainAxisSize.max,
+     // 副轴	水平方向
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+    TextDirection textDirection,
+     // item 排序方式 
+    VerticalDirection verticalDirection = VerticalDirection.down,
+    TextBaseline textBaseline,
+    List<Widget> children = const <Widget>[],
+  })
+```
+
+## Expanded
+
+```dart
+body:Column(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: <Widget>[
+    Center(child:Text('I am JSPang')),
+      // 当前元素 最大占据
+    Expanded(child:Center(child:Text('my website is jspang.com'))),
+    Center(child:Text('I love coding'))
+  ],
+)
+```
+
+## CircleAvatar
+
+```dart
+  const CircleAvatar({
+    Key key,
+    this.child,
+    this.backgroundColor,
+    this.backgroundImage,
+    this.onBackgroundImageError,
+    this.foregroundColor,
+    this.radius,
+    this.minRadius,
+    this.maxRadius,
+  })
+```
+
+## Stack
+
+```dart
+ Stack({
+    Key key,
+    this.alignment = AlignmentDirectional.topStart,
+    this.textDirection,
+    this.fit = StackFit.loose,
+    this.overflow = Overflow.clip,
+    List<Widget> children = const <Widget>[],
+  })
+     
+     
+var stack = new Stack(
+
+        children: <Widget>[
+          new CircleAvatar(
+            backgroundImage: new NetworkImage('http://jspang.com/static//myimg/blogtouxiang.jpg'),
+            radius: 100.0,
+          ),
+          new Positioned(
+            top:10.0,
+            left:10.0,
+            child: new Text('JSPang.com'),
+          ),
+          new Positioned( // 定位
+            bottom:10.0,
+            right:10.0,
+            child: new Text('技术胖'),
+          )
+        ],
+      );
+```
+
+
+
+## 辅助样式
+
+### padding
+
+```dart
+	用法:
+Padding(
+	padding: const EdgeInsets.all(10.0),
+	child: Text("title")
+)
+
+    属性:
+padding:
+	EdgeInsets.all(10.0); //全部 padding:
+	EdgeInsets.only(	//padding-top:
+    	left:20.0,
+        top:20.0,
+        right:20.0,
+        bottom:20.0,
+    );
+	EdgeInsets.symmetric(
+    	vertical:100.0, //垂直方向 padding-top/bottom 100
+        horizontal:100.0  //水平方向
+    );
+	EdgeInsets.fromLTRB(
+    	left:10.0,
+        top:10.0,
+        right:10.0,
+        bottom:10.0,
+    )
+```
+
+### Alignment
+
+```dart
+const Align({
+    Key key,
+    this.alignment = Alignment.center,
+    this.widthFactor,
+    this.heightFactor,
+    Widget child
+  })
+    
+
+
+alignment: 
+	Alignment.center,
+	Alignment.topLeft,
+	Alignment.topCenter,
+	Alignment.topRight,
+	Alignment.centerLeft,
+	Alignment(x,y), //中心为(0,0) (1,1)为右下角
+```
+
+### textDirection
+
+```dart
+// 文字排列方式
+textDirection:
+	TextDirection.ltr;
+	TextDirection.rtl;
 ```
 

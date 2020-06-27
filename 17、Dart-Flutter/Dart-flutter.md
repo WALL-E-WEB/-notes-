@@ -306,9 +306,142 @@ class MyApp extends StatelessWidget {
 }
 ```
 
+命令
+
+```
+flutter packages get
+flutter run
+```
+
+## 生命周期
+
+```
+上图就是 State 的生命周期图。
+
+StatefulWidget.createState()
+
+Framework 调用会通过调用 StatefulWidget.createState() 来创建一个 State。
+
+initState()
+
+新创建的 State 会和一个 BuildContext 产生关联，此时认为 State 已经被安装好了，initState() 函数将会被调用。
+
+通常，我们可以重写这个函数，进行初始化操作。
+
+didChangeDependencies()
+
+在 initState() 调用结束后，这个函数会被调用。
+
+事实上，当 State 对象的依赖关系发生变化时，这个函数总会被 Framework 调用。
+
+build()
+
+经过以上步骤，系统认为一个 State 已经准备好了，就会调用 build() 来构建视图。
+
+我们需要在这个函数中，返回一个 Widget。
+
+deactivate()
+
+当 State 被暂时从视图树中移除时，会调用这个函数。
+
+页面切换时，也会调用它，因为此时 State 在视图树中的位置发生了变化，需要先暂时移除后添加。
+
+⚠️注意，重写的时候必须要调用 super.deactivate()。
+
+dispose()
+
+当 State 被永久的从视图树中移除，Framework 会调用该函数。
+
+在销毁前触发，我们可以在这里进行最终的资源释放。
+
+在调用这个函数之前，总会先调用 deactivate()。
+
+⚠️注意，重写的时候必须要调用 super.dispose()。
+
+didUpdateWidget(covariant T oldWidget)
+
+当 widget 的配置发生变化时，会调用这个函数。
+
+比如，Hot-reload 的时候就会调用这个函数。
+
+这个函数调用后，会调用 build()。
+
+setState()
+
+当我需要更新 State 的视图时，需要手动调用这个函数，它会触发 build() 。
+```
+
+```
+当sestate 执行时会触发 build;
+
+initstate
+
+build
+
+dispose
+
+
+```
+
+## 事件event
+
+```dart
+
+gesturedetector
+
+点击:
+	onTapDown: 		用户手指按下
+    onTapUp: 		手指抬起
+	onTap: 			点击完成
+    onTapCancel: 	按下过程取消
+
+双击:
+	onDoubleTap: 	双击
+
+长按:
+	onLongPress:	在屏幕上保持一段时间
+
+纵向拖拽:
+	onVerticalDragStart: 	接触并开始纵向移动
+    onVerticalDragUpdate:	移动
+	onVerticalDragEnd:		结束
+
+
+横向拖拽:
+	onHorizontlDragStart: 	接触并开始纵向移动
+    onHorizontlDragUpdate:	移动
+	onHorizontlDragEnd:		结束
+        
+globalPosition  获取相对屏幕位置
+localPosition	相对于Widget位置信息
+```
+
+```dart
+body:Listener(
+		onPointerDown:(event){
+			event.position		// 屏幕中位置
+			event.localPosition // 在组件中的位置
+		}
+	)
+指针事件:
+	onPointerDownEvent
+    onPointerMoveEvent
+    onPoiinterUpEvent 
+    onPointerCancelEvent
+
+```
+
+事件传递
+
+```dart
+event_bus
+```
+
+
+
 ## StatelessWidget
 
-### StatefullWidget
+## StatefullWidget
 
 ```dart
 StatelessWidget //无状态
@@ -366,6 +499,110 @@ class MyApp extends StatelessWidget {
 }
 ```
 
+## 底部导航栏
+
+```dart
+
+import 'package:flutter/material.dart';
+
+class BottomBar extends StatefulWidget {
+  @override
+  BottomBarState createState() => BottomBarState();
+}
+
+class BottomBarState extends State<BottomBar> {
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      items: [
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.blue,
+            ),
+            title: Text('HOME', style: TextStyle(color: Colors.blue))),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.blue,
+            ),
+            title: Text('HOME', style: TextStyle(color: Colors.blue)))
+      ],
+    );
+  }
+}
+
+mixin StateBottomBar {}
+
+```
+
+```
+import 'package:flutter/material.dart';
+
+import './pages/main_BottomBar/main_BottomBar.dart';
+
+void main() => runApp(new MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Welcome to Flutter',
+      home: new Scaffold(
+        appBar: new AppBar(
+          title: new Text('Welcome to Flutster'),
+        ),
+        body: new Center(
+          // child: new Text(
+          //   'Hello Worlds',
+          //   textDirection: TextDirection.ltr,
+          //   style: TextStyle(
+          //       fontSize: 14.0, color: Color.fromRGBO(255, 122, 122, .5)),
+          // ),
+          heightFactor: 1,
+          widthFactor: 1,
+          // child: new HomeContent(),
+          // child: new ImageCom(),
+          child: ListView(
+            children: <Widget>[
+              ListTile(
+                title: Text('title'),
+                subtitle: Text('data'),
+                trailing: Text('trailing'),
+                isThreeLine: true,
+                dense: true,
+                onLongPress: () {
+                  print('222');
+                },
+              ),
+
+              TextField(
+                  decoration: InputDecoration(
+                      hintText: 'dddd',
+                      border: OutlineInputBorder(),
+                      labelText: '用户')),
+              SizedBox(height: 20),
+              TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                      hintText: 'dddd',
+                      border: OutlineInputBorder(),
+                      labelText: '用户')),
+
+              // MyInput()
+            ],
+          ),
+          // child: new PaddingTestRoute(),
+        ),
+       bottomNavigationBar:BottomBar(),
+      ),
+    );
+  }
+}
+```
+
+
+
 ## 布局
 
 ### container
@@ -403,7 +640,7 @@ const Align({
 })
 ```
 
-## Row
+### Row
 
 ```dart
 Row({
@@ -420,7 +657,7 @@ Row({
   })
 ```
 
-## Column
+### Column
 
 ```dart
  Column({
@@ -439,7 +676,7 @@ Row({
   })
 ```
 
-## Expanded
+### Expanded
 
 ```dart
 body:Column(
@@ -453,7 +690,7 @@ body:Column(
 )
 ```
 
-## CircleAvatar
+### CircleAvatar
 
 ```dart
   const CircleAvatar({
@@ -469,7 +706,7 @@ body:Column(
   })
 ```
 
-## Stack
+### Stack
 
 ```dart
  Stack({
@@ -503,9 +740,21 @@ var stack = new Stack(
       );
 ```
 
+sliverList
 
+sliverAppBar
+
+pageview.builder 有懒加载
 
 ## 辅助样式
+
+color
+
+```dart
+Color _bottombarcolor = Color(0xFFF63515);
+```
+
+
 
 ### padding
 
@@ -566,5 +815,248 @@ alignment:
 textDirection:
 	TextDirection.ltr;
 	TextDirection.rtl;
+```
+
+### BoxFit
+
+```dart
+fit:
+	BoxFit.fit 			//全图显示 充满父容器
+	BoxFit.contain		//全图显示 显示原比例 可能会有空隙
+	BoxFit.cover		//显示可能拉伸，可能裁切，充满
+	BoxFit.fitWidth		//宽度充满 会拉伸
+	BoxFit.fitHeight	//高度充满
+	BoxFit.scaleDown	//不允许显示超过源图片大小，可小不可大
+```
+
+
+
+## image
+
+- Image.asset 本地
+
+  ```dart
+   Image.asset(
+      String name, {
+      Key key,
+      AssetBundle bundle,
+      this.frameBuilder,
+      this.errorBuilder,
+      this.semanticLabel,
+      this.excludeFromSemantics = false,
+      double scale,
+      this.width,
+      this.height,
+      this.color,
+      this.colorBlendMode,
+      this.fit,
+          |-BoxFit.cover //不变形
+      this.alignment = Alignment.center,
+      this.repeat = ImageRepeat.noRepeat,
+      this.centerSlice,
+      this.matchTextDirection = false,
+      this.gaplessPlayback = false,
+      String package,
+      this.filterQuality = FilterQuality.low,
+      int cacheWidth,
+      int cacheHeight,
+    })
+  ```
+
+  ```dart
+  lib同级目录下 创建images文件
+  
+  |-images
+  	|-2.0x
+  	|-3.0x
+  	|-a.png
+  	
+  new Image.asset('images/logo.png')
+      
+  
+  ```
+
+  ```
+   pubspec.yaml 
+   
+  flutter:
+  
+    # The following line ensures that the Material Icons font is
+    # included with your application, so that you can use the icons in
+    # the material Icons class.
+    uses-material-design: true
+    assets:
+      - images/logo.png
+      - images/2.0x/logo.png
+      - images/3.0x/logo.png
+  ```
+
+  
+
+- Image.network 网路
+
+  ```dart
+  new Image.network ('https://test.jpg'))
+  ```
+
+- Image.file
+
+  ```dart
+  加载本地图片
+  new Image.file(new File('/storage/xxx/xxx/test.jpg'))
+  ```
+
+  
+
+## form
+
+```dart
+
+class MyStatefulWidget extends StatefulWidget {
+  MyStatefulWidget({Key key}) : super(key: key);
+  @override
+  _MyStatefulWidgetState createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  final _formKey = GlobalKey<FormState>();
+  var userName = new TextEditingController(); // 声明
+
+  @override
+  void initState() {
+    super.initState();
+    userName.text = '22220';
+  }
+    var flag = true;
+  @override
+  Widget build(BuildContext context) {
+    
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextFormField(
+            
+            decoration: const InputDecoration(
+              hintText: 'Enter your email',
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+            controller: userName, //绑定
+            onChanged: (value){
+              print('$value');
+              print(userName.text); // 双向绑定
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: RaisedButton(
+              onPressed: () {
+                // Validate will return true if the form is valid, or false if
+                // the form is invalid.
+                if (_formKey.currentState.validate()) {
+                  // Process data.
+                  print('sss');
+                }
+              },
+              child: Text('Submit'),
+            ),
+          ),
+             Checkbox(value:this.flag, onChanged: (value){
+            setState(() {
+              this.flag = value;
+              print(!value);
+            });
+          })
+        ],
+      ),
+    );
+  }
+}
+
+```
+
+
+
+checkbox
+
+```
+RadioListTile(
+              value: 1,
+              onChanged: (v) {
+                setState(() {
+                  this.sex = v;
+                });
+              },
+              groupValue: this.sex,
+            ),
+```
+
+```
+  RadioListTile(
+            groupValue: this.sex,
+            onChanged: (value) {
+              print(value);
+              setState(() {
+                this.sex = value;
+              });
+            },
+            value: 1,
+            title: Text('sss'),
+          ),
+```
+
+## routes
+
+```dart
+navigattor.of(context).push(MaterialPageRoute(
+	builder:(ctx){
+		return aboutPage()
+	}
+))
+    
+Navigator.push(MaterialPageRoute(
+	builder:(ctx){
+		return aboutPage()
+	}
+))
+    
+    
+Navigator.of().pushNamed('/home') //命名路由
+```
+
+钩子
+
+```
+onGenerateRoute(settings)
+
+onUnkonwnRoute  //不存在路由
+```
+
+例
+
+```
+routes:{
+	'/home':(context)=>About()
+},
+initialRoute:'/', //默认路径
+onGenerateRoute:(settings){
+	if(settings.name == '/home'){
+		return MaterialPageRoute(
+			builder:(context)=>HOme(settings.arguments)
+		);
+	}
+},
+onUnkonwnRoute(){
+	return MaterialPageRoute(
+			builder:(context)=>Eer(settings.arguments)
+		);
+}
+
 ```
 

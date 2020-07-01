@@ -431,10 +431,42 @@ body:Listener(
 
 ```
 
+```dart
+Inkwell 和 GestureDetector区别
+
+  new InkWell(
+    child: new Text("Click me!"),
+    onTap: () {
+      // 单击
+    },
+    onDoubleTap: () {
+      // 双击
+    },
+    onLongPress: () {
+      // 长按
+    }
+  );
+  
+  
+  GestureDetector: 
+  		是无状态组件 
+  		无水波纹
+
+  Inkwell:
+  		水波纹
+  		widget
+            
+可自定义水波纹:
+	Ink(
+        highlightColor: Colors.purple[800], //颜色在最上层 会覆盖
+    	splashColor:Color.red
+    )
+```
+
 事件传递
 
 ```dart
-event_bus
+event_bus //第三方库
 ```
 
 

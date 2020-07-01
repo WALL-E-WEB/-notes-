@@ -4922,6 +4922,11 @@ const instance = axios.create({
 ### post请求方式
 
 ```js
+data 与 pramas 区别
+data:请求体;
+pramas:拼接到请求地址
+
+
 文件上传:
 export const uploadFileRequest = (url, params) => {
   return axios({
@@ -4935,6 +4940,7 @@ export const uploadFileRequest = (url, params) => {
 }
 
 
+// 转换
 export const postRequest = (url, params) => {
   return axios({
     method: 'post',
@@ -4953,6 +4959,63 @@ export const postRequest = (url, params) => {
   });
 }
 ```
+
+### get
+
+```js
+const qs = require('qs');
+
+axios.get(url, {
+    params:{
+        arr: [1,2,3]
+    },
+    paramsSerializer: function(params) {
+        return qs.stringify(params, {arrayFormat: 'repeat'})
+    }
+})
+```
+
+### 请求转换
+
+```js
+import axios from 'axios'
+import qs from 'qs'
+
+//get传递数组
+axios.get(url, {
+    params: {
+     id: [1,2,3],
+     type: 1
+    },
+    paramsSerializer: params => {
+      return qs.stringify(params, { indices: false })
+}})
+
+//url?id=1&id=2&id=3
+```
+
+```js
+axios.post(url, qs.stringify(
+    params: { // 请求地址方式
+     id: [1,2,3],
+     type: 1
+}, { indices: false }))
+```
+
+### qs
+
+```js
+qs.stringify({id: [1, 2, 3]}, { indices: false })
+ //形式： id=1&id=2&id=3
+qs.stringify({id: [1, 2, 3]}, {arrayFormat: ‘indices‘})
+ //形式： ids[0]=1&ids[1]=2&ids[2]=3
+qs.stringify({id: [1, 2, 3]}, {arrayFormat: ‘brackets‘})
+ //形式：id[]=1&id[]=2&id[]=3
+qs.stringify({ids: [1, 2, 3]}, {arrayFormat: ‘repeat‘}) 
+//形式： id=1&id=2&id=3
+```
+
+
 
 ### 拦截处理
 
@@ -6680,5 +6743,39 @@ methods:{
           <div class="ql-editor"  v-html="newsData.content">
           </div>
  </div>
+```
+
+# 元素滚动置顶-节流
+
+```js
+mounted() {
+    this.weekeleOffTop = this.$refs.weekele.offsetTop;
+    window.addEventListener("scroll", Throttle(this.scrollToTop, 300));
+  },
+      
+ scrollToTop() {
+      let top =
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop;
+
+      if (top > this.weekeleOffTop) {
+        this.fixedClass = true;
+      } else {
+        this.fixedClass = false;
+      }
+    }
+
+---
+const Throttle = function(fn, gapTime) {
+  let _lastTime = null;
+  return function() {
+    let _nowTime = +new Date();
+    if (_nowTime - _lastTime > gapTime || !_lastTime) {
+      fn();
+      _lastTime = _nowTime;
+    }
+  };
+};
 ```
 

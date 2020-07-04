@@ -531,6 +531,77 @@ class MyApp extends StatelessWidget {
 }
 ```
 
+| key   | type      | detail                       |
+| ----- | --------- | ---------------------------- |
+| title | String    | 为用户识别应用程序的单行描述 |
+| theme | ThemeData |                              |
+|       |           |                              |
+
+ThemeData
+
+```dart
+factory ThemeData({
+  Brightness brightness, // 应用整体主题的亮度。用于按钮之类的小部件，以确定在不使用主色或强调色时选择什么颜色。
+  MaterialColor primarySwatch,// 定义一个单一的颜色以及十个色度的色块。
+  Color primaryColor, // 应用程序主要部分的背景颜色(toolbars、tab bars 等)
+  Brightness primaryColorBrightness, // primaryColor的亮度。用于确定文本的颜色和放置在主颜色之上的图标(例如工具栏文本)。
+  Color primaryColorLight, // primaryColor的浅色版
+  Color primaryColorDark, // primaryColor的深色版
+  Color accentColor, // 小部件的前景色(旋钮、文本、覆盖边缘效果等)。
+  Brightness accentColorBrightness, // accentColor的亮度。
+  Color canvasColor, //  MaterialType.canvas 的默认颜色
+  Color scaffoldBackgroundColor, // Scaffold的默认颜色。典型Material应用程序或应用程序内页面的背景颜色。
+  Color bottomAppBarColor, // BottomAppBar的默认颜色
+  Color cardColor, // Card的颜色
+  Color dividerColor, // Divider和PopupMenuDivider的颜色，也用于ListTile之间、DataTable的行之间等。
+  Color highlightColor, // 选中在泼墨动画期间使用的突出显示颜色，或用于指示菜单中的项。
+  Color splashColor,  // 墨水飞溅的颜色。InkWell
+  InteractiveInkFeatureFactory splashFactory, // 定义由InkWell和InkResponse反应产生的墨溅的外观。
+  Color selectedRowColor, // 用于突出显示选定行的颜色。
+  Color unselectedWidgetColor, // 用于处于非活动(但已启用)状态的小部件的颜色。例如，未选中的复选框。通常与accentColor形成对比。也看到disabledColor。
+  Color disabledColor, // 禁用状态下部件的颜色，无论其当前状态如何。例如，一个禁用的复选框(可以选中或未选中)。
+  Color buttonColor, // RaisedButton按钮中使用的Material 的默认填充颜色。
+  ButtonThemeData buttonTheme, // 定义按钮部件的默认配置，如RaisedButton和FlatButton。
+  Color secondaryHeaderColor, // 选定行时PaginatedDataTable标题的颜色。
+  Color textSelectionColor, // 文本框中文本选择的颜色，如TextField
+  Color cursorColor, // 文本框中光标的颜色，如TextField
+  Color textSelectionHandleColor,  // 用于调整当前选定的文本部分的句柄的颜色。
+  Color backgroundColor, // 与主色形成对比的颜色，例如用作进度条的剩余部分。
+  Color dialogBackgroundColor, // Dialog 元素的背景颜色
+  Color indicatorColor, // 选项卡中选定的选项卡指示器的颜色。
+  Color hintColor, // 用于提示文本或占位符文本的颜色，例如在TextField中。
+  Color errorColor, // 用于输入验证错误的颜色，例如在TextField中
+  Color toggleableActiveColor, // 用于突出显示Switch、Radio和Checkbox等可切换小部件的活动状态的颜色。
+  String fontFamily, // 文本字体
+  TextTheme textTheme, // 文本的颜色与卡片和画布的颜色形成对比。
+  TextTheme primaryTextTheme, // 与primaryColor形成对比的文本主题
+  TextTheme accentTextTheme, // 与accentColor形成对比的文本主题。
+  InputDecorationTheme inputDecorationTheme, // 基于这个主题的 InputDecorator、TextField和TextFormField的默认InputDecoration值。
+  IconThemeData iconTheme, // 与卡片和画布颜色形成对比的图标主题
+  IconThemeData primaryIconTheme, // 与primaryColor形成对比的图标主题
+  IconThemeData accentIconTheme, // 与accentColor形成对比的图标主题。
+  SliderThemeData sliderTheme,  // 用于呈现Slider的颜色和形状
+  TabBarTheme tabBarTheme, // 用于自定义选项卡栏指示器的大小、形状和颜色的主题。
+  CardTheme cardTheme, // Card的颜色和样式
+  ChipThemeData chipTheme, // Chip的颜色和样式
+  TargetPlatform platform, 
+  MaterialTapTargetSize materialTapTargetSize, // 配置某些Material部件的命中测试大小
+  PageTransitionsTheme pageTransitionsTheme, 
+  AppBarTheme appBarTheme, // 用于自定义Appbar的颜色、高度、亮度、iconTheme和textTheme的主题。
+  BottomAppBarTheme bottomAppBarTheme, // 自定义BottomAppBar的形状、高度和颜色的主题。
+  ColorScheme colorScheme, // 拥有13种颜色，可用于配置大多数组件的颜色。
+  DialogTheme dialogTheme, // 自定义Dialog的主题形状
+  Typography typography, // 用于配置TextTheme、primaryTextTheme和accentTextTheme的颜色和几何TextTheme值。
+  CupertinoThemeData cupertinoOverrideTheme 
+})
+```
+
+
+
+## Scaffold
+
+![image-20200704124550478](Dart-flutter.assets/image-20200704124550478.png)
+
 ## 底部导航栏
 
 ```dart
@@ -639,6 +710,13 @@ class MyApp extends StatelessWidget {
 
 ### container
 
+绘制顺序
+
+1. transform
+2. decoration
+3. child
+4. foregroundDecoration
+
 ```dart
 class HomeContent extends StatelessWidget {
   @override
@@ -659,6 +737,14 @@ class HomeContent extends StatelessWidget {
   }
 }
 ```
+
+|      |      |      |
+| ---- | ---- | ---- |
+|      |      |      |
+|      |      |      |
+|      |      |      |
+
+
 
 ### Align
 
@@ -778,6 +864,49 @@ sliverAppBar
 
 pageview.builder 有懒加载
 
+## 流式布局
+
+Wrap
+
+|                    |      |      |
+| ------------------ | ---- | ---- |
+| direction          | axis |      |
+| alignment          |      |      |
+| runSpacing         |      |      |
+| runAlignment       |      |      |
+| crossAxisAlignment |      |      |
+| VerticalDirection  |      |      |
+| textDirection      |      |      |
+| children           |      |      |
+
+
+
+### 辅助布局
+
+#### center
+
+```
+
+```
+
+|      |      |      |
+| ---- | ---- | ---- |
+|      |      |      |
+|      |      |      |
+|      |      |      |
+
+#### SizeBox
+
+
+
+#### AspectRatio
+
+
+
+#### FractionallySizedBox
+
+#### card
+
 ## 辅助样式
 
 color
@@ -859,6 +988,22 @@ fit:
 	BoxFit.fitWidth		//宽度充满 会拉伸
 	BoxFit.fitHeight	//高度充满
 	BoxFit.scaleDown	//不允许显示超过源图片大小，可小不可大
+```
+
+### Icon
+
+```dart
+Icon(
+   Icons.search,
+   color: Color(0xffcccccc),
+   size:18.0,
+),
+```
+
+BoxDecoration
+
+```
+gradient:LinearGradient() //.渐变
 ```
 
 
@@ -1013,7 +1158,43 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
 ```
 
+### input
 
+```dart
+const TextField({
+    Key key,
+    this.controller,    //编辑框的控制器，跟文本框的交互一般都通过该属性完成，如果不创建的话默认会自动创建
+    this.focusNode,  //用于管理焦点
+    this.decoration = const InputDecoration(),   //输入框的装饰器，用来修改外观
+    TextInputType keyboardType,   //设置输入类型，不同的输入类型键盘不一样
+    this.textInputAction,   //用于控制键盘动作（一般位于右下角，默认是完成）
+    this.textCapitalization = TextCapitalization.none,
+    this.style,    //输入的文本样式
+    this.textAlign = TextAlign.start,   //输入的文本位置
+    this.textDirection,    //输入的文字排列方向，一般不会修改这个属性
+    this.autofocus = false,   //是否自动获取焦点
+    this.obscureText = false,   //是否隐藏输入的文字，一般用在密码输入框中
+    this.autocorrect = true,   //是否自动校验
+    this.maxLines = 1,   //最大行
+    this.maxLength,   //能输入的最大字符个数
+    this.maxLengthEnforced = true,  //配合maxLength一起使用，在达到最大长度时是否阻止输入
+    this.onChanged,  //输入文本发生变化时的回调
+    this.onEditingComplete,   //点击键盘完成按钮时触发的回调，该回调没有参数，(){}
+    this.onSubmitted,  //同样是点击键盘完成按钮时触发的回调，该回调有参数，参数即为当前输入框中的值。(String){}
+    this.inputFormatters,   //对输入文本的校验
+    this.enabled,    //输入框是否可用
+    this.cursorWidth = 2.0,  //光标的宽度
+    this.cursorRadius,  //光标的圆角
+    this.cursorColor,  //光标的颜色
+    this.keyboardAppearance,
+    this.scrollPadding = const EdgeInsets.all(20.0),
+    this.dragStartBehavior = DragStartBehavior.down,
+    this.enableInteractiveSelection,
+    this.onTap,    //点击输入框时的回调(){}
+    this.buildCounter,
+  })
+
+```
 
 checkbox
 
@@ -1090,5 +1271,92 @@ onUnkonwnRoute(){
 		);
 }
 
+```
+
+# 问题
+
+'getAppBarWidget' can't be assigned to the parameter type 'PreferredSizeWidget'.
+
+```dart
+import 'package:flutter/material.dart';
+
+class HomeAppBar extends StatelessWidget implements PreferredSizeWidget { //加入 接口PreferredSizeWidget
+  @override
+  Widget build(BuildContext context) {
+    return PreferredSize(
+      child: AppBar(
+        title: Image.asset('images/jd.png'),
+        backgroundColor: Colors.red,
+        actions: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(Icons.crop_free),
+              Text('扫一扫', style: TextStyle(fontSize: 6.0))
+            ],
+          ),
+          Padding(padding: EdgeInsetsDirectional.fromSTEB(0, 0, 10, 0)),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(Icons.sms),
+              Text('消息', style: TextStyle(fontSize: 6.0))
+            ],
+          ),
+          Padding(padding: EdgeInsetsDirectional.fromSTEB(0, 0, 20, 0))
+        ],
+      ),
+      preferredSize: Size.fromHeight(44),
+    );
+
+    
+  }
+  // final String name;
+  // HomeAppBar({Key key, @required this.name}) :super(key: key);
+  @override
+  // TODO: implement preferredSize
+    Size get preferredSize => getSize();
+    
+      getSize() {
+         return new Size(100.0, 44.0);
+      }
+}
+
+```
+
+## 去除顶部半透明
+
+![360截图20200427015824935.png](Dart-flutter.assets/4158227332-5ea654ce483c9_articlex.png)
+
+```kotlin
+package com.example.helloflutter
+
+import io.flutter.embedding.android.FlutterActivity
+//---增加部分
+import android.os.Build;
+import android.os.Bundle;
+//----end
+class MainActivity: FlutterActivity() {
+   //-----增加部分
+    //设置状态栏沉浸式透明（修改flutter状态栏黑色半透明为全透明）
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        window.statusBarColor = 0
+    }
+}
+//---- end
+}
+```
+
+## flutter_swiper 裁剪border radius
+
+```dart
+外层加入:
+PhysicalModel(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            clipBehavior: Clip.antiAlias,
+)
 ```
 

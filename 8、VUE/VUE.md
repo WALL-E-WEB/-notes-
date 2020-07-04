@@ -250,7 +250,7 @@ this指向vue的实例;
 <script>
 export default {
   model: {
-    prop: 'show',
+    prop: 'show', //注意 是字符串
     event: 'mEventChange'
   },
   props: {

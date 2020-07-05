@@ -1642,6 +1642,22 @@ https://www.lodashjs.com/
         };
 ```
 
+### 对象的内置属性
+
+```js
+value:  	//值
+writable:	//默认true, 是否可读写;
+enumerable:	//默认 true, 是否for in 可枚举;
+getter:		//函数或nudefined取值时;
+setter:		//函数或nudefined设置时;
+configurable://默认 true,是否可删除或改变特征值;
+```
+
+```js
+Object.getOwnPropertyDescriptor(obj,key);
+//{value:name,writable:true, ```}
+```
+
 
 
 ## Date对象

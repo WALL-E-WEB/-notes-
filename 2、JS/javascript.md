@@ -1707,6 +1707,80 @@ var allMS = date.getTime(); // 获取总毫秒
     }
 ```
 
+### 后端带T时间处理
+
+```js
+2020-03-18T18:55:27.207转2020-03-18 18:55;
+安卓会把这个带T字母的时间看做UTC时间格式，
+（包括ios打包后也会相差8个小时）与北京时间相差8个小时。
+
+ var dateee = new Date(val).toJSON();
+
+ var date = new Date(dateee)
+          .toISOString()
+          .replace(/T/g, " ")
+          .replace(/\.[\d]{3}Z/, "");
+```
+
+```
+getParseTime:function(time, cFormat){   //('2020-03-18T18:55:27.207', '{y}-{m}-{d} | {h}:{i}' )
+
+    if (!time) {
+        return '';
+    }
+    var myDate = new Date(time + '+0800');
+    if (myDate == 'Invalid Date') {
+        time = time.replace(/T/g, ' ');
+        time = time.replace(/-/g, '/');
+        time = time.replace(/\.\d+/, ' ');//去掉毫秒
+        myDate = new Date(time + '+0800');
+    }
+    time = myDate;
+
+
+    if (time == null) {
+        return '';
+    }
+    if (arguments.length === 0) {
+        return null
+    }
+    var format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
+    var date
+    if (typeof time === 'object') {
+        date = time
+    } else {
+        if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
+            time = parseInt(time)
+        }
+        if ((typeof time === 'number') && (time.toString().length === 10)) {
+            time = time * 1000
+        }
+        date = new Date(time)
+    }
+    var formatObj = {
+        y: date.getFullYear(),
+        m: date.getMonth() + 1,
+        d: date.getDate(),
+        h: date.getHours(),
+        i: date.getMinutes(),
+        s: date.getSeconds(),
+        a: date.getDay()
+    }
+    var time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
+        var value = formatObj[key]
+        // Note: getDay() returns 0 on Sunday
+        if (key === 'a') {
+            return ['日', '一', '二', '三', '四', '五', '六'][value]
+        }
+        //return value.toString().padStart(2, '0')  //时间补零，padStart可能出现兼容问题
+        return value.toString()
+    })
+    return time_str
+},
+```
+
+
+
 ## Array对象
 
 ### concat
@@ -2961,6 +3035,14 @@ if(str.indexOf('Chrome')!=-1){
    }
 
 ```
+
+#### 获取设备像素比
+
+```js
+window.devicePixelRatio
+```
+
+
 
 ### Screen 屏幕
 
@@ -5068,6 +5150,20 @@ function throttle(callback,duration){
 window.onscroll = throttle(function(){
     
 },500);
+
+//可传参数 节流
+const Throttle = function(fn, gapTime) {
+  let _lastTime = null;
+  return function() {
+    let _this = this;
+    let args = arguments;
+    let _nowTime = +new Date();
+    if (_nowTime - _lastTime > gapTime || !_lastTime) {
+      fn.apply(_this, args);
+      _lastTime = _nowTime;
+    }
+  };
+};
 ```
 
 ### 2.类型判断函数
@@ -5181,5 +5277,19 @@ header:{
 header:{
      'content-type': 'application/octet-stream'
     }
+```
+
+# New Blob
+
+```
+https://developer.mozilla.org/zh-CN/docs/Web/API/Blob
+```
+
+# Web_Audio_API
+
+```
+https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Audio_API
+
+https://blog.csdn.net/weixin_34010949/article/details/85828884?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight
 ```
 

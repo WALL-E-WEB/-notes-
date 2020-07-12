@@ -1651,6 +1651,11 @@ enumerable:	//默认 true, 是否for in 可枚举;
 getter:		//函数或nudefined取值时;
 setter:		//函数或nudefined设置时;
 configurable://默认 true,是否可删除或改变特征值;
+
+两类属性:
+	数据属性:value,writable,enumerable,configurable
+	访问器:getter,setter,
+        enumerable,configurable
 ```
 
 ```js

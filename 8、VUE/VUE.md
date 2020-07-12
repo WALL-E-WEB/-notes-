@@ -4960,6 +4960,19 @@ export const postRequest = (url, params) => {
 }
 ```
 
+#### multipart/form-data
+
+```js
+'multipart/form-data' 
+		let formData = new FormData();
+      formData.append("multipartFile", Blob); //Blob为 文件内容
+      GETVoiceToSrc(formData).then(res => {
+        console.log(res);
+      });
+```
+
+
+
 ### get
 
 ```js

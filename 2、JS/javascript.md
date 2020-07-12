@@ -5284,6 +5284,31 @@ header:{
     }
 ```
 
+
+
+# Element API
+
+## element.getBoundingClientRect()
+
+```
+https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect
+```
+
+```typescript
+Object  element.getBoundingClientRect();
+
+retunr {
+    width,
+    height,
+    left,
+    right,
+    top,
+    right
+}
+```
+
+
+
 # New Blob
 
 ```

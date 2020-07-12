@@ -486,6 +486,7 @@ ES6 ES7 转换为 ES5
 babeljs.com
 
 安装最新:npm i babel-loader @babel/core @babel/preset-env webpack -D
+
 @babel/core  核心包
 @babel/preset-env 预设包,语言包
 
@@ -548,6 +549,8 @@ babeljs.com
 该模块需要在使用新方法的地方直接引入:
 
 ​	`import '@babel/polyfill'`
+
+
 
 ## source map的使用
 
@@ -894,8 +897,7 @@ devServer: {
     
     publicPath:'/assets/'//编译后文件的路径 http://localhost:8080/assets/bundle.js
  }
-————————————————
-原文链接：https://blog.csdn.net/franktaoge/article/details/80083317
+https://blog.csdn.net/franktaoge/article/details/80083317
 ```
 
 ## package.json
@@ -1895,7 +1897,140 @@ module: {
     console.log(moment().subtract(6, 'days').calendar())
     ```
 
-## 
+# bable
+
+```
+babel 总共分为三个阶段：解析，转换，生成。
+```
+
+```json
+// .babelrc 文件
+{ 
+    "plugins": [
+        "transform-es2015-template-literals",  // 转译模版字符串的 plugins
+    ],
+    "presets": [
+        ["env", {
+            // 是否自动引入 polyfill，开启此选项必须保证已经安装了 babel-polyfill
+            // “usage” | “entry” | false, defaults to false.
+            "useBuiltIns": "usage"
+        }], "stage-2"]
+}
+
+---
+先执行 plugins 的配置项,再执行 Preset 的配置项；
+plugins 配置项，按照声明顺序执行；
+Preset 配置项，按照声明逆序执行。
+
+列入以下代码的执行顺序为：
+
+transform-es2015-template-literals
+stage-2
+env
+
+```
+
+## useBuiltIns
+
+```json
+我们可能在全局引入 babel-polyfill，这样打包后的整个文件体积必然是会变大的。
+
+useBuiltIns 参数说明：
+
+false: 不对 polyfills 做任何操作
+entry: 根据 target 中浏览器版本的支持，将 polyfills 拆分引入，仅引入有浏览器不支持的 polyfill
+usage(新)：检测代码中 ES6/7/8 等的使用情况，仅仅加载代码中用到的 polyfills
+
+
+```
+
+### babel-core（核心）
+
+```
+这个模块是最能顾名思义的了，即 babel 的核心模块。babel 的核心 api 都在这个模块中。也就是这个模块会把我们写的 js 代码抽象成 AST 树；然后再将 plugins 转译好的内容解析为 js 代码。
+```
+
+## babel-polyfill
+
+```json
+babel 对一些新的 API 是无法转换，比如 Generator、Set、Proxy、Promise 等全局对象，以及新增的一些方法：includes、Array.form 等。所以这个时候就需要一些工具来为浏览器做这个兼容
+官网的定义：babel-polyfill 是为了模拟一个完整的 ES6+ 环境，旨在用于应用程序而不是库/工具。
+
+使用 babel-polyfill 会导致打出来的包非常大，很多其实没有用到，对资源来说是一种浪费。
+babel-polyfill 可能会污染全局变量，给很多类的原型链上都作了修改，这就有不可控的因素存在。
+
+因为上面两个问题，所以在 Babel7 中增加了 babel-preset-env，我们设置 "useBuiltIns": "usage" 这个参数值就可以实现按需加载 babel-polyfill 啦。
+
+```
+
+```
+{
+  "presets": [
+    ["env"]
+  ],
+  "plugins": [
+    ["transform-runtime", {
+      "helpers": false, // defaults to true
+      "polyfill": false, // defaults to true
+      "regenerator": true, // defaults to true
+      "moduleName": "babel-runtime" // defaults to "babel-runtime"
+    }]
+  ]
+}
+
+作者：小生方勤
+链接：https://juejin.im/post/5d2b1df66fb9a07ef161b208
+来源：掘金
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+
+
+## 三种方案对比
+
+|                       方案                       |         优点          |                    缺点                    |
+| :----------------------------------------------: | :-------------------: | :----------------------------------------: |
+| @babel/runtime & @babel/plugin-transform-runtime | 按需引入, 打包体积小  |              不能兼容实例方法              |
+|                 @babel/polyfill                  | 完整模拟 ES2015+ 环境 | 打包体积过大, 污染全局对象和内置的对象原型 |
+|                @babel/preset-env                 | 按需引入, 可配置性高  |                                            |
+
+配置案例
+
+```js
+//.babelrc
+{
+    "plugins": ["@babel/plugin-transform-arrow-functions"]
+}
+// 设置 箭头函数转换
+
+```
+
+## @babel/preset-env
+
+```
+@babel/preset-env 主要作用是对我们所使用的并且目标浏览器中缺失的功能进行代码转换和加载 polyfill，在不进行任何配置的情况下，@babel/preset-env 所包含的插件将支持所有最新的JS特性(ES2015,ES2016等，不包含 stage 阶段)，将其转换成ES5代码。例如，如果你的代码中使用了可选链(目前，仍在 stage 阶段)，那么只配置 @babel/preset-env，转换时会抛出错误，需要另外安装相应的插件。
+
+//.babelrc
+{
+    "presets": ["@babel/preset-env"]
+}
+```
+
+需要说明的是，`@babel/preset-env` 会根据你配置的目标环境，生成插件列表来编译。对于基于浏览器或 `Electron` 的项目，官方推荐使用 `.browserslistrc` 文件来指定目标环境。默认情况下，如果你没有在 `Babel` 配置文件中(如 .babelrc)设置 `targets` 或 `ignoreBrowserslistConfig`，`@babel/preset-env` 会使用 `browserslist` 配置源。
+
+如果你不是要兼容所有的浏览器和环境，推荐你指定目标环境，这样你的编译代码能够保持最小。
+
+例如，仅包括浏览器市场份额超过0.25％的用户所需的 `polyfill` 和代码转换（忽略没有安全更新的浏览器，如 IE10 和 BlackBerry）:
+
+## Browserslist 配置
+
+```
+//.browserslistrc
+> 0.25%
+not dead
+```
+
+https://github.com/browserslist/browserslist
 
 # 打包分析
 

@@ -2129,7 +2129,7 @@ module.exports = function (api) {
 [@babel/preset-typescript](https://babel.docschina.org/docs/en/babel-preset-typescript)
 
 ```js
-安装:npm install @babel/preset-env
+安装:npm install --save-dev @babel/preset-env
 ```
 
 ```js
@@ -2148,10 +2148,7 @@ module.exports = function (api) {
 
 ### @babel/polyfill
 
-​	是由如下组成:
-
-1. core-js2  
-2. regenerator-runtime
+​	已经取消;通过配置corejs版本.
 
 ```js
 安装:npm i --save core-js@3
@@ -2228,8 +2225,33 @@ module.exports = function (api) {
 
 ### @babel/plugin-transform-runtime
 
+作用:
+
+1. 自动引用公共函数,防止多个文件多次重复引用.
+2. 创建一个沙盒环境,避免全局污染
+
 ```
 npm install --save-dev @babel/plugin-transform-runtime
+```
+
+默认选项:
+
+```json
+{
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "absoluteRuntime": false,
+        "corejs": false,
+        "helpers": true,
+        "regenerator": true,  // 使用不污染全局
+        "useESModules": false,
+        "version": "7.0.0-beta.0" //版本号
+      }
+    ]
+  ]
+}
 ```
 
 配置:
@@ -2257,6 +2279,7 @@ module.exports = function (api) {
       [
           '@babel/plugin-transform-runtime', 
           { corejs: 3 }
+          // 
       ]
   ];
   return {
@@ -2267,6 +2290,42 @@ module.exports = function (api) {
 ```
 
 ![image-20200714170616917](E:%5CWall-E%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C11%E3%80%81webpack%5Cimage-20200714170616917.png)
+
+
+
+### @babel/runtime
+
+提出来公共的包
+
+```js
+根据corejs选项选定:
+npm install --save @babel/runtime			// corejs: false
+npm install --save @babel/runtime-corejs2	// corejs: 2
+npm install --save @babel/runtime-corejs3 	// corejs: 3
+```
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+  const presets = [......]
+  const plugins = [
+      [
+          '@babel/plugin-transform-runtime', // 防止全局污染
+          { 
+            corejs: false 
+		//	corejs: 2
+		//	corejs: 3
+          }
+      ]
+  ];
+  return {
+    presets,
+    plugins
+  };
+};
+```
+
+
 
 最终配置:
 

@@ -3687,7 +3687,7 @@ watch: {
 
 #### hash模式
 
-```
+```html
 1.就是指 url 尾巴后的 # 号以及后面的字符, 
 	请求的时候不会被包含在 http 请求中 只会携带#之前的，
 	所以每次改变hash不会重新请求加载页面
@@ -3700,6 +3700,61 @@ watch: {
 https://developer.mozilla.org/zh-CN/docs/Web/API/Location
 ```
 
+##### 实现:
+
+```js
+class Router {
+  constructor() {
+    this.routes = {};
+    this.currentUrl = '';
+  }
+  route(path, callback) {
+    this.routes[path] = callback || function() {};
+  }
+  updateView() {
+    this.currentUrl = location.hash.slice(1) || '/';
+    this.routes[this.currentUrl] && this.routes[this.currentUrl]();
+  }
+  init() {
+    window.addEventListener('load', this.updateView.bind(this), false);
+    window.addEventListener('hashchange', this.updateView.bind(this), false);
+  }
+}
+```
+
+```html
+<div id="app">
+  <ul>
+    <li>
+      <a href="#/">home</a>
+    </li>
+    <li>
+      <a href="#/about">about</a>
+    </li>
+    <li>
+      <a href="#/topics">topics</a>
+    </li>
+  </ul>
+  <div id="content"></div>
+</div>
+<script src="js/router.js"></script>
+<script>
+  const router = new Router();
+  router.init();
+  router.route('/', function () {
+    document.getElementById('content').innerHTML = 'Home';
+  });
+  router.route('/about', function () {
+    document.getElementById('content').innerHTML = 'About';
+  });
+  router.route('/topics', function () {
+    document.getElementById('content').innerHTML = 'Topics';
+  });
+</script>
+```
+
+
+
 #### history模式
 
 ```js
@@ -3707,11 +3762,87 @@ https://developer.mozilla.org/zh-CN/docs/Web/API/Location
 2.不带#号,请求时是整个链接,所以需要服务器的支持把所有路由都重定向到根页面
 3.怕刷新,刷新请求,需要服务端配合;
 
+以下会触发popstate:
+1.点击浏览器的前进或后退按钮
+2.点击 a 标签
+3.在 JS 代码中触发 history.push(replace)State 函数
+
+
 监听事件:popstate
 
+history.pushState({},null,url); 
+	1.pushState url变化,页面不会刷新;只有back,forward,go会;
+	2.遵守同源策略;
+history.replaceState()
 history.back()
 history.forward()
 history.go()
+```
+
+##### 实现:
+
+```js
+class Router {
+  constructor() {
+    this.routes = {};
+    this.currentUrl = '';
+  }
+  route(path, callback) {
+    this.routes[path] = callback || function() {};
+  }
+  updateView(url) {
+    this.currentUrl = url;
+    this.routes[this.currentUrl] && this.routes[this.currentUrl]();
+  }
+  bindLink() {
+    const allLink = document.querySelectorAll('a[data-href]');
+    for (let i = 0, len = allLink.length; i < len; i++) {
+      const current = allLink[i];
+      current.addEventListener(
+        'click',
+        e => {
+          e.preventDefault();
+          const url = current.getAttribute('data-href');
+          history.pushState({}, null, url);
+          this.updateView(url);
+        },
+        false
+      );
+    }
+  }
+  init() {
+    this.bindLink();
+    window.addEventListener('popstate', e => {
+      this.updateView(window.location.pathname);
+    });
+    window.addEventListener('load', () => this.updateView('/'), false);
+  }
+}
+```
+
+```html
+<div id="app">
+  <ul>
+    <li><a data-href="/" href="#">home</a></li>
+    <li><a data-href="/about" href="#">about</a></li>
+    <li><a data-href="/topics" href="#">topics</a></li>
+  </ul>
+  <div id="content"></div>
+</div>
+<script src="js/router.js"></script>
+<script>
+  const router = new Router();
+  router.init();
+  router.route('/', function() {
+    document.getElementById('content').innerHTML = 'Home';
+  });
+  router.route('/about', function() {
+    document.getElementById('content').innerHTML = 'About';
+  });
+  router.route('/topics', function() {
+    document.getElementById('content').innerHTML = 'Topics';
+  });
+</script>
 ```
 
 

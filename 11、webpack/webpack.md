@@ -1428,6 +1428,8 @@ devServer: {
       
     }
   },
+      
+注意:axios中的baseurl 要设为'/api'
 ```
 
 ## HMR的使用
@@ -1624,8 +1626,39 @@ Code Splitting是webpack打包时用到的重要的优化特性之一，此特�
 有三种常用的代码分离方法：
 
 - 入口起点(entry points)：使用`entry`配置手动地分离代码。
+
 - 防止重复(prevent duplication)：使用 `SplitChunksPlugin`去重和分离 chunk。
+
 - 动态导入(dynamic imports)：通过模块的内联函数调用来分离代码。
+
+- ```js
+   externals: {
+      // vue: "Vue",
+      // "vue-router": "VueRouter",
+      // vuex: "Vuex",
+      // iview: "iView",
+      // axios: "axios"
+    },
+        
+  1.后再 index.html 手动引入 所需
+  2.删掉import 引入
+  https://www.jb51.net/article/164542.htm
+  
+  或
+   externals: {
+      'vue': 'Vue',
+      'vue-router': 'VueRouter',
+      'vuex': 'Vuex',
+      'axios': 'axios'
+    },
+    css: [
+    ],
+    js: [
+     "https://baidu.com"
+    ]
+  ```
+
+  
 
 ### 手动配置多入口
 
@@ -1714,6 +1747,38 @@ tips: Webpack v4以上使用的插件为`SplitChunksPlugin`，以前使用的`Co
 4. 查看`vendors~main~other.bundle.js`，其实就是把都用到的jQuery打包到了一个单独的js中
 
     ![1558772012664](../image/1558772012664.png)
+
+```js
+ optimization: {
+      
+        // 分割代码块
+       splitChunks: {
+        chunks: "async”,//默认作用于异步chunk，值为all/initial/async/function(chunk),值为function时第一个参数为遍历所有入口chunk时的chunk模块，chunk._modules为chunk所有依赖的模块，通过chunk的名字和所有依赖模块的resource可以自由配置,会抽取所有满足条件chunk的公有模块，以及模块的所有依赖模块，包括css
+        minSize: 30000,  //表示在压缩前的最小模块大小,默认值是30kb
+        minChunks: 1,  // 表示被引用次数，默认为1；
+         maxAsyncRequests: 5,  //所有异步请求不得超过5个
+        maxInitialRequests: 3,  //初始话并行请求不得超过3个
+        automaticNameDelimiter:'~',//名称分隔符，默认是~
+        name: true,  //打包后的名称，默认是chunk的名字通过分隔符（默认是～）分隔
+        cacheGroups: { //设置缓存组用来抽取满足不同规则的chunk,下面以生成common为例
+         common: {
+         name: 'common',  //抽取的chunk的名字
+         chunks(chunk) { //同外层的参数配置，覆盖外层的chunks，以chunk为维度进行抽取
+         },
+         test(module, chunks) {  //可以为字符串，正则表达式，函数，以module为维度进行抽取，只要是满足条件的module都会被抽取到该common的chunk中，为函数时第一个参数是遍历到的每一个模块，第二个参数是每一个引用到该模块的chunks数组。自己尝试过程中发现不能提取出css，待进一步验证。
+         },
+        priority: 10,  //优先级，一个chunk很可能满足多个缓存组，会被抽取到优先级高的缓存组中
+       minChunks: 2,  //最少被几个chunk引用
+       reuseExistingChunk: true，//  如果该chunk中引用了已经被抽取的chunk，直接引用该chunk，不会重复打包代码
+       enforce: true  // 如果cacheGroup中没有设置minSize，则据此判断是否使用上层的minSize，true：则使用0，false：使用上层minSize
+       }
+    }
+}
+        }
+
+```
+
+
 
 ### 动态导入 (懒加载)
 
@@ -1897,7 +1962,7 @@ module: {
     console.log(moment().subtract(6, 'days').calendar())
     ```
 
-# bable
+# babel
 
 ```
 babel 总共分为三个阶段：解析，转换，生成。
@@ -1963,7 +2028,7 @@ babel-polyfill 可能会污染全局变量，给很多类的原型链上都作�
 
 ```
 
-```
+```js
 {
   "presets": [
     ["env"]
@@ -1978,10 +2043,6 @@ babel-polyfill 可能会污染全局变量，给很多类的原型链上都作�
   ]
 }
 
-作者：小生方勤
-链接：https://juejin.im/post/5d2b1df66fb9a07ef161b208
-来源：掘金
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 
 
@@ -2007,7 +2068,7 @@ babel-polyfill 可能会污染全局变量，给很多类的原型链上都作�
 
 ## @babel/preset-env
 
-```
+```js
 @babel/preset-env 主要作用是对我们所使用的并且目标浏览器中缺失的功能进行代码转换和加载 polyfill，在不进行任何配置的情况下，@babel/preset-env 所包含的插件将支持所有最新的JS特性(ES2015,ES2016等，不包含 stage 阶段)，将其转换成ES5代码。例如，如果你的代码中使用了可选链(目前，仍在 stage 阶段)，那么只配置 @babel/preset-env，转换时会抛出错误，需要另外安装相应的插件。
 
 //.babelrc
@@ -2022,12 +2083,329 @@ babel-polyfill 可能会污染全局变量，给很多类的原型链上都作�
 
 例如，仅包括浏览器市场份额超过0.25％的用户所需的 `polyfill` 和代码转换（忽略没有安全更新的浏览器，如 IE10 和 BlackBerry）:
 
+## @babel/runtime
+
+```
+@babel/runtime 提出来公共的包
+@babel/plugin-transform-runtime 所以我们需要这个包来自动引用公共函数
+
+安装:npm i --S @babel/runtime @babel/plugin-transform-runtime
+```
+
+```js
+js
+{
+	"presets":[
+		["@babel/preset-env"]
+	],
+	"plugins":[
+		"babel/plugin-transform-runtime"
+	]
+}
+```
+
+# babel参考配置
+
+### babel/cli命令行编译
+
+```js
+npm install --save-dev @babel/core @babel/cli  // 自己安装测试时用的
+```
+
+```js
+npx babel index.js --out-file out.js     
+```
+
+### @babel/plugin
+
+​	插件方式转换
+
+```js
+安装:npm install --save-dev @babel/plugin-transform-arrow-functions
+```
+
+```js
+配置:
+module.exports = function (api) {
+    api.cache(true);
+	// 转换箭头函数 插件
+    const plugins = [ "@babel/plugin-transform-arrow-functions" ];
+
+    return {
+        plugins
+    };
+}
+```
+
+**转换结果:** 只对箭头函数进行转换.
+
+![image-20200714155123916](E:%5CWall-E%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C11%E3%80%81webpack%5Cimage-20200714155123916.png)
+
+### @babel/presets 插件集合
+
+​	解决babel/plugin 多个插件书写麻烦;
+
+​	@babel/presets 只对syntax进行转换;
+
+**转换类型分类:**
+
+1. syntax :如箭头函数,let, const, class等; (使用@babel/presets 转换)
+2.    api: 可以通过函数 重新覆盖的语法 如:includes,map等;(使用@babel/polyfill)
+
+**常见组合:**
+
+[@babel/preset-env](https://babel.docschina.org/docs/en/babel-preset-env)
+
+[@babel/preset-flow](https://babel.docschina.org/docs/en/babel-preset-flow)
+
+[@babel/preset-react](https://babel.docschina.org/docs/en/babel-preset-react)
+
+[@babel/preset-typescript](https://babel.docschina.org/docs/en/babel-preset-typescript)
+
+```js
+安装:npm install --save-dev @babel/preset-env
+```
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+  const presets = [['@babel/preset-env']];
+  return {
+    presets
+  };
+};
+```
+
+**转换结果:**箭头,class,let被编译;
+
+![image-20200714155408077](E:%5CWall-E%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C11%E3%80%81webpack%5Cimage-20200714155408077.png)
+
+### @babel/polyfill
+
+​	已经取消;通过配置corejs版本.
+
+```js
+安装:npm i --save core-js@3
+```
+
+**modules**
+
+```js
+"amd" | "umd" | "systemjs" | "commonjs" | "cjs" | "auto" | false，默认值是 auto。
+
+false:不会对文件的模块语法进行转化
+
+使用 webpack 中的一些新特性，比如 tree shaking 和 sideEffects，就需要设置为 false，
+
+
+```
+
+**useBuiltIns**
+
+- false:需要在 js 代码第一行主动 import '@babel/polyfill'，会将@babel/polyfill 整个包全部导入。
+- entry:需要在 js 代码第一行主动 import '@babel/polyfill'，会将 browserslist 环境不支持的所有垫片都导入。
+- usage:项目里不用主动 import，会自动将代码里已使用到的、且 browserslist 环境不支持的垫片导入。
+
+**targets**:用来配置需要支持的的环境，不仅支持浏览器，还支持 node。
+
+**loose**:默认值是 false，如果 preset-env 中包含的 plugin 支持 loose 的设置，那么可以通过这个字段来做统一的设置。
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+
+  const presets = [
+    [
+      '@babel/preset-env',
+      {
+        useBuiltIns: 'usage',
+        modules:false,
+        corejs: { //需要corejs配置版本
+          version: 3,
+          proposals: true
+        },
+        targets: {
+          browsers: [
+            '> 1%',
+            'last 2 versions',
+            'not ie <= 8'
+          ]
+        }
+      }
+    ]
+  ];
+  return {
+    presets
+    // plugins
+  };
+};
+```
+
+**转换结果:**
+
+1. 引入了很多转换所需模块,且每个文件都有引入;
+
+2. 会污染全局命名空间，当你写的是公共库时，可能会与使用者本地的方法产生冲突。
+
+   ```js
+   解决:@babel/runtime和@babel/plugin-transform-runtime
+   ```
+
+   
+
+![image-20200714164504159](E:%5CWall-E%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C11%E3%80%81webpack%5Cimage-20200714164504159.png)
+
+
+
+### @babel/plugin-transform-runtime
+
+作用:
+
+1. 自动引用公共函数,防止多个文件多次重复引用.
+2. 创建一个沙盒环境,避免全局污染
+
+```
+npm install --save-dev @babel/plugin-transform-runtime
+```
+
+默认选项:
+
+```json
+{
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "absoluteRuntime": false,
+        "corejs": false,
+        "helpers": true,
+        "regenerator": true,  // 使用不污染全局
+        "useESModules": false,
+        "version": "7.0.0-beta.0" //版本号
+      }
+    ]
+  ]
+}
+```
+
+配置:
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+
+  const presets = [
+    [
+      '@babel/preset-env',
+      {
+        useBuiltIns: 'usage',
+        corejs: {
+          version: 3,
+          proposals: true
+        },
+        targets: {
+          browsers: ['> 1%', 'last 2 versions', 'not ie<= 8']
+        }
+      }
+    ]
+  ];
+  const plugins = [
+      [
+          '@babel/plugin-transform-runtime', 
+          { corejs: 3 }
+          // 
+      ]
+  ];
+  return {
+    presets,
+    plugins
+  };
+};
+```
+
+![image-20200714170616917](E:%5CWall-E%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C11%E3%80%81webpack%5Cimage-20200714170616917.png)
+
+
+
+### @babel/runtime
+
+提出来公共的包
+
+```js
+根据corejs选项选定:
+npm install --save @babel/runtime			// corejs: false
+npm install --save @babel/runtime-corejs2	// corejs: 2
+npm install --save @babel/runtime-corejs3 	// corejs: 3
+```
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+  const presets = [......]
+  const plugins = [
+      [
+          '@babel/plugin-transform-runtime', // 防止全局污染
+          { 
+            corejs: false 
+		//	corejs: 2
+		//	corejs: 3
+          }
+      ]
+  ];
+  return {
+    presets,
+    plugins
+  };
+};
+```
+
+
+
+最终配置:
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+
+  const presets = [
+    [
+      '@babel/preset-env',
+      {
+        useBuiltIns: 'usage', //按需导入
+        corejs: { // 指定版本3
+          version: 3,
+          proposals: true
+        },
+        targets: { // 浏览器适配范围
+          browsers: ['> 1%', 'last 2 versions', 'not ie<= 8']
+        }
+      }
+    ]
+  ];
+  const plugins = [
+      [
+          '@babel/plugin-transform-runtime', // 防止全局污染
+          { corejs: 3 }
+      ]
+  ];
+  return {
+    presets,
+    plugins
+  };
+};
+https://segmentfault.com/a/1190000019718925
+```
+
+
+
 ## Browserslist 配置
 
 ```
 //.browserslistrc
 > 0.25%
 not dead
+
+
 ```
 
 https://github.com/browserslist/browserslist

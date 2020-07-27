@@ -111,3 +111,123 @@ waiting    当视频因缓冲下一帧而停止时产生该事件
 
 ```
 
+# Audio
+
+```js
+1.navigator.mediaDevice .getUserMedia
+
+2.new AudioContext();
+
+3.let Source = audioContext.createMediaStreamSource(mediaStream);
+
+4.let jsnode = audioContext.createJavaScriptNode ();
+
+5.jsnode.connect(audioContext.destination);
+
+6. jsnode.onaudioprocess
+
+7. event.inputBuffer.getChannelData(0) //获取声道数据 push
+
+8. 合并声道 alldata
+
+9. createWavFile return wavBuffer
+
+10. let blob = new Blob([new Uint8Array(arrayBuffer)]);
+```
+
+
+
+```js
+navigator.getUserMedia() 取消 使用 MediaDevices,getUserMedia()
+```
+
+## 使用:
+
+### constranints  - 参数
+
+```js
+let constranints = { 
+    audio: true, //音频
+    video: true  //视屏 
+   // video: { width: 1280, height: 720 },
+   // video: {
+   // 	width: { min: 1024, ideal: 1280, max: 1920 },
+   // 	height: {min: 776, ideal: 720, max: 1080 }
+   // } //ideal 优先级最高
+	};
+```
+
+```
+{ audio: true, video: { facingMode: "user" } } //调用前摄
+```
+
+```
+{ audio: true, video: { facingMode: { exact: "environment" } } } //调用后摄
+```
+
+```js
+
+navigator.mediaDevices.getUserMedia(constraints)
+.then(function(stream) {
+  /* 使用这个stream stream */
+})
+.catch(function(err) {
+  /* 处理error */
+});
+```
+
+## AudioContext
+
+https://denzel.netlify.app/js/useful_webapis_audiocontext.html
+
+```js
+音频中的 `AudioContext` 可以类比于 `canvas` 中的 `context`，
+就是可以用来控制音频的各种行为，比如播放、暂停、音量;
+「高级」属性:声道的合并与分割、混响、音调、声相控制和音频振幅压缩等;
+```
+
+### 	createOscillator 振荡器
+
+```js
+let oscillator = audioCtx.createOscillator();
+```
+
+### createGain 音量节点
+
+```js
+let gainNode = audioCtx.createGain();
+```
+
+```js
+gainNode.gain.value = 0.5;  // 音量 0~1
+oscillator.type = 'sine';   // 振荡器输出正弦波
+oscillator.frequency.value = 200;  // 振荡频率200Hz
+
+oscillator.connect(gainNode);    // 发生源振荡器连接音量
+gainNode.connect(audioCtx.destination); //音量连接扬声器
+oscillator.start();
+oscillator.stop(audioCtx.currentTime + FADING_TIME);  //现在起FADING_TIME秒后结束发声，没有FADING_TIME表示立刻结束
+```
+
+### createAnalyser 分析器
+
+```js
+this.analyser = this.audioCtx.createAnalyser();
+    //快速傅里叶变换参数
+    this.analyser.fftSize = 256;
+    //bufferArray长度
+    this.bufferLength = this.analyser.frequencyBinCount;
+    //创建bufferArray，用来装音频数据
+    this.dataArray = new Uint8Array(this.bufferLength);
+```
+
+### createScriptProcessor 处理器
+
+```js
+//创建处理器，参数分别是缓存区大小、输入声道数、输出声道数
+    this.scriptProcessor = this.audioCtx.createScriptProcessor(2048, 1, 1);
+    //分析器连接处理器，处理器连接扬声器
+    this.analyser.connect(this.scriptProcessor);
+    this.scriptProcessor.connect(this.audioCtx.destination);
+```
+

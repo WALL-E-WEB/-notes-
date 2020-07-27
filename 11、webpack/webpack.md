@@ -1041,7 +1041,7 @@ module.exports = {
         to: 'assets'
       }
     ]),
-    new webpack.BannerPlugin('黑马程序员真牛biubiu!')
+    new webpack.BannerPlugin('真牛biubiu!')
   ],
   module: {
     rules: [
@@ -1296,7 +1296,7 @@ module.exports = {
         to: 'assets'
       }
     ]),
-    new webpack.BannerPlugin('黑马程序员真牛biubiu!'),
+    new webpack.BannerPlugin('biubiu!'),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery'

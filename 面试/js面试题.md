@@ -49,7 +49,7 @@ footer
     块、行内元素转换为行内块： display: inline-block;
     隐藏:display:none;
     flex布局:display:flex;
-    ```
+  ```
 
 ## css选择器有哪些
 
@@ -339,6 +339,132 @@ vue组件传递如何传递:
 兄弟互传:
 
 ```js
+
+```
+
+# xss 和 csrf
+
+## xss
+
+```js
+https://www.cnblogs.com/tugenhua0707/p/10909284.html
+
+http://www.ruanyifeng.com/blog/2016/09/csp.html
+```
+
+
+
+```js
+Cross Site Scripting
+跨站脚本攻击
+恶意攻击者在web页面中会插入一些恶意的script代码。
+
+```
+
+1. **xss防御html编码**
+
+2. 
+
+   ```
+   编码规则：将 & < > " ' / 转义为实体字符
+   ```
+
+   
+
+3. **XSS 防御HTML Attribute编码**
+
+   ```
+   编码规则：除了字母、数字、字符以外，使用 &#x;16进制格式来转义ASCII值小于256所有的字符。
+   
+   
+   ```
+
+   
+
+4. **XSS防御之javascript编码**
+
+   ```js
+   JavaScript编码将字符编码成\x+16进制的形式，对款字节编码成Unicode
+   function encodeForJavascript(str) {
+         let encoded = '';
+         for(let i = 0; i < str.length; i++) {
+           let cc = hex = str[i];
+           if (!/[A-Za-z0-9]/.test(str[i]) && str.charCodeAt(i) < 256) {
+             hex = '\\x' + cc.charCodeAt().toString(16);
+           }
+           encoded += hex;
+         }
+         return encoded;
+       };
+   ```
+
+   
+
+5. **XSS 防御之 URL 编码**
+
+   ```js
+   将不可信数据作为url参数值时需要经行url编码
+   
+   使用encodeURIComponent（url）
+   ```
+
+6. **XSS 防御之 CSS 编码**
+
+   ```css
+   编码规则：除了字母数字字符以外，使用\XXXXXX格式来转义ASCII值小于256的所有字符。 
+   background-img：url（）
+   
+   function encodeForCSS (attr, str){
+     let encoded = '';
+     for (let i = 0; i < str.length; i++) {
+       let ch = str.charAt(i);
+       if (!ch.match(/[a-zA-Z0-9]/) {
+         let hex = str.charCodeAt(i).toString(16);
+         let pad = '000000'.substr((hex.length));
+         encoded += '\\' + pad + hex;
+       } else {
+         encoded += ch;
+       }
+     }
+     return encoded;
+   };
+   ```
+
+   
+
+### 解决方案:
+
+**开启CSP网页安全政策防止XSS攻击**
+
+```html
+<meta http-equiv="Content-Security-Policy" content="">
+  
+<meta http-equiv="Content-Security-Policy" content="
+default-src http: https:  *.xxx.com 'self' 'unsafe-inline' ;
+style-src 'self' 'unsafe-inline' *.yyy.com;
+script-src 'self' 'unsafe-inline' 'unsafe-eval' ;
+">
+```
+
+## CSRF
+
+CSRF跨站点请求伪造(Cross—Site Request Forgery)
+
+```js
+
+
+验证 HTTP Referer 字段；
+	HTTP 请求头Referer 记录请求的来源地址 后台验证；
+    
+在请求地址中添加 token 并验证；
+	防止请求伪造
+```
+
+# HTTP
+
+## 常见状态码
+
+```
 
 ```
 

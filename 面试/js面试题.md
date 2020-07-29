@@ -90,15 +90,110 @@ footer
 ## 移动端怎么做适配:
 
 ```
+1.媒体查询。
 
+2.js 动态设置 html 的 font-size（rem 为单位）。
+
+3.淘宝提供的解决方案 flexible.js（rem 为单位）。
+
+rem 淘宝适配方案+postcss-pxtorem
 ```
+
+2-js 动态设置
+
+```js
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+
+(function(doc, win) {
+    var docEl = doc.documentElement,
+        resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+        recalc = function() {
+            var clientWidth = docEl.clientWidth;
+            if (!clientWidth) return;
+        // 设置设计稿的宽度clientWidth为750
+            if (clientWidth >= 750) {
+                docEl.style.fontSize = '75px';
+            } else {
+                // 设置设计稿的宽度clientWidth为750
+                docEl.style.fontSize = 75 * (clientWidth / 750) + 'px';
+            };
+        };
+    if (!doc.addEventListener) return;
+    win.addEventListener(resizeEvt, recalc, false);
+    doc.addEventListener('DOMContentLoaded', recalc, false);
+})(document, window);
+```
+
+3-淘宝提供的解决方案 flexible.js（rem 为单位）。
+
+```js
+// 首先是一个立即执行函数，执行时传入的参数是window和document
+(function flexible (window, document) {
+  var docEl = document.documentElement // 返回文档的root元素
+  var dpr = window.devicePixelRatio || 1 
+  // 获取设备的dpr，即当前设置下物理像素与虚拟像素的比值
+
+  // 调整body标签的fontSize，fontSize = (12 * dpr) + 'px'
+  // 设置默认字体大小，默认的字体大小继承自body
+  function setBodyFontSize () {
+    if (document.body) {
+      document.body.style.fontSize = (12 * dpr) + 'px'
+    } else {
+      document.addEventListener('DOMContentLoaded', setBodyFontSize)
+    }
+  }
+  setBodyFontSize();
+
+  // set 1rem = viewWidth / 10
+  // 设置root元素的fontSize = 其clientWidth / 10 + ‘px’
+  function setRemUnit () {
+    var rem = docEl.clientWidth / 10
+    docEl.style.fontSize = rem + 'px'
+  }
+
+  setRemUnit()
+
+
+    // 当我们页面尺寸大小发生变化的时候，要重新设置下rem 的大小
+    window.addEventListener('resize', setRemUnit)
+        // pageshow 是我们重新加载页面触发的事件
+    window.addEventListener('pageshow', function(e) {
+        // e.persisted 返回的是true 就是说如果这个页面是从缓存取过来的页面，也需要从新计算一下rem 的大小
+        if (e.persisted) {
+            setRemUnit()
+        }
+    })
+
+  // 检测0.5px的支持，支持则root元素的class中有hairlines
+  if (dpr >= 2) {
+    var fakeBody = document.createElement('body')
+    var testElement = document.createElement('div')
+    testElement.style.border = '.5px solid transparent'
+    fakeBody.appendChild(testElement)
+    docEl.appendChild(fakeBody)
+    if (testElement.offsetHeight === 1) {
+      docEl.classList.add('hairlines')
+    }
+    docEl.removeChild(fakeBody)
+  }
+}(window, document))
+```
+
+
 
 ## 简述px,em,rem
 
 - ```
-    
-    ```
+    PX
+    px像素（Pixel）
 
+    em
+    相对父级文fontsize; 1em = 父fontsize;
+    
+    rem
+    	相对html的fontsize大小; 1rem = html fontsize
+    ```
+    
     
 
 # js
@@ -363,15 +458,13 @@ Cross Site Scripting
 
 1. **xss防御html编码**
 
-2. 
-
    ```
    编码规则：将 & < > " ' / 转义为实体字符
    ```
 
    
 
-3. **XSS 防御HTML Attribute编码**
+2. **XSS 防御HTML Attribute编码**
 
    ```
    编码规则：除了字母、数字、字符以外，使用 &#x;16进制格式来转义ASCII值小于256所有的字符。
@@ -381,10 +474,10 @@ Cross Site Scripting
 
    
 
-4. **XSS防御之javascript编码**
+3. **XSS防御之javascript编码**
 
    ```js
-   JavaScript编码将字符编码成\x+16进制的形式，对款字节编码成Unicode
+   编码规则:JavaScript编码将字符编码成\x+16进制的形式，对款字节编码成Unicode
    function encodeForJavascript(str) {
          let encoded = '';
          for(let i = 0; i < str.length; i++) {
@@ -396,11 +489,13 @@ Cross Site Scripting
          }
          return encoded;
        };
+   
+    XSS 防御HTML Attribute编码中我们是可以防御XSS攻击，但是它只能防御的是HTML通用属性，并不是全部属性，在html中还存在很多支持协议解析的html属性，比如 onclick, onerror, href, src 等这些，
    ```
 
    
 
-5. **XSS 防御之 URL 编码**
+4. **XSS 防御之 URL 编码**
 
    ```js
    将不可信数据作为url参数值时需要经行url编码
@@ -408,7 +503,7 @@ Cross Site Scripting
    使用encodeURIComponent（url）
    ```
 
-6. **XSS 防御之 CSS 编码**
+5. **XSS 防御之 CSS 编码**
 
    ```css
    编码规则：除了字母数字字符以外，使用\XXXXXX格式来转义ASCII值小于256的所有字符。 

@@ -151,7 +151,7 @@ console.log('male:' + true);
 #### 字符串长度length
 
 ```js
-var str = '黑马程序猿 Hello World';
+var str = '程序猿 Hello World';
 console.log(str.length);
 ```
 

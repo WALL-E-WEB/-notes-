@@ -70,21 +70,63 @@ footer
 ## 清除浮动的方式:
 
 - ```
-    
+  单伪类清除：
+    .clearfix::after {
+	content:".";		/*小点兼容低版本火狐*/
+    	display:block;
+    	clear:both;
+    	height:0;			/*去除点的高度*/
+    	visibility:hidden;  /*去除小点*/
+    }
+    .clearfix {
+    	*zoom:1;     /*兼容低版本IE*/
+    }
     ```
-
+    
     
 
 ## Flex布局有哪些常见属性:
 
 ```
+flex-direction:
+	row（默认值）：主轴为水平方向，起点在左端。
+    row-reverse：主轴为水平方向，起点在右端。
+    column：主轴为垂直方向，起点在上沿。
+    column-reverse：主轴为垂直方向，起点在下沿。
 
+
+flex-wrap:
+	nowrap; wrap; wrap-reverse;
+
+flex-flow
+
+justify-content:
+	flex-start; lex-end; center;space-between;space-around
+
+align-items:
+	flex-start;
+
+align-content:
+	flex-start; lex-end; center;space-between;space-around
 ```
 
 ## 水平居中有哪些方法:
 
-```
+```css
+position:absolute;
+top:50%;
+left:50%;
+margin-top:-50px;
+margin-left:-50px;
 
+position:absolute;
+top:50%;
+left:50%;
+transfrom:translate(-50%,-50%);
+
+display:flex;
+justify-content:center;
+align-item:center;
 ```
 
 ## 移动端怎么做适配:
@@ -177,6 +219,129 @@ rem 淘宝适配方案+postcss-pxtorem
     docEl.removeChild(fakeBody)
   }
 }(window, document))
+```
+
+```js
+;(function(win, lib) {
+    var doc = win.document;
+    var docEl = doc.documentElement;
+    var metaEl = doc.querySelector('meta[name="viewport"]');
+    var flexibleEl = doc.querySelector('meta[name="flexible"]');
+    var dpr = 0;
+    var scale = 0;
+    var tid;
+    var flexible = lib.flexible || (lib.flexible = {});
+    
+    if (metaEl) {
+        console.warn('将根据已有的meta标签来设置缩放比例');
+        var match = metaEl.getAttribute('content').match(/initial\-scale=([\d\.]+)/);
+        if (match) {
+            scale = parseFloat(match[1]);
+            dpr = parseInt(1 / scale);
+        }
+    } else if (flexibleEl) {
+        var content = flexibleEl.getAttribute('content');
+        if (content) {
+            var initialDpr = content.match(/initial\-dpr=([\d\.]+)/);
+            var maximumDpr = content.match(/maximum\-dpr=([\d\.]+)/);
+            if (initialDpr) {
+                dpr = parseFloat(initialDpr[1]);
+                scale = parseFloat((1 / dpr).toFixed(2));    
+            }
+            if (maximumDpr) {
+                dpr = parseFloat(maximumDpr[1]);
+                scale = parseFloat((1 / dpr).toFixed(2));    
+            }
+        }
+    }
+
+    if (!dpr && !scale) {
+        var isAndroid = win.navigator.appVersion.match(/android/gi);
+        var isIPhone = win.navigator.appVersion.match(/iphone/gi);
+        var devicePixelRatio = win.devicePixelRatio;
+        if (isIPhone) {
+            // iOS下，对于2和3的屏，用2倍的方案，其余的用1倍方案
+            if (devicePixelRatio >= 3 && (!dpr || dpr >= 3)) {                
+                dpr = 3;
+            } else if (devicePixelRatio >= 2 && (!dpr || dpr >= 2)){
+                dpr = 2;
+            } else {
+                dpr = 1;
+            }
+        } else {
+            // 其他设备下，仍旧使用1倍的方案
+            dpr = 1;
+        }
+        scale = 1 / dpr;
+    }
+
+    docEl.setAttribute('data-dpr', dpr);
+    if (!metaEl) {
+        metaEl = doc.createElement('meta');
+        metaEl.setAttribute('name', 'viewport');
+        metaEl.setAttribute('content', 'initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+        if (docEl.firstElementChild) {
+            docEl.firstElementChild.appendChild(metaEl);
+        } else {
+            var wrap = doc.createElement('div');
+            wrap.appendChild(metaEl);
+            doc.write(wrap.innerHTML);
+        }
+    }
+
+    function refreshRem(){
+        var width = docEl.getBoundingClientRect().width;
+        if (width / dpr > 540) {
+            width = 540 * dpr;
+        }
+        var rem = width / 10;
+        docEl.style.fontSize = rem + 'px';
+        flexible.rem = win.rem = rem;
+    }
+
+    win.addEventListener('resize', function() {
+        clearTimeout(tid);
+        tid = setTimeout(refreshRem, 300);
+    }, false);
+    win.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+            clearTimeout(tid);
+            tid = setTimeout(refreshRem, 300);
+        }
+    }, false);
+
+    if (doc.readyState === 'complete') {
+        doc.body.style.fontSize = 12 * dpr + 'px';
+    } else {
+        doc.addEventListener('DOMContentLoaded', function(e) {
+            doc.body.style.fontSize = 12 * dpr + 'px';
+        }, false);
+    }
+    
+
+    refreshRem();
+
+    flexible.dpr = win.dpr = dpr;
+    flexible.refreshRem = refreshRem;
+    flexible.rem2px = function(d) {
+        var val = parseFloat(d) * this.rem;
+        if (typeof d === 'string' && d.match(/rem$/)) {
+            val += 'px';
+        }
+        return val;
+    }
+    flexible.px2rem = function(d) {
+        var val = parseFloat(d) / this.rem;
+        if (typeof d === 'string' && d.match(/px$/)) {
+            2
+
+            
+            val += 'rem';
+        }
+        return val;
+    }
+
+})(window, window['lib'] || (window['lib'] = {}));
 ```
 
 
@@ -324,18 +489,25 @@ rem 淘宝适配方案+postcss-pxtorem
 
   
 
-进描述一下cookies,sessionStorage和localStorage
+## cookies,sessionStorage和localStorage
 
 - ```
+  cookie:数据始终在同源的http请求中携带; 大小4k;
+    
+localStorage:存储持久数据，浏览器关闭后数据不丢失除非主动删除数据;大小5M;
+    
+    sessionStorage:数据在当前浏览器窗口关闭后自动删除;大小5M;
+    
+    indexDB:大小无限;
     
     ```
-
+    
     
 
 浏览器的同源策略
 
 - ```
-    
+    同协议 同地址 同端口
     ```
 
     
@@ -383,8 +555,77 @@ js原生对象有哪些
 前端优化有哪些:
 
 - ```js
-    
+   
     ```
+
+## promise
+
+```
+ Promise三种状态：状态一旦改变将不可更改
+  	pending：promise初始化时；
+    resolved：执行resolve
+    rejected：执行reject
+```
+
+```js
+class HD {
+            static PENDING = "pending";
+            static FULFILLED = "fulfilled";
+            static REJECTED = "rejected";
+            constructor(executor) {
+                this.status = HD.PENDING;
+                this.value = null;
+               
+                    executor(this.resolve.bind(this), this.reject.bind(this));
+               
+            }
+            resolve(value) {
+                if (this.status == HD.PENDING) {
+                    this.status = HD.FULFILLED;
+                    this.value = value;
+                    console.log(this);
+                    console.log('resolve');
+                    console.log(value);
+                }
+            }
+            reject(value) {
+                if (this.status == HD.PENDING) {
+                    this.status = HD.REJECTED;
+                    this.value = value;
+                }
+            }
+            then(onFulfilled, onRejected) {
+               
+                if (this.status == HD.FULFILLED) {
+                    
+                        onFulfilled(this.value);
+                  
+                }
+                if (this.status == HD.REJECTED) {
+                    
+                        onRejected(this.value);
+                    
+                }
+            }
+        };
+        let p = new HD((resolve, reject) => {
+            resolve("后盾人");
+        });
+        console.log(p);
+```
+
+virtual dom
+
+```js
+减少渲染次数，提高渲染效率;
+核心api:
+	h:创建虚拟dom节点;
+
+
+	patch: 通过diff算法计算虚拟dom的差异,更新视图;
+```
+
+
 
 # ES6
 
@@ -436,6 +677,15 @@ vue组件传递如何传递:
 ```js
 
 ```
+
+virtual dom
+
+```
+virtual dom的好处：
+	减少页面渲染的次数；提高渲染效率；
+```
+
+
 
 # xss 和 csrf
 

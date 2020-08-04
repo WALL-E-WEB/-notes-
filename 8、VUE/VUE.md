@@ -846,7 +846,15 @@ undate(){
 }
 ```
 
-## $nextTick
+# nextTick
+
+原理：
+
+```
+基于异步：promise，MutationObserver，setImmediate，setTimeout
+```
+
+
 
 ```js
 async created() {
@@ -883,7 +891,7 @@ updated() {
 
 ![image-20191230170209052](C:%5CUsers%5CAdministrator%5CDesktop%5C%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0%5C%E7%AC%94%E8%AE%B0%5C-notes-%5C%E5%85%AB%E3%80%81VUE%5Cimage-20191230170209052.png)
 
-## 自定义指令-directives
+# 自定义指令-directives
 
 ```js
 局部指令:
@@ -3176,9 +3184,7 @@ fn(function(item){
         methods:{}
     }
 </script>
-————————————————
-版权声明：本文为CSDN博主「三哥玩前端」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/zhaoxiang66/article/details/80940762
+
 ```
 
 
@@ -3265,6 +3271,8 @@ Vue-Router 是vue官方的路由管理器。
 
 
 ### 1.组件导航创建 
+
+
 
 ```html
 <div id="app">
@@ -3552,10 +3560,7 @@ const Foo = {
 11、触发 DOM 更新
 12、在创建好的实例调用 beforeRouteEnter 守卫中传给 next 的回调函数
 
-作者：woniu12
-链接：https://www.jianshu.com/p/96cfc1b9ff21
-来源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
 ```
 
  ![img](../image/20190616165857285-1574860714128.png) 

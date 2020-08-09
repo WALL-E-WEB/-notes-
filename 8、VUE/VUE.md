@@ -6800,6 +6800,174 @@ dateFormat:function(time) {
 使用dateFormat(2020-04-30T01:00:000+000Z) //2020-04-30 01:00:00
 ```
 
+# 瀑布流实现
+
+```js
+<template>
+  <div class="zj_waterfall">
+
+    <div class="col"
+         ref="col1">
+      <transition-group name="list">
+        <div class="item"
+             v-for="item in dataList1"
+             :key="item">
+
+          <img class="item_img" :src="item.src"
+               alt="">
+          <div class="item_text">
+            <span>{{item.text}}</span>
+            <span class="item_tag">标签</span>
+          </div>
+        </div>
+      </transition-group>
+    </div>
+    <div class="col"
+         ref="col2">
+      <transition-group name="list">
+        <div class="item"
+             v-for="item in dataList2"
+             :key="item">
+          <img class="item_img" :src="item.src"
+               alt="">
+          <div class="item_text">
+            <span>{{item.text}}</span>
+            <span class="item_tag">标签</span>
+          </div>
+        </div>
+      </transition-group>
+    </div>
+    <div class="col"
+         ref="col3">
+      <transition-group name="list">
+        <div class="item"
+             v-for="item in dataList3"
+             :key="item">
+
+          <img class="item_img" :src="item.src"
+               alt="">
+          <div class="item_text">
+            <span>{{item.text}}</span>
+            <span class="item_tag">标签</span>
+          </div>
+        </div>
+      </transition-group>
+    </div>
+    <div class="col"
+         ref="col4">
+      <transition-group name="list">
+        <div class="item"
+             v-for="item in dataList4"
+             :key="item">
+          <img class="item_img" :src="item.src"
+               alt="">
+          <div class="item_text">
+            <span>{{item.text}}</span>
+            <span class="item_tag">标签</span>
+          </div>
+        </div>
+      </transition-group>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      mainMenuList: [],
+      dataList1: [],
+      dataList2: [],
+      dataList3: [],
+      dataList4: [],
+    };
+  },
+  methods: {
+    mountMenu(arg) {
+      var temp = this.mainMenuList;
+      var index = arg || 0;
+      var refName = this.selectCol();
+      if (temp.length > index) {
+        this[refName].push(this.mainMenuList[index]);
+        this.$nextTick(() => {
+          this.mountMenu(index + 1);
+        });
+      }
+    },
+    selectCol() {
+      var getHeight = (ref) => {
+        return this.$refs[ref].offsetHeight;
+      };
+      var height1 = getHeight("col1");
+      var height2 = getHeight("col2");
+      var height3 = getHeight("col3");
+      var height4 = getHeight("col4");
+      switch (Math.min(height1, height2, height3, height4)) {
+        case height1:
+          return "dataList1";
+          break;
+        case height2:
+          return "dataList2";
+          break;
+        case height3:
+          return "dataList3";
+        case height4:
+          return "dataList4";
+          break;
+      }
+    },
+  },
+  mounted() {
+       this.mainMenuList = [
+           {text:1,src:require('../static/img/1.png')},
+           {text:2,src:require('../static/img/2.png')},
+           {text:3,src:require('../static/img/3.png')},
+           {text:4,src:require('../static/img/4.png')},
+           {text:5,src:require('../static/img/5.png')},
+           {text:6,src:require('../static/img/1.png')},
+           {text:6,src:require('../static/img/6.png')},
+           {text:6,src:require('../static/img/6.png')},
+           {text:6,src:require('../static/img/4.png')},
+           {text:6,src:require('../static/img/6.png')},
+       ]
+      this.mountMenu()
+  },
+};
+</script>
+
+<style lang="less" scoped>
+.zj_waterfall {
+  width: 1180px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  .col {
+    width: 24%;
+    background-color: #fff;
+    .item {
+      margin-top: 20px;
+      overflow: hidden;
+      border-radius: 4px;
+      line-height: 48px;
+    }
+    .item_text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .item_img{
+        width: 100%;
+    }
+  }
+}
+</style>
+```
+
+
+
 # vue-quill-editor
 
 ```html

@@ -302,3 +302,52 @@ p,定位位置;
 </html>
 ```
 
+# 获取图片主题色
+
+```js
+  let image = document.getElementById('img')
+        img.crossOrigin = '';
+        console.log(image);
+
+        image.onload = function () {
+            let width = image.width;
+            let height = image.height;
+            let blockSize = 4
+            let rgb = { r: 0, g: 0, b: 0 }
+            let i = -4;
+            let count = 0
+            console.log('---', width, height);
+
+            let canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            let ctx = canvas.getContext("2d");
+            ctx.drawImage(image, 0, 0);
+            let data = ctx.getImageData(0, 0, width, height).data;
+            let length = data.length
+            while ((i += blockSize * 4) < length) {
+                ++count;
+                rgb.r += data[i];
+                rgb.g += data[i + 1];
+                rgb.b += data[i + 2];
+            }
+            rgb.r = ~~(rgb.r / count); // 取平均值
+            rgb.g = ~~(rgb.g / count);
+            rgb.b = ~~(rgb.b / count);
+            let bg = document.getElementById('bg');
+            // r: 65, g: 85, b: 21
+            console.log(rgb);
+            bg.style.backgroundColor = `rgb(${rgb.r},${rgb.g},${rgb.b})`
+        }
+```
+
+跨域问题:
+
+```js
+ <img id="img" src="./static/img/d.jpg" crossorigin="anonymous" alt="">
+     
+加:crossorigin="anonymous" 好像不起作用;
+本地调试:可用http-server
+```
+

@@ -4100,6 +4100,21 @@ to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.
 >
 >
 
+### 10.路由跳转打开新页面方法
+
+```js
+方法1
+<router-link target="_blank" :to="{path:'/home',query:{id:'1'}}">新页面打开home页</router-link>
+
+方法2:
+ let routeUrl = this.$router.resolve({
+     path: "/share",
+     query: {id:96}
+   });
+   window.open(routeUrl.href, '_blank');
+
+```
+
 
 
 # VUE-Vuex 状态管理

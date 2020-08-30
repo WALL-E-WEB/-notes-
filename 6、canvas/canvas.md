@@ -304,6 +304,8 @@ p,定位位置;
 
 # 获取图片主题色
 
+https://segmentfault.com/a/1190000016436206
+
 ```js
   let image = document.getElementById('img')
         img.crossOrigin = '';
@@ -347,7 +349,8 @@ p,定位位置;
 ```js
  <img id="img" src="./static/img/d.jpg" crossorigin="anonymous" alt="">
      
-加:crossorigin="anonymous" 好像不起作用;
-本地调试:可用http-server
+1加:crossorigin="anonymous" 好像不起作用;
+2本地调试:可用http-server;
+3图片转换成base64编码，直接把base64编码赋值给图片的src属性
 ```
 

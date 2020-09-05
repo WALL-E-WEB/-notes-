@@ -7111,3 +7111,89 @@ const Throttle = function(fn, gapTime) {
 };
 ```
 
+# 按钮节流方法
+
+```js
+变了判断方法:
+Vue.directive('throttle', {
+  bind: function (el, binding) {
+    let throttleTime = binding.value // 节流时间
+    if (!throttleTime) { // 用户若不设置节流时间，则默认2s
+      throttleTime = 2000
+    }
+    let cbFun
+    el.addEventListener('click', () => {
+      el.isDisableClick = true
+      if (!cbFun) {
+        cbFun = setTimeout(() => {
+          el.isDisableClick = false
+          cbFun = null
+        }, throttleTime)
+      }
+    }, true)
+  }
+})
+
+<button @click="sayHello" ref="target" v-throttle>提交</button>
+sayHello() {
+  if (!this.$refs.target.isDisableClick) {
+    console.log('Hello!')
+  }
+}
+```
+
+```js
+
+Vue.directive('throttle', {
+  bind: function (el, binding) {
+    let throttleTime = binding.value // 节流时间
+    if (!throttleTime) { // 用户若不设置节流时间，则默认2s
+      throttleTime = 2000
+    }
+    let cbFun
+    el.addEventListener('click', () => {
+      if (!el.disabled) {
+                el.disabled = true
+                cbFun = setTimeout(() => {
+                    el.disabled = false
+                    cbFun = null
+                }, throttleTime)
+            }
+    }, true)
+  }
+})
+
+<button @click="sayHello" v-throttle>提交</button>
+复制代码
+sayHello() {
+    console.log('Hello!')
+}
+```
+
+
+
+```js
+vue 自定义指令方式:
+let throttleTime = binding.value; // 防抖时间
+    if (!throttleTime) { // 用户若不设置防抖时间，则默认2s
+      throttleTime = 2000;
+    }
+    let cbFun;
+    el.addEventListener('click', event => {
+      if (!cbFun) { // 第一次执行
+        cbFun = setTimeout(() => {
+          cbFun = null;
+        }, throttleTime);
+      } else {
+        event && event.stopImmediatePropagation(); // 取消剩余同名事件
+      }
+    }, true);
+  },
+});
+
+<button @click="sayHello" v-throttle>提交</button>
+sayHello() {
+    console.log('Hello!')
+}
+```
+

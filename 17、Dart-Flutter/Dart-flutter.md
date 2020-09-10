@@ -309,8 +309,11 @@ class MyApp extends StatelessWidget {
 命令
 
 ```
-flutter packages get
-flutter run
+flutter ctrate 项目名称  // 创建项目
+
+
+flutter packages get // 类似 npm i
+flutter run			// 运行
 ```
 
 ## 生命周期
@@ -1224,23 +1227,223 @@ RadioListTile(
           ),
 ```
 
-## routes
+# routes
+
+MaterialPageRoute
+
+`MaterialPageRoute`继承自`PageRoute`类，`PageRoute`类是一个抽象类，表示占有整个屏幕空间的一个模态路由页面，它还定义了路由构建及切换时过渡动画的相关接口及属性。`MaterialPageRoute` 是Material组件库提供的组件，它可以针对不同平台，实现与平台页面切换动画风格一致的路由切换动画：
+
+```
+  MaterialPageRoute({
+    WidgetBuilder builder,
+    RouteSettings settings,
+    bool maintainState = true,
+    bool fullscreenDialog = false, //返回按键变X
+  });
+ 
+```
+
+- `builder` 是一个WidgetBuilder类型的回调函数，它的作用是构建路由页面的具体内容，返回值是一个widget。我们通常要实现此回调，返回新路由的实例。
+- `settings` 包含路由的配置信息，如路由名称、是否初始路由（首页）。
+- `maintainState`：默认情况下，当入栈一个新路由时，原来的路由仍然会被保存在内存中，如果想在路由没用的时候释放其所占用的所有资源，可以设置`maintainState`为false。
+- `fullscreenDialog`表示新的路由页面是否是一个全屏的模态对话框，在iOS中，如果`fullscreenDialog`为`true`，新页面将会从屏幕底部滑入（而不是水平方向）。
+
+普通路由:
 
 ```dart
+import '../home/HomeTest.dart';
+
+//进入
 navigattor.of(context).push(MaterialPageRoute(
-	builder:(ctx){
-		return aboutPage()
+	builder:(context){
+		return HomeTest()
 	}
 ))
-    
-Navigator.push(MaterialPageRoute(
-	builder:(ctx){
-		return aboutPage()
-	}
-))
-    
-    
+//进入    
+ Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return HomeTest();
+          }),
+        );
+//返回
+ Navigator.of(context).pop();
+
 Navigator.of().pushNamed('/home') //命名路由
+```
+
+普通路由传值:
+
+```dart
+ Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return HomeTest(title:'wo');
+            },
+          ),
+        ); // 传值
+
+class HomeTest extends StatefulWidget {
+  HomeTest({Key key, this.title}) : super(key: key);
+  final String title; //接收
+  @override
+  _HomeTestState createState() => _HomeTestState();
+}
+
+class _HomeTestState extends State<HomeTest> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title:Text(widget.title), // 赋值
+      ),
+      body: Text('data'),
+    );
+  }
+}
+```
+
+命名路由:
+
+```dart
+申明:
+main.dart
+import 'package:flutter/material.dart';
+import './routers/router.dart';
+import './home/HomeTest.dart';
+    void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      routes:{
+        '/home':(context)=>HomeTest(), //申明 全局引用
+      },
+      initialRoute: "/",
+      onGenerateRoute: onGenerateRoute,
+    );
+  }
+};
+
+页面调用:
+  Navigator.pushNamed(context, '/home',);
+```
+
+动态图命名路由传值:
+
+```
+ Navigator.pushNamed(context, '/HomeTest',arguments: {'title':'4444'}); 传参数;
+ 
+```
+
+```
+import 'package:flutter/material.dart';
+import '../Tabs/Tabs.dart'; //配置路由
+import '../home/HomeTest.dart';
+动态路由配置:
+final routes = {
+  '/': (context) => Tabs(),
+  '/HomeTest': (context, {arguments}) => HomeTest(arguments: arguments),
+};
+
+
+// ignore: top_level_function_literal_block
+var onGenerateRoute = (RouteSettings settings) {
+  // 统一处理
+  final String name = settings.name;
+  final Function pageContentBuilder = routes[name];
+
+  if (pageContentBuilder != null) {
+    if (settings.arguments != null) {
+      print(name);
+      final Route route = MaterialPageRoute(
+          builder: (context) =>
+              pageContentBuilder(context, arguments: settings.arguments));
+      return route;
+    } else {
+      final Route route =
+          MaterialPageRoute(builder: (context) => pageContentBuilder(context));
+      return route;
+    }
+  }
+};
+
+```
+
+```dart
+import 'package:flutter/material.dart';
+
+class HomeTest extends StatefulWidget {
+  final arguments; // 接收
+  HomeTest({Key key, this.arguments}) : super(key: key);
+
+  @override
+  _HomeTestState createState() => _HomeTestState();
+}
+
+class _HomeTestState extends State<HomeTest> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.arguments['title']), //使用
+      ),
+      body: FloatingActionButton(
+        child: Text('2'),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+}
+
+```
+
+页面返回返回参数:
+
+```dart
+ Navigator.of(context).pop('返回'); // 传参
+
+写法一:
+Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return HomeTest(arguments:{'title':'mytitle'});
+            },
+            // fullscreenDialog: true,
+          ),
+        ).then((value){
+          print('222222');
+          print(value);
+        });
+写法二:
+Future future = Navigator.pushNamed(
+          context,
+          '/HomeTest',
+          arguments: {'title': '上个页面的title'},
+        );
+        future.then((value) {
+          print('value--------');
+          print(value);
+        });
+写法三:    
+ Navigator.of(context).pushNamed(
+          '/HomeTest',
+          arguments: {'title': '上个页面的title'},
+        ).then((value) {
+          print(value);
+          print('999');
+        });
+
+注:点击顶部返回,手机手势返回;不能捕获参数;
+
 ```
 
 钩子
@@ -1272,6 +1475,127 @@ onUnkonwnRoute(){
 }
 
 ```
+
+```dart
+import 'package:flutter/material.dart';
+import '../Tabs/Tabs.dart'; //配置路由
+
+final routes = {
+  '/': (context) => Tabs(),
+}; //固定写法
+
+var onGenerateRoute = (RouteSettings settings) {
+  // 统一处理
+  final String name = settings.name;
+  final Function pageContentBuilder = routes[name];
+  if (pageContentBuilder != null) {
+    if (settings.arguments != null) {
+      final Route route = MaterialPageRoute(
+          builder: (context) =>
+              pageContentBuilder(context, arguments: settings.arguments));
+      return route;
+    } else {
+      final Route route =
+          MaterialPageRoute(builder: (context) => pageContentBuilder(context));
+      return route;
+    }
+  }
+};
+
+
+
+```
+
+
+
+# bottomNavigationBar
+
+```dart
+import 'package:flutter/material.dart';
+import './Category.dart';
+import './Home.dart';
+import './My.dart';
+import './User.dart';
+
+class Tabs extends StatefulWidget {
+  Tabs({Key key, this.title}) : super(key: key);
+  final String title;
+  @override
+  _TabsState createState() => _TabsState();
+}
+
+class _TabsState extends State<Tabs> {
+  int _currentIndex = 0;
+
+  List _TabsPages = [Home(), Category(), My(), User()];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: _TabsPages[this._currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+          currentIndex: this._currentIndex,
+          onTap: (index) {
+            setState(() {
+              this._currentIndex = index;
+            });
+          },
+          type: BottomNavigationBarType.fixed, // 多个底部导航栏需要配置
+          items: [
+            BottomNavigationBarItem(
+              title: Text("首页"),
+              icon: Icon(Icons.home),
+            ),
+            BottomNavigationBarItem(
+              title: Text("分类"),
+              icon: Icon(Icons.category),
+            ),
+            BottomNavigationBarItem(
+              title: Text("购物车"),
+              icon: Icon(Icons.shopping_cart),
+            ),
+            BottomNavigationBarItem(
+              title: Text("我的"),
+              icon: Icon(Icons.people),
+            ),
+          ]),
+    );
+  }
+}
+
+```
+
+```dart
+main.dart
+
+import 'package:flutter/material.dart';
+import "./Tabs/Tabs.dart";
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Tabs(title: 'walle JD'),
+    );
+  }
+}
+
+
+```
+
+
 
 # 问题
 

@@ -1684,3 +1684,92 @@ PhysicalModel(
 )
 ```
 
+# flutter 插件
+
+## 国外论坛
+
+```
+https://dev.to/
+```
+
+
+
+## 工具集
+
+```
+https://dev.to/parabeac/5-tools-to-supercharge-your-flutter-development-1m0l
+```
+
+
+
+## flutter_swiper
+
+地址:https://pub.dev/packages/flutter_swiper
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+
+
+class Home extends StatefulWidget {
+  Home({Key key, this.title}) : super(key: key);
+  final String title;
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  var title;
+
+  Widget _swiperview() {
+    List<String> imgList = [
+      "https://zhijia-pro.oss-cn-shenzhen.aliyuncs.com/h5/ad/AI%E9%A3%8E%E6%A0%BCh5.png",
+      "https://zhijia-pro.oss-cn-shenzhen.aliyuncs.com/h5/ad/AI%E6%99%BA%E9%80%89%20%28h5%29.png",
+      "https://zhijia-pro.oss-cn-shenzhen.aliyuncs.com/h5/ad/0%E5%85%83%E6%90%9E%E5%AE%9A%E8%AE%BE%E8%AE%A1h5.png",
+    ];
+
+    return Container(
+        // 必须设置宽高 或AspectRatio 设置宽高比
+      child: AspectRatio(
+        aspectRatio: 540 / 216,
+        child: Swiper(
+          itemBuilder: (BuildContext context, int index) {
+            return new Image.network(
+              imgList[index],
+              fit: BoxFit.cover,
+            );
+          },
+          itemCount: imgList.length,
+          // pagination: new SwiperPagination(),
+          pagination: SwiperPagination(
+            builder: RectSwiperPaginationBuilder(
+              size: Size(20.0, 8.0),
+              activeSize: Size(20.0, 8.0),
+              activeColor: Colors.white,
+              color: Colors.black,
+            ),
+            alignment: Alignment.bottomCenter,
+          ),
+
+          // control: new SwiperControl(),
+          autoplay: true,
+          loop: true,
+          // viewportFraction: 0.8,
+          // scale: 0.9,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        _swiperview(),
+      ],
+    );
+  }
+}
+```
+

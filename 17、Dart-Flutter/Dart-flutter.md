@@ -1773,3 +1773,31 @@ class _HomeState extends State<Home> {
 }
 ```
 
+## flutter_screenutil 
+
+```
+dependencies:
+  flutter:
+    sdk: flutter
+  # 添加依赖
+  flutter_screenutil: ^2.3.0
+```
+
+```
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+```
+
+
+
+```
+https://pub.dev/packages/flutter_screenutil
+```
+
+```
+// 需要放入build 中; 要放入路由之后;
+ScreenUtil.init(context, width: 750, height: 1334, allowFontScaling: false);
+  
+   width: ScreenUtil().setWidth(335),
+   height: ScreenUtil().setHeight(221),
+```
+

@@ -5171,6 +5171,48 @@ const Throttle = function(fn, gapTime) {
 };
 ```
 
+第一次执行
+
+```js
+function throttle2(fn,delay=100){
+ let last = 0;
+ return function(){
+  let curr = +new Date();
+  if(curr - last > delay){
+   fn.apply(this,arguments);
+   last = curr;
+  }
+ }
+}
+
+function debounce2(fn, delay = 200, atBegin = true) {
+ let timer = null, last = 0,during;
+ return function () {
+  let self = this, args = arguments;
+  var exec = function () {
+   fn.apply(self, args);
+  }
+  if (atBegin && !timer) {
+   exec();
+   atBegin = false;
+  } else {
+   during = Date.now() - last;
+   if (during > delay) {
+    exec();
+   } else {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(function () {
+     exec();
+    }, delay);
+   }
+  }
+  last = Date.now();
+ }
+}
+```
+
+
+
 ### 2.类型判断函数
 
 ```js
@@ -5239,6 +5281,16 @@ let render = timeChunk(arr, function(n) {   // n为data.shift()取到的数据
 render();
 
 ```
+
+### 判断pc端或移动端
+
+```js
+ var e = navigator.userAgent.toLocaleLowerCase();
+        r = /iphone|android|symbianos|windows\sphone/g;
+        r.test(e) ? (window.open('https://m.jia.top/sz/owner/index')) : void 0;
+```
+
+
 
 # post传参方式
 
@@ -5327,5 +5379,48 @@ https://developer.mozilla.org/zh-CN/docs/Web/API/Blob
 https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Audio_API
 
 https://blog.csdn.net/weixin_34010949/article/details/85828884?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight
+```
+
+# js图片预览兼容写法
+
+```
+<form action="" enctype="multipart/form-data">
+    <input id="file" class="filepath" onchange="changepic(this)" type="file"><br>
+    <img src="" id="show" width="200">
+</form>
+<script>
+    function changepic(obj) {
+        //console.log(obj.files[0]);//这里可以获取上传文件的name
+        var newsrc=getObjectURL(obj.files[0]);
+        document.getElementById('show').src=newsrc;
+    }
+    //建立一個可存取到該file的url
+    function getObjectURL(file) {
+        var url = null ;
+        // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+        if (window.createObjectURL!=undefined) { // basic
+            url = window.createObjectURL(file) ;
+        } else if (window.URL!=undefined) { // mozilla(firefox)
+            url = window.URL.createObjectURL(file) ;
+        } else if (window.webkitURL!=undefined) { // webkit or chrome
+            url = window.webkitURL.createObjectURL(file) ;
+        }
+        return url ;
+    }
+</script>
+```
+
+# js base64转file
+
+```
+//将base64转换为file文件
+ function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.dataURL.split(','), mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type:mime});
+  }
 ```
 

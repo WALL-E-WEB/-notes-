@@ -1339,6 +1339,20 @@ Global:Vue.ls
 Context:this.$ls
 ```
 
+## 获取图片主题色
+
+```js
+olorthief.js
+ var colorThief = new ColorThief();
+var img = new Image();
+img.addEventListener('load', function() {
+var colorlist = colorThief.getColor(img);
+document.getElementById('bannerwrap').style.backgroundColor = `rgba(${colorlist[0]},${colorlist[1]},${colorlist[2]},1)`;
+            });
+img.crossOrigin = 'Anonymous';
+img.src = newsrc;
+```
+
 
 
 # vue渲染render()

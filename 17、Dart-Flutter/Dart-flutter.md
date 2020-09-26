@@ -709,6 +709,71 @@ class MyApp extends StatelessWidget {
 
 
 
+## Widget
+
+### Text
+
+```dart
+ Text(
+        "Text组件的使用",
+        style: TextStyle(
+            // 文字颜色
+            color: Color(0xfff0000),
+            // none 不显示装饰线条，underline 字体下方，overline 字体上方，lineThrough穿过文字
+            decoration: TextDecoration.none,
+            // solid 直线，double 双下划线，dotted 虚线，dashed 点下划线，wavy 波浪线
+            decorationStyle: TextDecorationStyle.solid,
+            // 装饰线的颜色
+            decorationColor: Colors.red,
+            // 文字大小
+            fontSize: 15.0,
+            // normal 正常，italic 斜体
+            fontStyle: FontStyle.normal,
+            // 字体的粗细
+            fontWeight: FontWeight.bold,
+            // 文字间的宽度
+            letterSpacing: 1.0,
+            // 文本行与行的高度，作为字体大小的倍数（取值1~2，如1.2）
+            height: 1,
+            //对齐文本的水平线:
+            //TextBaseline.alphabetic：文本基线是标准的字母基线
+            //TextBaseline.ideographic：文字基线是表意字基线；
+            //如果字符本身超出了alphabetic 基线，那么ideograhpic基线位置在字符本身的底部。
+            textBaseline: TextBaseline.alphabetic),
+        // 段落的间距样式
+        strutStyle: StrutStyle(
+          fontFamily: 'serif',
+          fontFamilyFallback: ['monospace', 'serif'],
+          fontSize: 20,
+          height: 2,
+          leading: 2.0,
+          fontWeight: FontWeight.w300,
+          fontStyle: FontStyle.normal,
+          forceStrutHeight: true,
+          debugLabel: 'text demo',
+        ),
+        // 文字对齐方式
+        textAlign: TextAlign.center,
+        // 文字排列方向 ltr 左到右，rtl右到左
+        textDirection: TextDirection.ltr,
+        // 用于选择区域特定字形的语言环境
+        locale: Locale('zh_CN'),
+        // 软包裹 ，文字是否应该在软断行出断行
+        softWrap: false,
+        // 如何处理视觉溢出:clip 剪切溢出的文本以修复其容器。ellipsis 使用省略号表示文本已溢出。fade 将溢出的文本淡化为透明。
+        overflow: TextOverflow.clip,
+        // 文字的缩放比例
+        textScaleFactor: 1.0,
+        // 文本要跨越的可选最大行数,
+        maxLines: 2,
+        // 图像的语义描述，用于向Andoid上的TalkBack和iOS上的VoiceOver提供图像描述
+        semanticsLabel: 'text demo',
+        textWidthBasis: TextWidthBasis.longestLine,
+      )
+```
+
+
+
 ## 布局
 
 ### container
@@ -867,9 +932,9 @@ sliverAppBar
 
 pageview.builder 有懒加载
 
-## 流式布局
 
-Wrap
+
+## Wrap
 
 |                    |      |      |
 | ------------------ | ---- | ---- |
@@ -881,6 +946,21 @@ Wrap
 | VerticalDirection  |      |      |
 | textDirection      |      |      |
 | children           |      |      |
+
+```dart
+ Wrap({
+    Key key,
+    this.direction = Axis.horizontal,   //排列方向，默认水平方向排列
+    this.alignment = WrapAlignment.start,  //子控件在主轴上的对齐方式
+    this.spacing = 0.0,  //主轴上子控件中间的间距
+    this.runAlignment = WrapAlignment.start,  //子控件在交叉轴上的对齐方式
+    this.runSpacing = 0.0,  //交叉轴上子控件之间的间距
+    this.crossAxisAlignment = WrapCrossAlignment.start,   //交叉轴上子控件的对齐方式
+    this.textDirection,   //textDirection水平方向上子控件的起始位置
+    this.verticalDirection = VerticalDirection.down,  //垂直方向上子控件的其实位置
+    List<Widget> children = const <Widget>[],   //要显示的子控件集合
+  })
+```
 
 
 
@@ -1683,6 +1763,68 @@ PhysicalModel(
             clipBehavior: Clip.antiAlias,
 )
 ```
+
+## BottomNavigation切换保持
+
+```dart
+class _TabsState extends State<Tabs> {
+  int _currentIndex = 0;
+  List _TabsPages = [Home(), Category(), My(), User()];
+  var _pageController = PageController(); // 一
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("flutter ZJ"),
+      ),
+      body: PageView.builder(  // 二
+          physics: NeverScrollableScrollPhysics(),
+          //禁止页面左右滑动切换
+          controller: _pageController,
+          onPageChanged: (int index) {
+            if (index != _currentIndex) {
+              setState(() {
+                _currentIndex = index;
+              });
+            }
+          },
+          //回调函数
+          itemCount: _TabsPages.length,
+          itemBuilder: (context, index) => _TabsPages[index]),// 三
+
+      bottomNavigationBar: BottomNavigationBar(
+          currentIndex: this._currentIndex,
+          onTap: (index) {
+            setState(() {
+              _pageController.jumpToPage(index);
+            });
+          },
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              title: Text("首页"),
+              icon: Icon(Icons.home),
+            ),
+           	//....
+          ]),
+    );
+  }
+}
+
+```
+
+```dart
+子页面
+class _HomeState extends State<Home> 
+with AutomaticKeepAliveClientMixin { // AutomaticKeepAliveClientMixin
+
+ @override
+  bool get wantKeepAlive => true; // 
+}
+```
+
+
 
 # flutter 插件
 

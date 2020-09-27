@@ -441,6 +441,35 @@ $().on('keydown', function(){
 })
 ```
 
+### 自定义事件
+
+```js
+var CLICK_EVENT_KEY = 'click-bounced';
+var BOUNCING_DURATION = 1000;
+$.event.special[CLICK_EVENT_KEY] = {
+  bindType: 'click',
+  handle(event){
+  	if ($(this).data('clicking')){
+    	return
+  	}else{
+    	$(this).data('clicking', true);
+    	event.handleObj.handler.apply(this, arguments);
+    	var _this = this;
+    setTimeout(function(){
+      $(_this).data('clicking', false);
+    }, BOUNCING_DURATION)
+  }
+  }
+}
+
+$('button.bounced').on(CLICK_EVENT_KEY, function(){
+  let num = Number(document.querySelector('.alert').innerHTML);
+  document.querySelector('.alert').innerHTML = ++ num;
+});
+```
+
+
+
 ## 链式语法注意点
 
 ```jq
@@ -484,4 +513,3 @@ console.log($.fn.jquery)
 })($3)
 外面是 $ 是$
 ```
-

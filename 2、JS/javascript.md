@@ -5569,6 +5569,109 @@ header:{
 
 
 
+# 图片懒加载
+
+## 方式一:getBoundingClientRect
+
+```js
+ <div class="img-area">
+            <img class="my-photo" alt="loading" data-src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1238229328,4118222302&fm=26&gp=0.jpg">
+        </div>
+---
+function isInSight(el) {
+            const bound = el.getBoundingClientRect();
+            const clientHeight = window.innerHeight;
+            //如果只考虑向下滚动加载
+            //const clientWidth = window.innerWeight;
+            return bound.top <= clientHeight + 100;
+        }
+
+        function checkImgs() {
+            const imgs = [...document.querySelectorAll('.my-photo')];
+
+            imgs.forEach(el => {
+                if (isInSight(el)) {
+                    loadImg(el);
+                }
+            })
+        }
+
+        function loadImg(el) {
+            if (!el.src) {
+                const source = el.dataset.src;
+                el.src = source;
+            }
+        }
+
+        function throttle(fn, mustRun = 100) {
+            const timer = null;
+            let previous = null;
+            return function() {
+                const now = new Date();
+                const context = this;
+                const args = arguments;
+                if (!previous) {
+                    previous = now;
+                }
+                const remaining = now - previous;
+                if (mustRun && remaining >= mustRun) {
+                    fn.apply(context, args);
+                    previous = now;
+                }
+            }
+        }
+        window.onscroll = throttle(function() {
+            checkImgs();
+        });
+        window.onload = function() {
+            checkImgs();
+        }
+```
+
+## 方法二:IntersectionObserver
+
+```
+var io = new IntersectionObserver(callback, option);
+// 开始观察
+io.observe(document.getElementById('example'));
+// 停止观察
+io.unobserve(element);
+// 关闭观察器
+io.disconnect();
+
+http://www.ruanyifeng.com/blog/2016/11/intersectionobserver_api.html
+https://github.com/justjavac/the-front-end-knowledge-you-may-not-know/issues/10
+```
+
+```js
+ function checkImgs() {
+            const imgs = Array.from(document.querySelectorAll(".my-photo"));
+            imgs.forEach(item => io.observe(item));
+        }
+
+        function loadImg(el) {
+            if (!el.src) {
+                const source = el.dataset.src;
+                el.src = source;
+            }
+        }
+
+        const io = new IntersectionObserver(ioes => {
+            console.log('ioes', ioes);
+            ioes.forEach(ioe => {
+                const el = ioe.target;
+                const intersectionRatio = ioe.intersectionRatio;
+                if (intersectionRatio > 0 && intersectionRatio <= 1) {
+                    loadImg(el);
+                }
+                el.onload = el.onerror = () => io.unobserve(el);
+            });
+        });
+        checkImgs();
+```
+
+
+
 # Element API
 
 ```

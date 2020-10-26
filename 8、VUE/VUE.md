@@ -4540,6 +4540,45 @@ modules: {
 }
 ```
 
+#### 模块自动注册
+
+```js
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex);
+
+const context = require.context('./modules', false, /\.js$/);
+const moduleStores = {};
+context.keys().forEach(key => {
+    const fileName = key.slice(2, -3);
+    const fileModule = context(key).default;
+    moduleStores[fileName] = {
+        ...fileModule,
+    };
+});
+
+const store = new Vuex.Store({
+    modules: {
+        ...moduleStores,
+    },
+    state: {
+        curcity: {
+            province: '广东省',
+            provinceId: 440000,
+            city: '深圳',
+            cityId: 440300,
+            cityshortnamepinyin: 'sz'
+        },
+        sessionCallBack: ''
+    },
+    mutations: {},
+    actions: {}
+})
+export default store
+```
+
+
+
 ### 6.刷新事件beforunload解决持久化
 
 持久化插件:

@@ -707,6 +707,12 @@ class MyApp extends StatelessWidget {
 }
 ```
 
+# SliverAppBar
+
+```
+
+```
+
 
 
 ## Widget

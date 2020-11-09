@@ -158,6 +158,14 @@ bool isNoble(int atomicNumber) => _nobleGases[atomicNumber] != null;
 
   
 
+## String
+
+```
+https://www.cnblogs.com/lxlx1798/p/11280106.html
+```
+
+
+
 ## 类
 
 封装 继承 多态
@@ -770,6 +778,127 @@ class MyApp extends StatelessWidget {
         semanticsLabel: 'text demo',
         textWidthBasis: TextWidthBasis.longestLine,
       )
+```
+
+## Offstage
+
+```
+ 控制child是否显示
+ const Offstage({ Key key, this.offstage = true, Widget child })
+```
+
+## PreferredSize
+
+```
+   Scaffold( 
+        appBar: PreferredSize(
+        child: AppBar(
+        ),
+        preferredSize: Size.fromHeight(screenSize.height * 0.07))
+);
+```
+
+## tabber
+
+```dart
+ Key key,
+    @required this.tabs,
+    this.controller,
+    this.isScrollable = false, 				//是否可滚动
+    this.indicatorColor,					//指示器颜色
+    this.indicatorWeight = 2.0,				//指示器厚度
+    this.indicatorPadding = EdgeInsets.zero,//底部指示器的Padding
+
+    this.indicator,						//指示器decoration，例如边框等
+    this.indicatorSize, //指示器大小计算方式
+    this.labelColor,
+    this.labelStyle,
+    this.labelPadding,
+    this.unselectedLabelColor,
+    this.unselectedLabelStyle,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.mouseCursor,
+    this.onTap,
+    this.physics,
+```
+
+## SliverAppBar
+
+```dart
+ const SliverAppBar({
+    Key key,
+    this.leading,//左侧的图标或文字，多为返回箭头
+    this.automaticallyImplyLeading = true,//没有leading为true的时候，默认返回箭头，没有leading且为false，则显示title
+    this.title,//标题
+    this.actions,//标题右侧的操作
+    this.flexibleSpace,//可以理解为SliverAppBar的背景内容区
+    this.bottom,//SliverAppBar的底部区
+    this.elevation,//阴影
+    this.forceElevated = false,//是否显示阴影
+    this.backgroundColor,//背景颜色
+    this.brightness,//状态栏主题，默认Brightness.dark，可选参数light
+    this.iconTheme,//SliverAppBar图标主题
+    this.actionsIconTheme,//action图标主题
+    this.textTheme,//文字主题
+    this.primary = true,//是否显示在状态栏的下面,false就会占领状态栏的高度
+    this.centerTitle,//标题是否居中显示
+    this.titleSpacing = NavigationToolbar.kMiddleSpacing,//标题横向间距
+    this.expandedHeight,//合并的高度，默认是状态栏的高度加AppBar的高度
+    this.floating = false,//滑动时是否悬浮
+    this.pinned = false,//标题栏是否固定
+    this.snap = false,//配合floating使用
+  })
+```
+
+
+
+```dart
+滚动 浮动
+http://www.ptbird.cn/flutter-customscrollview-floating-appbar.html
+```
+
+示例
+
+```dart
+TabController _controller;
+
+@override
+  void initState() {
+    super.initState();
+    _controller = TabController(
+      length: _tabValues.length,
+      vsync: ScrollableState(),
+    );
+  }
+
+Container(
+            child: TabBar(
+              tabs: _tabValues.map((f) {
+                return Text(f);
+              }).toList(),
+              controller: _controller,
+              indicatorColor: Colors.red,
+              indicatorSize: TabBarIndicatorSize.tab,
+              isScrollable: true,
+              labelColor: Colors.red,
+              unselectedLabelColor: Colors.black,
+              indicatorWeight: 5.0,
+              labelStyle: TextStyle(height: 2),
+            ),
+          ),
+
+ Container(
+            // width: 750,
+            height: 600.0, // 非body时 需要指定高度
+            child: TabBarView(
+              controller: _controller,
+              children: _tabValues.map((f) {
+                return Center(
+                  child: Text(f),
+                );
+              }).toList(),
+            ),
+          ),
 ```
 
 
@@ -1941,5 +2070,11 @@ ScreenUtil.init(context, width: 750, height: 1334, allowFontScaling: false);
   
    width: ScreenUtil().setWidth(335),
    height: ScreenUtil().setHeight(221),
+```
+
+调试工具
+
+```
+https://flutter.dev/docs/development/tools/devtools/vscode
 ```
 

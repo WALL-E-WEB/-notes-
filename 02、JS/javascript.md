@@ -5704,6 +5704,13 @@ https://github.com/justjavac/the-front-end-knowledge-you-may-not-know/issues/10
 
 
 
+# 原生组件
+
+```
+Custom Elements
+https://www.php.cn/div-tutorial-411820.html
+```
+
 # Element API
 
 ```

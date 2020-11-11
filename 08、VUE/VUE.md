@@ -7250,3 +7250,20 @@ sayHello() {
 }
 ```
 
+请求封装
+
+```js
+const requesting = {}
+export default fetch({url, data, type, dataType}) {
+ let uid = params.url+params.type+params.method+JSON.stringify(params.data)
+     if(requesting[uid]) {
+         console.warn('请勿重复点击哦~')
+         return
+     }
+     requesting[uid] = true
+     Ajax({url, data, type, dataType}).then(() => {
+         requesting[uid] = false
+     })
+}
+```
+

@@ -39,6 +39,8 @@ Symbol
 - String
 
   ```dart
+  https://www.cnblogs.com/lxlx1798/p/11280106.html
+  
   $表达式
   var name = 'walle'
   print('abc$name'); // abcwalle
@@ -613,6 +615,34 @@ factory ThemeData({
 
 ![image-20200704124550478](Dart-flutter.assets/image-20200704124550478.png)
 
+## appbar
+
+```dart
+AppBar({
+    Key key,
+    this.leading, //widget类型，即可任意设计样式，表示左侧leading区域，通常为icon，如返回icon
+    this.automaticallyImplyLeading = true, // 如果leading!=null，该属性不生效；如果leading==null且为true，左侧leading区域留白；如果leading==null且为false，左侧leading区域扩展给title区域使用
+    this.title,//widget类型，即可任意设计样式，表示中间title区域，通常为标题栏
+    this.actions,// List<Widget>类型，即可任意设计样式，表示右侧actions区域，可放置多个widget，通常为icon，如搜索icon、菜单icon
+    this.flexibleSpace,
+    this.bottom, //PreferredSizeWidget类型，appbar底部区域，通常为Tab控件
+    this.elevation, //阴影高度，默认为4
+    this.shape,//ShapeBorder 类型，表示描边形状
+    this.backgroundColor, //Color类型，背景色 
+    this.brightness,//Brightness类型，表示当前appbar主题是亮或暗色调，有dark和light两个值，可影响系统状态栏的图标颜色
+    this.iconTheme, //IconThemeData类型，可影响包括leading、title、actions中icon的颜色、透明度，及leading中的icon大小。
+    this.actionsIconTheme,
+    this.textTheme,// TextTheme类型，文本主题样式，可设置appbar中文本的许多样式，如字体大小、颜色、前景色、背景色等...
+    this.primary = true,//true时，appBar会以系统状态栏高度为间距显示在下方；false时，会和状态栏重叠，相当于全屏显示。
+    this.centerTitle, // boolean 类型，表示标题是否居中显示
+    this.titleSpacing = NavigationToolbar.kMiddleSpacing,//title区域水平方向与leading和actions的间距(padding)
+    this.toolbarOpacity = 1.0,//toolbar区域透明度
+    this.bottomOpacity = 1.0,//bottom区域透明度
+  }
+```
+
+
+
 ## 底部导航栏
 
 ```dart
@@ -715,7 +745,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-# SliverAppBar
+## SliverAppBar
 
 ```
 
@@ -905,6 +935,120 @@ Container(
               }).toList(),
             ),
           ),
+```
+
+## 主题ThemeData
+
+```dart
+factory ThemeData({
+  Brightness brightness, // 应用整体主题的亮度。用于按钮之类的小部件，以确定在不使用主色或强调色时选择什么颜色。
+  MaterialColor primarySwatch,// 定义一个单一的颜色以及十个色度的色块。
+  Color primaryColor, // 应用程序主要部分的背景颜色(toolbars、tab bars 等)
+  Brightness primaryColorBrightness, // primaryColor的亮度。用于确定文本的颜色和放置在主颜色之上的图标(例如工具栏文本)。
+  Color primaryColorLight, // primaryColor的浅色版
+  Color primaryColorDark, // primaryColor的深色版
+  Color accentColor, // 小部件的前景色(旋钮、文本、覆盖边缘效果等)。
+  Brightness accentColorBrightness, // accentColor的亮度。
+  Color canvasColor, //  MaterialType.canvas 的默认颜色
+  Color scaffoldBackgroundColor, // Scaffold的默认颜色。典型Material应用程序或应用程序内页面的背景颜色。
+  Color bottomAppBarColor, // BottomAppBar的默认颜色
+  Color cardColor, // Card的颜色
+  Color dividerColor, // Divider和PopupMenuDivider的颜色，也用于ListTile之间、DataTable的行之间等。
+  Color highlightColor, // 选中在泼墨动画期间使用的突出显示颜色，或用于指示菜单中的项。
+  Color splashColor,  // 墨水飞溅的颜色。InkWell
+  InteractiveInkFeatureFactory splashFactory, // 定义由InkWell和InkResponse反应产生的墨溅的外观。
+  Color selectedRowColor, // 用于突出显示选定行的颜色。
+  Color unselectedWidgetColor, // 用于处于非活动(但已启用)状态的小部件的颜色。例如，未选中的复选框。通常与accentColor形成对比。也看到disabledColor。
+  Color disabledColor, // 禁用状态下部件的颜色，无论其当前状态如何。例如，一个禁用的复选框(可以选中或未选中)。
+  Color buttonColor, // RaisedButton按钮中使用的Material 的默认填充颜色。
+  ButtonThemeData buttonTheme, // 定义按钮部件的默认配置，如RaisedButton和FlatButton。
+  Color secondaryHeaderColor, // 选定行时PaginatedDataTable标题的颜色。
+  Color textSelectionColor, // 文本框中文本选择的颜色，如TextField
+  Color cursorColor, // 文本框中光标的颜色，如TextField
+  Color textSelectionHandleColor,  // 用于调整当前选定的文本部分的句柄的颜色。
+  Color backgroundColor, // 与主色形成对比的颜色，例如用作进度条的剩余部分。
+  Color dialogBackgroundColor, // Dialog 元素的背景颜色
+  Color indicatorColor, // 选项卡中选定的选项卡指示器的颜色。
+  Color hintColor, // 用于提示文本或占位符文本的颜色，例如在TextField中。
+  Color errorColor, // 用于输入验证错误的颜色，例如在TextField中
+  Color toggleableActiveColor, // 用于突出显示Switch、Radio和Checkbox等可切换小部件的活动状态的颜色。
+  String fontFamily, // 文本字体
+  TextTheme textTheme, // 文本的颜色与卡片和画布的颜色形成对比。
+  TextTheme primaryTextTheme, // 与primaryColor形成对比的文本主题
+  TextTheme accentTextTheme, // 与accentColor形成对比的文本主题。
+  InputDecorationTheme inputDecorationTheme, // 基于这个主题的 InputDecorator、TextField和TextFormField的默认InputDecoration值。
+  IconThemeData iconTheme, // 与卡片和画布颜色形成对比的图标主题
+  IconThemeData primaryIconTheme, // 与primaryColor形成对比的图标主题
+  IconThemeData accentIconTheme, // 与accentColor形成对比的图标主题。
+  SliderThemeData sliderTheme,  // 用于呈现Slider的颜色和形状
+  TabBarTheme tabBarTheme, // 用于自定义选项卡栏指示器的大小、形状和颜色的主题。
+  CardTheme cardTheme, // Card的颜色和样式
+  ChipThemeData chipTheme, // Chip的颜色和样式
+  TargetPlatform platform, 
+  MaterialTapTargetSize materialTapTargetSize, // 配置某些Material部件的命中测试大小
+  PageTransitionsTheme pageTransitionsTheme, 
+  AppBarTheme appBarTheme, // 用于自定义Appbar的颜色、高度、亮度、iconTheme和textTheme的主题。
+  BottomAppBarTheme bottomAppBarTheme, // 自定义BottomAppBar的形状、高度和颜色的主题。
+  ColorScheme colorScheme, // 拥有13种颜色，可用于配置大多数组件的颜色。
+  DialogTheme dialogTheme, // 自定义Dialog的主题形状
+  Typography typography, // 用于配置TextTheme、primaryTextTheme和accentTextTheme的颜色和几何TextTheme值。
+  CupertinoThemeData cupertinoOverrideTheme 
+})
+```
+
+## webview
+
+```
+插件
+https://pub.dev/packages/webview_flutter
+```
+
+```dart
+拦截返回
+import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+class Case extends StatefulWidget {
+  Case({Key key, this.title}) : super(key: key);
+  final String title;
+  @override
+  _CaseState createState() => _CaseState();
+}
+
+class _CaseState extends State<Case> {
+  String url = 'https://m.jia.top/sz/design/index?hideLeftArrow=1';
+  WebViewController _webViewController;
+  Future<bool> _requestPop() {
+    // Navigator.of(context).pop(100);
+
+    ///弹出页面并传回int值100，用于上一个界面的回调
+    // return new Future.value(false);
+    Future canGoBack = _webViewController.canGoBack();
+    canGoBack.then((str) {
+      if (str) {
+        _webViewController.goBack();
+      } else {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      child: WebView(
+        initialUrl: url,
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          // 在WebView创建完成后会产生一个 webViewController
+          _webViewController = webViewController;
+        },
+      ),
+      onWillPop: _requestPop,
+    );
+  }
+}
+
 ```
 
 
@@ -1441,6 +1585,263 @@ RadioListTile(
             title: Text('sss'),
           ),
 ```
+
+## TextField
+
+```
+https://www.cnblogs.com/joe235/p/11711653.html
+```
+
+复制粘贴设置成中文
+
+```
+-pubspec.yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+```
+
+```dart
+return MaterialApp(
+  localizationsDelegates: [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ],
+  supportedLocales: [
+    const Locale('zh', 'CN'),
+    const Locale('en', 'US'),
+  ]
+}
+
+```
+
+
+
+```dart
+ Key key,
+    this.controller,                    // 控制正在编辑文本
+    this.focusNode,                     // 获取键盘焦点
+    this.decoration = const InputDecoration(),              // 边框装饰
+    TextInputType keyboardType,         // 键盘类型
+    this.textInputAction,               // 键盘的操作按钮类型
+    this.textCapitalization = TextCapitalization.none,      // 配置大小写键盘
+    this.style,                         // 输入文本样式
+    this.textAlign = TextAlign.start,   // 对齐方式
+    this.textDirection,                 // 文本方向
+    this.autofocus = false,             // 是否自动对焦
+    this.obscureText = false,           // 是否隐藏内容，例如密码格式
+    this.autocorrect = true,            // 是否自动校正
+    this.maxLines = 1,                  // 最大行数
+    this.maxLength,                     // 允许输入的最大长度
+    this.maxLengthEnforced = true,      // 是否允许超过输入最大长度
+    this.onChanged,                     // 文本内容变更时回调
+    this.onEditingComplete,             // 提交内容时回调
+    this.onSubmitted,                   // 用户提示完成时回调
+    this.inputFormatters,               // 验证及格式
+    this.enabled,                       // 是否不可点击
+    this.cursorWidth = 2.0,             // 光标宽度
+    this.cursorRadius,                  // 光标圆角弧度
+    this.cursorColor,                   // 光标颜色
+    this.keyboardAppearance,            // 键盘亮度
+    this.scrollPadding = const EdgeInsets.all(20.0),        // 滚动到视图中时，填充边距
+    this.enableInteractiveSelection,    // 长按是否展示【剪切/复制/粘贴菜单LengthLimitingTextInputFormatter】
+    this.onTap,  
+```
+
+
+
+```dart
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+///整理
+//TextField 输入文本 decoration 配置边框样式以及提示文本分析篇
+class TextFeildHomePage5 extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return TextFeildHomePageState();
+  }
+}
+
+class TextFeildHomePageState extends State {
+
+  ///用来控制  TextField 焦点的获取与关闭
+  FocusNode focusNode = new FocusNode();
+  ///文本输入框是否可编辑
+  bool isEnable = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    ///添加获取焦点与失去焦点的兼听
+    focusNode.addListener((){
+      ///当前兼听的 TextFeild 是否获取了输入焦点
+      bool hasFocus = focusNode.hasFocus;
+      ///当前 focusNode 是否添加了兼听
+      bool hasListeners = focusNode.hasListeners;
+
+      print("focusNode 兼听 hasFocus:$hasFocus  hasListeners:$hasListeners");
+    });
+
+    /// WidgetsBinding 它能监听到第一帧绘制完成，第一帧绘制完成标志着已经Build完成
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ///获取输入框焦点
+      FocusScope.of(context).requestFocus(focusNode);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          FlatButton(child: Text("获取焦点"),onPressed: (){
+            FocusScope.of(context).requestFocus(focusNode);
+          },),
+          FlatButton(child: Text("失去焦点"),onPressed: (){
+            focusNode.unfocus();
+          },),
+          FlatButton(child: Text("编辑"),onPressed: (){
+            setState(() {
+              isEnable = true;
+            });
+          },),
+          FlatButton(child: Text("不可编辑"),onPressed: (){
+            setState(() {
+              isEnable = false;
+            });
+          },),
+        ],
+      ),
+      body: Container(
+        ///SizedBox 用来限制一个固定 width height 的空间
+        child: SizedBox(
+          width: 400,
+          height: 130,
+          child: Container(
+            color: Colors.white24,
+            ///距离顶部
+            margin: EdgeInsets.only(top: 30),
+            padding: EdgeInsets.all(10),
+            ///Alignment 用来对齐 Widget
+            alignment: Alignment(0, 0),
+            ///文本输入框
+            child: TextField(
+
+              ///是否可编辑
+              enabled: isEnable,
+              ///焦点获取
+              focusNode: focusNode,
+              ///用来配置 TextField 的样式风格
+              decoration: InputDecoration(
+                ///设置输入文本框的提示文字
+                ///输入框获取焦点时 并且没有输入文字时
+                hintText: "请输入用户名",
+                ///设置输入文本框的提示文字的样式
+                hintStyle: TextStyle(color: Colors.grey,textBaseline: TextBaseline.ideographic,),
+                ///输入框内的提示 输入框没有获取焦点时显示
+                labelText: "用户名",
+                labelStyle: TextStyle(color: Colors.blue),
+                ///显示在输入框下面的文字
+                helperText: "这里是帮助提示语",
+                helperStyle: TextStyle(color: Colors.green),
+
+                ///显示在输入框下面的文字
+                ///会覆盖了 helperText 内容
+                errorText: "这里是错误文本提示",
+                errorStyle: TextStyle(color: Colors.red),
+
+                ///输入框获取焦点时才会显示出来 输入文本的前面
+                prefixText: "prefix",
+                prefixStyle: TextStyle(color: Colors.deepPurple),
+                ///输入框获取焦点时才会显示出来 输入文本的后面
+                suffixText: "suf ",
+                suffixStyle: TextStyle(color: Colors.black),
+
+                ///文本输入框右下角显示的文本
+                ///文字计数器默认使用
+                counterText: "count",
+                counterStyle:TextStyle(color: Colors.deepPurple[800]),
+
+                ///输入文字前的小图标
+                prefixIcon: Icon(Icons.phone),
+                ///输入文字后面的小图标
+                suffixIcon: Icon(Icons.close),
+
+                ///与 prefixText 不能同时设置
+//                prefix: Text("A") ,
+                /// 与 suffixText 不能同时设置
+//                suffix:  Text("B") ,
+                ///设置边框
+                ///   InputBorder.none 无下划线
+                ///   OutlineInputBorder 上下左右 都有边框
+                ///   UnderlineInputBorder 只有下边框  默认使用的就是下边框
+                border: OutlineInputBorder(
+                  ///设置边框四个角的弧度
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ///用来配置边框的样式
+                  borderSide: BorderSide(
+                    ///设置边框的颜色
+                    color: Colors.red,
+                    ///设置边框的粗细
+                    width: 2.0,
+                  ),
+                ),
+                ///设置输入框可编辑时的边框样式
+                enabledBorder: OutlineInputBorder(
+                  ///设置边框四个角的弧度
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ///用来配置边框的样式
+                  borderSide: BorderSide(
+                    ///设置边框的颜色
+                    color: Colors.blue,
+                    ///设置边框的粗细
+                    width: 2.0,
+                  ),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  ///设置边框四个角的弧度
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ///用来配置边框的样式
+                  borderSide: BorderSide(
+                    ///设置边框的颜色
+                    color: Colors.red,
+                    ///设置边框的粗细
+                    width: 2.0,
+                  ),
+                ),
+                ///用来配置输入框获取焦点时的颜色
+                focusedBorder: OutlineInputBorder(
+                  ///设置边框四个角的弧度
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ///用来配置边框的样式
+                  borderSide: BorderSide(
+                    ///设置边框的颜色
+                    color: Colors.green,
+                    ///设置边框的粗细
+                    width: 2.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+## 点击事件
+
+```dart
+InkWell,GestureDetector,RaisedButton。
+```
+
+
 
 # routes
 
@@ -2082,5 +2483,11 @@ ScreenUtil.init(context, width: 750, height: 1334, allowFontScaling: false);
 
 ```
 https://flutter.dev/docs/development/tools/devtools/vscode
+```
+
+# 教程
+
+```
+http://laomengit.com/
 ```
 

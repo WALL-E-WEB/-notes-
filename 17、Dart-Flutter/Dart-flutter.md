@@ -289,6 +289,44 @@ class Impostor implements Person {
 
 
 
+## 定时器
+
+```dart
+import 'dart:async';
+
+ Timer timeoutId;
+
+
+const timeout = const Duration(seconds: 5);
+print('currentTime='+DateTime.now().toString()); // 当前时间
+timeoutId = Timer(timeout, () { //callback function
+  print('afterTimer='+DateTime.now().toString()); // 5s之后
+});
+
+const timeout = const Duration(seconds: 1);
+timeoutId = Timer.periodic(timeout, (timer) { //callback function
+  //1s 回调一次
+  print('afterTimer='+DateTime.now().toString());
+  
+  timer.cancel();  // 取消定时器
+}
+               
+               
+```
+
+清除定时器
+
+```
+ 
+ @override
+ void dispose() {
+  super.dispose();
+  timeoutId.cancel();
+ }
+```
+
+
+
 # flutter
 
 hello world
@@ -751,6 +789,51 @@ class MyApp extends StatelessWidget {
 
 ```
 
+滚动到指定位置
+
+```dart
+ onTap: () {
+      _pageScroll.animateTo(
+          _pageScroll.position.minScrollExtent, //滚动到顶部部
+          duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+  },
+```
+
+## Dialog
+
+```dart
+https://juejin.im/post/6844903822028963847
+Future<T> showDialog<T>({
+  @required BuildContext context,
+  // 点击 dialog 外部是否可消失
+  bool barrierDismissible = true,
+  // 构建 Dialog 视图
+  WidgetBuilder builder,
+})
+
+    
+    如果要更新 dialog中的视图
+    科技加一层StatefulBuilder建立自身的 setstate；
+```
+
+```dart
+showDialog<Future>(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      useSafeArea: true,
+      builder: (BuildContext context) {
+      	 BuildContext iscontext = context; // 父级的
+         bool isShowPhone = true;
+        return StatefulBuilder(builder: (context, state // 自己的setstate) {
+        	return Widget
+        }
+      }
+
+```
+
 
 
 ## Widget
@@ -995,6 +1078,14 @@ factory ThemeData({
   CupertinoThemeData cupertinoOverrideTheme 
 })
 ```
+
+## safearea
+
+```
+屏幕适配
+```
+
+
 
 ## webview
 
@@ -1268,6 +1359,22 @@ pageview.builder 有懒加载
 #### FractionallySizedBox
 
 #### card
+
+## Transform
+
+```dart
+Transform(
+     origin: Offset(57.w / 2, 34.h / 2),
+     transform: Matrix4.rotationZ(pi / 2),
+     child: Image.asset(
+            'images/next.png',
+             width: 57.w,
+             height: 34.h,
+           ),
+  ),
+```
+
+
 
 ## 辅助样式
 
@@ -1557,6 +1664,14 @@ const TextField({
   })
 
 ```
+
+## 表单验证
+
+```
+https://www.jianshu.com/p/3fb613ffac22
+```
+
+
 
 checkbox
 

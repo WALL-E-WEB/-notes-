@@ -92,6 +92,41 @@ Symbol
   };
   ```
 
+  ## Map
+  
+  创建
+  
+  ```dart
+  创建Map: var map1 = {"first":"Dart",1:true,true:"2"};
+  创建不可变Map: var map2 = const{"first":"Dart",1:true,true:"2"};
+  
+  构造创建：var map3 = new Map();
+  ```
+  
+  
+  
+  ```dart
+  	常用属性：
+          keys            获取所有的key值
+          values          获取所有的value值
+          isEmpty         是否为空
+          isNotEmpty      是否不为空
+      常用方法:
+          remove(key)     删除指定key的数据
+          addAll({...})   合并映射  给映射内增加属性
+          containsValue   查看映射内的值  返回true/false
+          forEach   
+          map
+          where
+          any
+          every
+       常用操作   
+          [],length,keys,values,
+          containsKey,
+          containsValue,
+          remove,forEach 
+  ```
+  
   
 
 ## 数据转换
@@ -645,6 +680,21 @@ factory ThemeData({
   Typography typography, // 用于配置TextTheme、primaryTextTheme和accentTextTheme的颜色和几何TextTheme值。
   CupertinoThemeData cupertinoOverrideTheme 
 })
+```
+
+AppBarTheme
+
+```dart
+  const AppBarTheme({
+    this.brightness,
+    this.color, 	// 背景颜色
+    this.elevation, // 阴影辐射范围 default 4.0
+    this.shadowColor,
+    this.iconTheme,
+    this.actionsIconTheme,
+    this.textTheme,
+    this.centerTitle,
+  });
 ```
 
 

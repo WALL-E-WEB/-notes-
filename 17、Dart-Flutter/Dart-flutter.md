@@ -2485,9 +2485,184 @@ ScreenUtil.init(context, width: 750, height: 1334, allowFontScaling: false);
 https://flutter.dev/docs/development/tools/devtools/vscode
 ```
 
+# 打包
+
+```dart
+项目根目录/android/app/src/main/AndroidManifest.xml
+
+android:label="flutter_app"   //配置APP的名称，支持中文
+android:icon="@mipmap/ic_launcher" //APP图标的文件名称,所以这个图标文件名可以在这个地方配置
+```
+
+生成 keystore
+
+```
+
+
+在VScode输入flutter doctor -v找到Android toolchain栏目下的Java binary at：,复制这个标题项的地址。
+我Mac的地址是/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/bin/java
+在VScode的终端输入查询到的java根目录地址以及keytool -genkey -v -keystore F:/key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key 
+
+即：/Applications/'Android Studio.app'/Contents/jre/jdk/Contents/Home/bin/keytool -genkey -v -keystore ~/key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key
+回车后，他会要求你输入密钥库口令，记住你的口令，稍后会用到。
+继续操作后，还会要求你的密钥密码，同样也要记住这个密码。
+之后在你的user目录下生成key.jks.这个key.jks路径可以在上面的命令行中修改。记住这个文件不能共享给任何人!
+有了这个key.jks文件后，可以到项目目录下的android文件夹下，创建一个名为key.properties的文件，并打开粘贴下面的代码。
+
+```
+
+### build.gradle
+
+```dart
+buildscript {
+    ext.kotlin_version = '1.3.50'
+    repositories {
+//        google()
+//        jcenter()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+//        google()
+//        jcenter()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+```
+
+app下 build.gradle
+
+```
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    compileSdkVersion 28
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "com.example.myjd"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.release
+            // signingConfig signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+```
+
+android 目录下 创建key.properties
+
+```
+storePassword=woainia520
+keyPassword=woainia520
+keyAlias=key
+storeFile=F:/key.jks
+```
+
+打包命令
+
+```
+flutter build apk
+```
+
+
+
 # 教程
 
 ```
 http://laomengit.com/
+```
+
+```
+咸鱼技术分享
+https://www.yuque.com/xytech/flutter/lgxv30
 ```
 

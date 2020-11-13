@@ -92,6 +92,41 @@ Symbol
   };
   ```
 
+  ## Map
+  
+  创建
+  
+  ```dart
+  创建Map: var map1 = {"first":"Dart",1:true,true:"2"};
+  创建不可变Map: var map2 = const{"first":"Dart",1:true,true:"2"};
+  
+  构造创建：var map3 = new Map();
+  ```
+  
+  
+  
+  ```dart
+  	常用属性：
+          keys            获取所有的key值
+          values          获取所有的value值
+          isEmpty         是否为空
+          isNotEmpty      是否不为空
+      常用方法:
+          remove(key)     删除指定key的数据
+          addAll({...})   合并映射  给映射内增加属性
+          containsValue   查看映射内的值  返回true/false
+          forEach   
+          map
+          where
+          any
+          every
+       常用操作   
+          [],length,keys,values,
+          containsKey,
+          containsValue,
+          remove,forEach 
+  ```
+  
   
 
 ## 数据转换
@@ -286,6 +321,44 @@ class Impostor implements Person {
 ```
 
 ------
+
+
+
+## 定时器
+
+```dart
+import 'dart:async';
+
+ Timer timeoutId;
+
+
+const timeout = const Duration(seconds: 5);
+print('currentTime='+DateTime.now().toString()); // 当前时间
+timeoutId = Timer(timeout, () { //callback function
+  print('afterTimer='+DateTime.now().toString()); // 5s之后
+});
+
+const timeout = const Duration(seconds: 1);
+timeoutId = Timer.periodic(timeout, (timer) { //callback function
+  //1s 回调一次
+  print('afterTimer='+DateTime.now().toString());
+  
+  timer.cancel();  // 取消定时器
+}
+               
+               
+```
+
+清除定时器
+
+```
+ 
+ @override
+ void dispose() {
+  super.dispose();
+  timeoutId.cancel();
+ }
+```
 
 
 
@@ -609,6 +682,21 @@ factory ThemeData({
 })
 ```
 
+AppBarTheme
+
+```dart
+  const AppBarTheme({
+    this.brightness,
+    this.color, 	// 背景颜色
+    this.elevation, // 阴影辐射范围 default 4.0
+    this.shadowColor,
+    this.iconTheme,
+    this.actionsIconTheme,
+    this.textTheme,
+    this.centerTitle,
+  });
+```
+
 
 
 ## Scaffold
@@ -748,6 +836,51 @@ class MyApp extends StatelessWidget {
 ## SliverAppBar
 
 ```
+
+```
+
+滚动到指定位置
+
+```dart
+ onTap: () {
+      _pageScroll.animateTo(
+          _pageScroll.position.minScrollExtent, //滚动到顶部部
+          duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+  },
+```
+
+## Dialog
+
+```dart
+https://juejin.im/post/6844903822028963847
+Future<T> showDialog<T>({
+  @required BuildContext context,
+  // 点击 dialog 外部是否可消失
+  bool barrierDismissible = true,
+  // 构建 Dialog 视图
+  WidgetBuilder builder,
+})
+
+    
+    如果要更新 dialog中的视图
+    科技加一层StatefulBuilder建立自身的 setstate；
+```
+
+```dart
+showDialog<Future>(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      useSafeArea: true,
+      builder: (BuildContext context) {
+      	 BuildContext iscontext = context; // 父级的
+         bool isShowPhone = true;
+        return StatefulBuilder(builder: (context, state // 自己的setstate) {
+        	return Widget
+        }
+      }
 
 ```
 
@@ -995,6 +1128,14 @@ factory ThemeData({
   CupertinoThemeData cupertinoOverrideTheme 
 })
 ```
+
+## safearea
+
+```
+屏幕适配
+```
+
+
 
 ## webview
 
@@ -1268,6 +1409,22 @@ pageview.builder 有懒加载
 #### FractionallySizedBox
 
 #### card
+
+## Transform
+
+```dart
+Transform(
+     origin: Offset(57.w / 2, 34.h / 2),
+     transform: Matrix4.rotationZ(pi / 2),
+     child: Image.asset(
+            'images/next.png',
+             width: 57.w,
+             height: 34.h,
+           ),
+  ),
+```
+
+
 
 ## 辅助样式
 
@@ -1557,6 +1714,14 @@ const TextField({
   })
 
 ```
+
+## 表单验证
+
+```
+https://www.jianshu.com/p/3fb613ffac22
+```
+
+
 
 checkbox
 

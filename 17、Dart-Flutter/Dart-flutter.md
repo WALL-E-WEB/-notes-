@@ -1802,7 +1802,7 @@ const TextField({
 
 ```
 
-## 表单验证
+### 表单验证
 
 ```
 https://www.jianshu.com/p/3fb613ffac22
@@ -1838,7 +1838,7 @@ RadioListTile(
           ),
 ```
 
-## TextField
+### TextField
 
 ```
 https://www.cnblogs.com/joe235/p/11711653.html
@@ -2087,10 +2087,34 @@ class TextFeildHomePageState extends State {
 }
 ```
 
+### 失去焦点
+
+```dart
+ GestureDetector(
+       behavior: HitTestBehavior.translucent,
+       onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+  },
+ ）
+```
+
+
+
 ## 点击事件
 
 ```dart
 InkWell,GestureDetector,RaisedButton。
+```
+
+GestureDetector
+
+```dart
+GestureDetector
+
+behavior:
+	HitTestBehavior.opaque  // 事件可穿透
+    HitTestBehavior.deferToChild // child处理事件
+	HitTestBehavior.translucent // 自己和child都可以响应事件
 ```
 
 
@@ -2463,6 +2487,134 @@ class MyApp extends StatelessWidget {
 
 ```
 
+# 获取定位
+
+1. 申请高德key；
+2. 创建应用；
+3. 获取sha1，获取包名；
+4. 声明权限；
+
+```
+参考：https://blog.csdn.net/qq_42772570/article/details/101671009
+https://blog.csdn.net/Gemini_Kanon/article/details/104628500?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-4-104628500.nonecase&utm_term=flutter%20%E8%8E%B7%E5%8F%96%E4%BD%8D%E7%BD%AE%E4%BF%A1%E6%81%AF&spm=1000.2123.3001.4430
+https://lbs.amap.com/faq/android/map-sdk/create-project/43112
+```
+
+参考：https://blog.csdn.net/qq_44749053/article/details/101102785
+
+```
+依赖：
+  amap_location: ^0.2.0
+  permission_handler: ^3.2.0 // 权限判断
+
+引入：
+import 'package:amap_location/amap_location.dart';
+import 'package:permission_handler/permission_handler.dart'; //权限
+```
+
+```dart
+检查权限：
+ //检测权限状态
+  void checkPersmission() async {
+    // 申请权限
+    Map<PermissionGroup, PermissionStatus> permissions =
+        await PermissionHandler()
+            .requestPermissions([PermissionGroup.location]);
+    // 申请结果
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.location);
+    if (permission == PermissionStatus.granted) {
+      _getLocation();
+    } else {
+      print('定位权限申请被拒绝');
+      bool isOpened = await PermissionHandler().openAppSettings(); //打开应用设置
+    }
+  }
+```
+
+```dart
+监听：
+void _getLocation() async {
+    //先启动一下
+    await AMapLocationClient.startup(new AMapLocationOption(
+        desiredAccuracy: CLLocationAccuracy.kCLLocationAccuracyHundredMeters));
+
+    //直接获取定位
+    var result = await AMapLocationClient.getLocation(true);
+    print('result--$result');
+    print("""
+    经度：${result.longitude}
+    纬度：${result.latitude}
+    """);
+    var lat = result.latitude;
+    var lng = result.longitude;
+    if (lat.toString().isNotEmpty && lng.toString().isNotEmpty) {
+    } else {
+      print('获取位置失败，请检测GPS是否开启！');
+    }
+    // 关闭
+    // AMapLocationClient.stopLocation();
+    //停止定位
+
+    //监听定位
+    // AMapLocationClient.onLocationUpate.listen((AMapLocation loc) {
+    //   if (!mounted) return;
+    //   setState(() {
+    //     print("""
+    // 经度：${result.longitude}
+    // 纬度：${result.latitude}
+    // """);
+    //   });
+    // });
+    // 开始监听
+    // AMapLocationClient.startLocation();
+  }
+```
+
+android下的 build.gradle
+
+```dart
+defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "com.example.myjd"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        +manifestPlaceholders = [
+                AMAP_KEY : "d7aba329530bff4dce38b06aed63db8d", /// 高德地图key
+        ]
+    }
+
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    +implementation 'com.amap.api:location:latest.integration' // 高德地图依赖
+    +implementation 'androidx.appcompat:appcompat:1.0.0'
+}
+```
+
+android下的>src>AndroidManifest.xml
+
+```dart
+ <application>
+ ...
+     +<meta-data android:name="com.amap.api.v2.apikey" android:value="d7aba329530bff4dce38b06aed--高德的key" />
+	+<service android:name="com.amap.api.location.APSService"></service>
+ </application>
+```
+
+android下的>src>main>profile>AndroidManifest.xml
+
+```dart
+ <!--用于访问GPS定位-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+```
+
 
 
 # 问题
@@ -2624,7 +2776,7 @@ https://blog.csdn.net/c6e5uli1n/article/details/104666263
 
 # flutter 插件
 
-## 国外论坛
+### 国外论坛
 
 ```
 https://dev.to/
@@ -2632,7 +2784,7 @@ https://dev.to/
 
 
 
-## 工具集
+### 工具集
 
 ```
 https://dev.to/parabeac/5-tools-to-supercharge-your-flutter-development-1m0l
@@ -2640,7 +2792,7 @@ https://dev.to/parabeac/5-tools-to-supercharge-your-flutter-development-1m0l
 
 
 
-## flutter_swiper
+### flutter_swiper
 
 地址:https://pub.dev/packages/flutter_swiper
 
@@ -2711,7 +2863,7 @@ class _HomeState extends State<Home> {
 }
 ```
 
-## flutter_screenutil 
+### flutter_screenutil 
 
 ```
 dependencies:
@@ -2739,13 +2891,30 @@ ScreenUtil.init(context, width: 750, height: 1334, allowFontScaling: false);
    height: ScreenUtil().setHeight(221),
 ```
 
-调试工具
+### 调试工具
 
 ```
 https://flutter.dev/docs/development/tools/devtools/vscode
 ```
 
+获取设备信息
+
+```
+https://segmentfault.com/a/1190000014913010?utm_source=index-hottest
+device_info: 
+```
+
+定位
+
+```
+amap_location: 
+```
+
+
+
 # 打包
+
+参考：https://www.jianshu.com/p/04eb531da438
 
 ```dart
 项目根目录/android/app/src/main/AndroidManifest.xml
@@ -2857,7 +3026,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
-        checkReleaseBuilds false
+        checkReleaseBuilds false //新增
     }
 
     defaultConfig {
@@ -2911,6 +3080,43 @@ storeFile=F:/key.jks
 
 ```
 flutter build apk
+```
+
+在线生成图标
+
+```
+https://appiconmaker.co/Home/
+
+https://icon.wuruihong.com
+
+代码插件：flutter_launcher_icons
+https://pub.dev/packages/flutter_launcher_icons#-readme-tab-
+```
+
+声明
+
+```
+<!--用于进行网络定位-->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+<!--用于访问GPS定位-->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+<!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+<!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+<!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+<!--用于访问网络，网络定位需要上网-->
+<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+<!--用于读取手机当前的状态-->
+<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+<!--用于写入缓存数据到扩展存储卡-->
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+<!--用于申请调用A-GPS模块-->
+<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permission>
+<!--用于申请获取蓝牙信息进行室内定位-->
+<uses-permission android:name="android.permission.BLUETOOTH"></uses-permission>
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"></uses-permission>
 ```
 
 

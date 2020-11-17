@@ -2490,9 +2490,18 @@ class MyApp extends StatelessWidget {
 # 获取定位
 
 1. 申请高德key；
+
 2. 创建应用；
+
 3. 获取sha1，获取包名；
-4. 声明权限；
+
+4. ```
+   keytool -list -v -keystore F:/androiddebugkey.jks
+   ```
+
+   
+
+5. 声明权限；
 
 ```
 参考：https://blog.csdn.net/qq_42772570/article/details/101671009
@@ -2908,6 +2917,12 @@ device_info:
 
 ```
 amap_location: 
+```
+
+permission_handler 
+
+```
+权限
 ```
 
 

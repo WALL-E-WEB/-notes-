@@ -2398,6 +2398,25 @@ var onGenerateRoute = (RouteSettings settings) {
 
 ```
 
+pushNamedAndRemoveUntil
+
+```dart
+
+//前进
+  Navigator.of(context)
+            .pushNamedAndRemoveUntil(
+            “跳转路径”,
+            ModalRoute.withName('/demo'),//清除旧栈需要保留的栈 不清除就不写这句
+            arguments:{"data":“233”}//传值
+        );
+ 
+ 
+Navigator.pushNamedAndRemoveUntil(
+      context,
+     "跳转路径", (route) => false,//true保留跳转的当前栈   false 不保留
+    ); 
+```
+
 
 
 # bottomNavigationBar
@@ -2486,6 +2505,8 @@ class MyApp extends StatelessWidget {
 
 
 ```
+
+
 
 # 获取定位
 

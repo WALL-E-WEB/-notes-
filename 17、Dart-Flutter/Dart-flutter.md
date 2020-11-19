@@ -2093,6 +2093,109 @@ class TextFeildHomePageState extends State {
 InkWell,GestureDetector,RaisedButton。
 ```
 
+# redux
+
+```dart
+ redux: ^4.0.0+3
+
+```
+
+main.dart
+
+```dart
+import 'package:redux/redux.dart';
+
+class MyApp extends StatelessWidget {
+	final store = new Store<AppState>(
+    appReducer,
+  	);
+	  MyApp();
+	  ...
+}
+```
+
+store/init.dart
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
+
+class AppState {
+  String token;
+  ThemeData themeData;
+  AppState({this.token, this.themeData});
+}
+
+AppState appReducer(state, action) {
+  return AppState(
+    token: UpdateToken(state.token, action),
+    themeData: UpdateTheme(state.themeData, action),
+  );
+}
+
+final UpdateToken =
+    combineReducers<String>([TypedReducer<String, TokenAction>(_refToken)]);
+final UpdateTheme = combineReducers<ThemeData>(
+    [TypedReducer<ThemeData, ThenmeAction>(_refTheme)]);
+
+// 更新
+String _refToken(String token, action) {
+  token = action.token;
+  return token;
+}
+
+ThemeData _refTheme(ThemeData themeData, action) {
+  themeData = action.themeData;
+  return themeData;
+}
+
+// set new state
+class TokenAction {
+  final token;
+  TokenAction(this.token);
+}
+
+class ThenmeAction {
+  final themeData;
+  ThenmeAction(this.themeData);
+}
+
+```
+
+更新视图方法
+
+```
+flutter_redux: ^0.7.0
+```
+
+```dart
+class MyApp extends StatelessWidget {
+	final store = new Store<AppState>(
+    	appReducer,
+       	// 初始化
+        initialState:AppState(
+        	themeData:ThemeData(),
+        ),
+  	);
+	  MyApp();
+	  ...
+	  
+	@override
+    Widget build(BuildContext context) {
+      return Storeprovider(
+        store:store,
+        child:StoreBuilder<Appstate>(builder:(context,store){
+            return MaterialApp(
+            	theme:store.state.themeDate,
+            );
+        }),
+      );
+    }
+}
+
+
+```
+
 
 
 # routes
@@ -2372,6 +2475,12 @@ var onGenerateRoute = (RouteSettings settings) {
 
 
 
+```
+
+## fractionsizedbox
+
+```
+百分
 ```
 
 
@@ -2926,3 +3035,34 @@ http://laomengit.com/
 https://www.yuque.com/xytech/flutter/lgxv30
 ```
 
+一、试用期个人工作总结：
+
+1.2020年8月7日，有幸加入公司技术部，在工作三个月中在团队的指导与合作下，快速熟悉公司业务、工作内容以及未来公司开发方向。现将我试用期的工作内容做简要小结：
+
+一、个人工作内容总结：
+
+1.8月负责pc端页面商户后台的页面开:
+
+- 其中完成两个项目从0到1的项目架构搭建；
+- 完成了pc业主端20+页面的交互，联调；
+- 完了pc商户端登录模块、招标、内容管理、活动活理、关于公司、设置等各个大小模块；
+
+2.9月份负责业主端改版，商户功能修复优化：
+
+- 为了更好支持seo，以及美化，对pc端进行重构与页面改版；采用mvc开发方式与后户端配合，静态页面采用jquery完成了重写，以及页面改版迭代；
+- 完成pc商户端相关bug修复；微信扫码登录、绑定的功能迭代；期间对项目结构优化分离、打包压缩优化，减少项目包大小，提升首页加载时间；
+
+3.10月份负责微信小程序，头条小程序开发，bos后台、app：
+
+- 采用uniapp开发小程序；完成了大数据报价，在线报价，首页和其余的webview跳转等页面；
+- 其中完成微信小程序和头条小程序，百度小程序所有页面的三端完美适配；完成了微信小程序与头条小程序的上线发布
+- 完成了bos后台广告管理与字典、黑白名单模块的开发；
+- 使用flutter跨平台开发app；完成了项目架构的搭建，初步完成了首页与webview，解决了打包问题；
+
+二、对以后工作的计划：
+
+1.增强flutter语言开发效率，完成安卓与ios所需功能的开发；
+
+2.学习krpano的使用，为开发全景展示做准备；
+
+3.学习webGL，具备将3Dmax文件导入到web中进行展示，以及相应功能的开发能力；

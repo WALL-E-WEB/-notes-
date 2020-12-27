@@ -1,5 +1,9 @@
 https://www.cnblogs.com/MrZhujl/p/12073771.html
 
+
+
+https://blog.csdn.net/weixin_42708208/article/details/90260827
+
 # 选择器插值
 
 ```less
@@ -56,6 +60,18 @@ background-image: url("@{base-url}/images/bg.png");
   .generate-col(@n, (@i+2));
 }
 
+
+.wh(@number,@min) when ( @number > @min)  {
+  .zj_w_@{number} {
+    width:  ~'@{number}px';
+  }
+  .zj_h_@{number} {
+    height: ~'@{number}px';
+  }
+
+ .wh((@number - 2), @min); 
+}
+.wh(200,30);
 ```
 
 # 拼接类名
@@ -91,5 +107,16 @@ background-image: url("@{base-url}/images/bg.png");
   left: -50%;
 }
 
+```
+
+# 导出变量
+
+```
+导出变量 js使用
+@number:58;
+:export {
+  number:@number
+
+}
 ```
 

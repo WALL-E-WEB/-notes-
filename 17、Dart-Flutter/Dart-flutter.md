@@ -2500,9 +2500,6 @@ var onGenerateRoute = (RouteSettings settings) {
     }
   }
 };
-
-
-
 ```
 
 ## pushNamedAndRemoveUntil
@@ -2515,13 +2512,29 @@ var onGenerateRoute = (RouteSettings settings) {
             ModalRoute.withName('/demo'),//清除旧栈需要保留的栈 不清除就不写这句
             arguments:{"data":“233”}//传值
         );
+
+Navigator.of(context)
+          .pushNamedAndRemoveUntil(
+    		'/',  // new page
+          	ModalRoute.withName('/Welcome') //当前页面 关闭页面
+); 
  
- 
+
 Navigator.pushNamedAndRemoveUntil(
       context,
      "跳转路径", (route) => false,//true保留跳转的当前栈   false 不保留
     ); 
 ```
+
+## pushReplacementNamed
+
+```dart
+替换当前页面
+Navigator.of(context).pushReplacementNamed('/screen4');
+Navigator.pushReplacementNamed(context, '/settings/brightness');
+```
+
+
 
 ## fractionsizedbox
 
@@ -3270,6 +3283,12 @@ https://pub.dev/packages/flutter_launcher_icons#-readme-tab-
 
 
 # 教程
+
+```
+这个项目屌  收录了Flutter 300多个组件演示   https://github.com/toly1994328/FlutterUnit
+```
+
+
 
 ```
 http://laomengit.com/

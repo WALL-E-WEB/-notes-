@@ -5702,6 +5702,68 @@ https://github.com/justjavac/the-front-end-knowledge-you-may-not-know/issues/10
         checkImgs();
 ```
 
+# 动画
+
+```js
+// ------------
+/**
+ * 缓动函数
+ * @param t number 动画已消耗时间
+ * @param b number 原始值
+ * @param c number 目标值
+ * @param d number 持续时间
+ */
+const tween = {
+  linear: function (t, b, c, d) {
+    return c * t / d + b
+  },
+  easeIn: function (t, b, c, d) {
+    return c * (t /= d) * t + b
+  },
+  strongEaseIn: function (t, b, c, d) {
+    return c * (t /= d) * t * t * t * t + b
+  },
+  strongEaseOut: function (t, b, c, d) {
+    return c * ((t = t / d - 1) * t * t * t * t + 1) + b
+  },
+  sineaseIn: function (t, b, c, d) {
+    return c * (t /= d) * t * t + b
+  },
+  sineaseOut: function (t, b, c, d) {
+    return c * ((t = t / d - 1) * t * t + 1) + b
+  }
+}
+
+/**
+ * 将元素滚动到可见位置
+ * @param {scroller:HTMLElement }要滚动的元素
+ * @param {viewer:HTMLElement }需要可见的元素
+ * @param {justify:Number} 偏移量
+ * @param {moveTime:Number} 滚动所需时间
+ */
+export function scrollToView (scroller, viewer, justify = 0, moveTime = 500) {
+  if (!scroller || !viewer) {
+    return
+  }
+  const clientHeight = document.documentElement.clientHeight
+  const rect = viewer.getBoundingClientRect()
+  const scroll = rect.top - clientHeight + rect.height + justify
+  const scrollStart = scroller.scrollTop
+  let start = null
+  const step = (timestamp) => {
+    if (!start) {
+      start = timestamp
+    }
+    const stepScroll = tween.easeIn(timestamp - start, 0, scroll, moveTime)
+    const total = scroller.scrollTop = scrollStart + stepScroll
+    if (total > scrollStart + scroll) {
+      window.requestAnimationFrame(step)
+    }
+  }
+  window.requestAnimationFrame(step)
+}
+```
+
 
 
 # 原生组件

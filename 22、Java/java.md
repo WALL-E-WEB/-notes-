@@ -324,3 +324,43 @@ main(){
 | Teminated(被终止)        | 因为run方法正常退出而死亡，或者因为没有捕获的异常终止了run方法而死亡。 |
 
 ![image-20210203225535439](java.assets/image-20210203225535439.png)
+
+# IO
+
+```
+
+```
+
+
+
+# 服务器
+
+模拟BS
+
+```java
+public static void main(String[] args) throws IOException {
+        ServerSocket server = new ServerSocket(8080);
+        Socket socket = server.accept();
+        InputStream is = socket.getInputStream();
+        byte[] bytes = new byte[1024];
+        int len = 0;
+        while ((len = is.read(bytes)) != -1){
+            System.out.println(new String(bytes,0,len));
+        }
+    }
+```
+
+# 函数接口 interface
+
+有且只有一个抽象方法的接口;方便使用Lambda;
+
+```java
+定义:
+
+@FunctionalInterface
+public interface Fn {
+    public abstract void method();
+}
+
+```
+

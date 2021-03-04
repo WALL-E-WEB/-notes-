@@ -13,3 +13,24 @@ https://vue-test-utils.vuejs.org/zh/guides/#%E8%B5%B7%E6%AD%A5
 vue add @vue/cli-plugin-unit-jest 
 ```
 
+## sion
+
+```
+
+```
+
+
+
+## 模拟http
+
+```javascript
+1.引入真实的请求方法所在的文件；import * as svc from '../../../../src/api/modules/common.js'
+
+// 使用jest.spyOn()创建一个mock函数
+const HTTP_Upload = jest.spyOn(svc, 'HTTP_Upload') 
+
+HTTP_Upload.mockReturnValueOnce(
+    Promise.resolve({ return_data: 'value' })
+)
+```
+

@@ -996,6 +996,17 @@ Bennett Feely 的图案库 http:// bennettfeely.com/gradients
     background-size: 30px 30px;
 ```
 
+# pre
+
+```css
+保留格式，且能换行  
+white-space: pre-wrap; /*css-3*/
+   white-space: -moz-pre-wrap; /*Mozilla,since1999*/
+   white-space: -pre-wrap; /*Opera4-6*/
+   white-space: -o-pre-wrap; /*Opera7*/
+   word-wrap: break-word; /*InternetExplorer5.5+*/
+```
+
 
 
 ## 背景渐变linear-gradient

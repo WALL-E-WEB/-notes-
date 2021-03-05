@@ -1,5 +1,13 @@
 # jest
 
+参考
+
+```
+http://www.likecs.com/show-90674.html
+```
+
+
+
 ## vue-jest
 
 ```
@@ -32,5 +40,21 @@ const HTTP_Upload = jest.spyOn(svc, 'HTTP_Upload') 
 HTTP_Upload.mockReturnValueOnce(
     Promise.resolve({ return_data: 'value' })
 )
+```
+
+
+
+# vue
+
+过滤属性
+
+```javascript
+ ZjmBidding.filters.timeFilters('2021-02-10 12:12:12')
+```
+
+计算属性
+
+```javascript
+const name =  wrapper.vm.fn
 ```
 

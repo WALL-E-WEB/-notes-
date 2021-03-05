@@ -16,7 +16,7 @@ https://vue-test-utils.vuejs.org/zh/guides/#%E8%B5%B7%E6%AD%A5
 
 
 
-```
+```javascript
 加入:jest
 vue add @vue/cli-plugin-unit-jest 
 ```
@@ -24,10 +24,33 @@ vue add @vue/cli-plugin-unit-jest
 ## sion
 
 ```
-
+https://sinonjs.org/releases/v9.2.4/spies/
 ```
 
 
+
+```js
+import sinon from 'sinon'
+
+    const onall = sinon.stub()
+    wrapper.vm.$on('on-all', onall)
+    expect(onall.called).toBe(true)
+```
+
+```
+https://sinonjs.org/releases/v9.2.4/spies/
+stub.called  
+stub.callCount 
+stub.notCalled
+stub.calledTwice
+```
+
+www.tddjs.com
+
+statement：语句覆盖率，顾名思义，有多少语句被测到。
+branches：分支覆盖率，有多少逻辑分支被测到。
+function：函数覆盖率，有多少个函数被测到。
+lines：线路覆盖率，有多少个逻辑线路被测到。
 
 ## 模拟http
 
@@ -44,17 +67,45 @@ HTTP_Upload.mockReturnValueOnce(
 
 
 
-# vue
+# vue-test
 
 过滤属性
 
 ```javascript
- ZjmBidding.filters.timeFilters('2021-02-10 12:12:12')
+import ZjmBidding from "./ZjmBidding.vue"
+ZjmBidding.filters.timeFilters('2021-02-10 12:12:12')
 ```
 
 计算属性
 
 ```javascript
 const name =  wrapper.vm.fn
+```
+
+# 问题
+
+引入外部报错问题
+
+```js
+npm包
+babel-plugin-transform-require-context
+```
+
+```js
+babel.config.js
+module.exports = {
+  plugins: plugins,
+  presets: [
+    '@vue/cli-plugin-babel/preset'
+  ],
+// ++
+  env: {
+    test: {
+      plugins: ['transform-require-context'], // +
+      presets: [['@babel/preset-env', { targets: { node: 'current' } }]]
+    }
+  }
+
+}
 ```
 

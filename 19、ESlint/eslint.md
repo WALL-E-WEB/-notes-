@@ -641,7 +641,7 @@ rules: {
 
 # vue 配置
 
-```
+```javascript
 https://eslint.vuejs.org/rules/
 eslint-plugin-vue
 
